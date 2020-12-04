@@ -6,7 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class PositionUnitTest {
     @Test
-    void testClone() {
+    void testClone() throws Exception {
         Position p1 = new Position();
         Position p2 = (Position)p1.clone();
         p2.advanceLine();

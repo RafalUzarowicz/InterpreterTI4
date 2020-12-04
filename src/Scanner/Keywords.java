@@ -18,6 +18,12 @@ public class Keywords {
         put('!', new ArrayList<>(Collections.singletonList('=')));
         put('=', new ArrayList<>(Collections.singletonList('=')));
     }};
+    public final static HashMap<Character, Token.Type> firstFromMultiSymbol = new HashMap<>(){{
+        put('>', Token.Type.Greater);
+        put('<', Token.Type.Less);
+        put('!', Token.Type.Not);
+        put('=', Token.Type.Equals);
+    }};
     public final static HashMap<String, Token.Type> symbolToType = new HashMap<>(){{
         put(">=", Token.Type.GreaterEqual);
         put("<=", Token.Type.LessEqual);

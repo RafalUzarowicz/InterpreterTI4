@@ -37,34 +37,36 @@ public class Scanner {
             return;
         }else if(tryString()){
             return;
+        }else if(tryHexOrPlanet()){
+            return;
         }else if(tryIdentifierOrKeywordOrLiteral()){
             return;
         }else if(tryNumber()){
             return;
         }
-        // TODO: usun to
-//        this.token = new Token(Token.Type.Undefined, position, (undefString != null?undefString.toString():""+(char)source.peek()));
-        throw new Exception("Undefined symbol: "+(undefString != null?undefString.toString():""+(char)source.peek())+" at "+position+".");
+        String unknownSymbol = undefString != null ? undefString.toString() : ""+(char)source.peek();
+        throw new Exception("Undefined symbol: "+unknownSymbol+" at "+position+".");
     }
 
     public Token get(){
         return token;
     }
 
-    private boolean tryEof(){
-        if(source.peek() == -1){
-            token = new Token(Token.Type.EOF, position, "eof");
+    private boolean tryEof() throws Exception{
+        if(source.peek() == Constants.Source.EOF){
+            token = new Token(Token.Type.EOF, position);
             source.next();
             return true;
         }
         return false;
     }
 
-    private boolean trySingleSymbols(){
+    private boolean trySingleSymbols() throws Exception{
         // Single symbols = symbols that are single characters.
         tempType = Keywords.singleToType.get(""+(char)source.peek());
         if(tempType != null){
-            token = new Token(tempType, position, ""+(char)source.get());
+            token = new Token(tempType, position);
+            source.next();
             return true;
         }
         return false;
@@ -72,24 +74,23 @@ public class Scanner {
 
     private boolean tryDoubleSymbol() throws Exception {
         // Double symbols - symbols that have two same characters like "||".
-        char tempChar = (char) source.peek();
+        char tempChar = (char)source.peek();
         if(Keywords.doubleSymbols.get(tempChar) != null){
             source.next();
-            if(tempChar == (char) source.peek()){
+            if(tempChar == (char)source.peek()){
                 tempType = Keywords.symbolToType.get(""+tempChar+tempChar);
             }else{
-                // TODO: lepsza obsluga wyjatkow
                 throw new Exception("Double symbol error at "+position+".");
             }
         }else{
             return false;
         }
-        token = new Token(tempType, position, ""+tempChar+tempChar);
+        token = new Token(tempType, position);
         source.next();
         return true;
     }
 
-    private boolean tryMultiSymbols(){
+    private boolean tryMultiSymbols() throws Exception {
         // Multi symbols - symbols that can have more than one characters that are not all the same like "<=".
         StringBuilder symbols = new StringBuilder();
         symbols.append((char) source.peek());
@@ -99,27 +100,16 @@ public class Scanner {
                 symbols.append((char) source.get());
                 tempType = Keywords.symbolToType.get(symbols.toString());
             }else{
-                switch(symbols.charAt(0)){
-                    case '>':
-                        tempType = Token.Type.Greater;
-                        break;
-                    case '<':
-                        tempType = Token.Type.Less;
-                        break;
-                    case '!':
-                        tempType = Token.Type.Not;
-                        break;
-                    case '=':
-                        tempType = Token.Type.Equals;
-                        break;
-                    default:
-                        break;
+                tempType = Keywords.firstFromMultiSymbol.get(symbols.charAt(0));
+                if(tempType != null){
+                    token = new Token(tempType, position);
+                    return true;
                 }
             }
         }else{
             return false;
         }
-        token = new Token(tempType, position, symbols.toString());
+        token = new Token(tempType, position);
         return true;
     }
 
@@ -136,7 +126,6 @@ public class Scanner {
                 token = new Token(Token.Type.StringLiteral, position, stringBuilder.toString());
                 return true;
             }else{
-                // TODO: lepsza obsluga wyjatkow
                 throw new Exception("String not valid at "+position+".");
             }
         }
@@ -148,72 +137,65 @@ public class Scanner {
     }
 
     private boolean isSpecialCharacter(char c){
-        // TODO: escape characters
         return Constants.Token.SPECIAL_CHARS.contains(c);
     }
 
-    private boolean tryIdentifierOrKeywordOrLiteral() throws Exception {
-        // Only identifiers can start with '_'.
-        if((char)source.peek() == '_'){
-            try{
-                return tryIdentifier(null);
-            } catch (Exception exception) {
-                // TODO: lepsza obsluga wyjatkow
-                throw new Exception(exception.getMessage());
-            }
-        }
-        // It's not '_' and not digit -> it can be keyword, literal or identifier.
-        if(!isDigit((char)source.peek())){
+    private boolean tryHexOrPlanet() throws Exception {
+        if(isHexOrPlanet((char)source.peek())){
             undefString = new StringBuilder();
-            // stringBuilder - we will hold current characters that we read in it.
-            StringBuilder stringBuilder = undefString;
-            stringBuilder.append((char)source.get());
-            // If it starts with h and p it can be hex/planet literal.
-            if(stringBuilder.charAt(0) == 'h' || stringBuilder.charAt(0) =='p'){
-                if(tryHexOrPlanet(stringBuilder)){
-                    return true;
+            undefString.append((char)source.get());
+            if((char)source.peek() == '0'){
+                undefString.append((char)source.get());
+            }else if(isNonZeroDigit((char)source.peek())){
+                undefString.append((char)source.get());
+                while(isDigit((char)source.peek())){
+                    Integer.parseInt(undefString.substring(1)+(char)source.peek());
+                    undefString.append((char)source.get());
                 }
+            }else{
+                return false;
             }
-            // It doesnt start with h/p or it starts with h/p but it doesn't fulfills proper requirements.
-            // If last character is not letter we move on.
-            if(isLetter(stringBuilder.charAt(stringBuilder.length()-1))) {
-                // currLen - just to check if we didn't pass limits.
-                int currLen = stringBuilder.length();
-                // Add new letter and then check if current string is keyword/literal.
-                do {
-                    if ((tryKeyword(stringBuilder) || tryLiteral(stringBuilder)) && !isLetter((char) source.peek()) && !isDigit((char) source.peek())) {
-                        token = new Token(tempType, position, stringBuilder.toString());
-                        return true;
-                    }
-                    if (isLetter((char) source.peek())) {
-                        // Only letters can be used for keywords/literals.
-                        stringBuilder.append((char) source.get());
-                    } else {
-                        break;
-                    }
-                    ++currLen;
-                    // TODO: zamiast iden len to najwieksza dlugosc slowa z keywords
-                } while (currLen < Constants.Token.MAX_IDENTIFIER_LEN);
-
-                if (currLen == Constants.Token.MAX_IDENTIFIER_LEN) {
-                    // TODO: lepsza obsluga wyjatkow
-                    throw new Exception("Too long identifier at " + position + ".");
-                }
-            }
-
-            // We try to create identifier with what we have.
-            try{
-                return tryIdentifier(stringBuilder);
-            } catch (Exception exception) {
-                // TODO: lepsza obsluga wyjatkow
-                throw new Exception(exception.getMessage());
+            if(!isIdentifierCharacter((char)source.peek())){
+                tempType = Keywords.hexOrPlanetToType.get(undefString.substring(0, 1));
+                token = new Token(tempType, position, undefString.toString());
+                return true;
             }
         }
-        // It is digit so we move on.
         return false;
     }
 
-    private boolean tryKeyword(StringBuilder stringBuilder){
+    private boolean isHexOrPlanet(char c){
+        return c == 'h' || c == 'p';
+    }
+
+    private boolean tryIdentifierOrKeywordOrLiteral() throws Exception {
+        if(undefString == null){
+            if(isDigit((char)source.peek())){
+                return false;
+            }
+            undefString = new StringBuilder();
+        }else if(isDigit(undefString.charAt(undefString.length()-1))){
+            undefString.append((char)source.get());
+        }
+        while (undefString.length() < Constants.Token.MAX_IDENTIFIER_LEN){
+            if (isIdentifierCharacter((char) source.peek())) {
+                undefString.append((char) source.get());
+            }else{
+                if (checkIfKeyword(undefString) || checkIfLiteral(undefString) || checkIfIdentifier(undefString)) {
+                    token = new Token(tempType, position, undefString.toString());
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        }
+        if (undefString.length() == Constants.Token.MAX_IDENTIFIER_LEN) {
+            throw new Exception("Too long identifier at " + position + ".");
+        }
+        return false;
+    }
+
+    private boolean checkIfKeyword(StringBuilder stringBuilder){
         if( stringBuilder != null ){
             tempType = Keywords.keywordToType.get(stringBuilder.toString());
             return tempType != null;
@@ -221,7 +203,7 @@ public class Scanner {
         return false;
     }
 
-    private boolean tryLiteral(StringBuilder stringBuilder){
+    private boolean checkIfLiteral(StringBuilder stringBuilder){
         if( stringBuilder != null ) {
             tempType = Keywords.literalToType.get(stringBuilder.toString());
             return tempType != null;
@@ -229,76 +211,22 @@ public class Scanner {
         return false;
     }
 
-    private boolean tryHexOrPlanet(StringBuilder stringBuilder){
-        if(isDigit((char)source.peek())){
-            stringBuilder.append((char)source.get());
-            if(isDigit((char)source.peek())){
-                stringBuilder.append((char)source.get());
-            }
-            int value = Integer.parseInt(stringBuilder.substring(1));
-            if( !(isDigit((char)source.peek())||isLetter((char)source.peek())) && checkPlanetOrHexIndex(value, stringBuilder.charAt(0)) ){
-                tempType = Keywords.hexOrPlanetToType.get(stringBuilder.substring(0, 1));
-                token = new Token(tempType, position, stringBuilder.toString());
+    private boolean checkIfIdentifier(StringBuilder stringBuilder){
+        if(stringBuilder.length()>0){
+            if(isLetter(stringBuilder.charAt(0)) || (isUnderscore(stringBuilder.charAt(0))&&stringBuilder.length()>1)){
+                tempType = Token.Type.Identifier;
                 return true;
             }
         }
         return false;
     }
 
-    private boolean checkPlanetOrHexIndex(int index, char planetOrHex){
-        return (planetOrHex == 'p' && index>=0 && index<Constants.Board.PLANET_NUMBER) || (planetOrHex == 'h' && index>=0 && index<Constants.Board.HEX_NUMBER);
+    private boolean isIdentifierCharacter(char c){
+        return isLetter(c)||isDigit(c)||isUnderscore(c);
     }
 
-    private boolean tryIdentifier(StringBuilder stringBuilder) throws Exception {
-        // If we didn't collected something already we need to start from scratch.
-        if (stringBuilder == null) {
-            stringBuilder = new StringBuilder();
-            undefString = stringBuilder;
-            while((char)source.peek() == '_'){
-                stringBuilder.append((char)source.get());
-                if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN-1){
-                    throw new Exception("Identifier name too long at "+position+".");
-                }
-            }
-            // We must have at least one letter.
-            if(isLetter((char)source.peek())){
-                stringBuilder.append((char)source.get());
-            }else{
-                return false;
-            }
-        }
-        if( stringBuilder.length() > 0 && isDigit(stringBuilder.charAt(stringBuilder.length()-1)) && (isLetter((char)source.peek())||(char)source.peek()=='_')){
-            throw new Exception("Wrong identifier name: "+stringBuilder.toString()+(char)source.peek()+" at "+position+".");
-        }
-        // If last character is letter we can continue creating identifier.
-        if( stringBuilder.length() > 0 && isLetter(stringBuilder.charAt(stringBuilder.length()-1)) ){
-            while(isLetter((char)source.peek())){
-                stringBuilder.append((char)source.get());
-                if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN){
-                    throw new Exception("Identifier name too long at "+position+".");
-                }
-            }
-            while(isDigit((char)source.peek())){
-                stringBuilder.append((char)source.get());
-                if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN){
-                    throw new Exception("Identifier name too long at "+position+".");
-                }
-            }
-            token = new Token(Token.Type.Identifier, position, stringBuilder.toString());
-            return true;
-        }
-        // If lst character is digit we can continue creating identifier.
-        if( stringBuilder.length() > 0 && isDigit(stringBuilder.charAt(stringBuilder.length()-1)) ) {
-            while(isDigit((char)source.peek())){
-                stringBuilder.append((char)source.get());
-                if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN){
-                    throw new Exception("Identifier name too long at "+position+".");
-                }
-            }
-            token = new Token(Token.Type.Identifier, position, stringBuilder.toString());
-            return true;
-        }
-        return false;
+    private boolean isUnderscore(char c){
+        return c == '_';
     }
 
     private boolean isLetter(char c){
@@ -342,7 +270,7 @@ public class Scanner {
         return c > '0' && c <= '9';
     }
 
-    private void ignoreWhiteSpaces(){
+    private void ignoreWhiteSpaces() throws Exception{
         while(Character.isWhitespace(source.peek())){
             source.next();
         }

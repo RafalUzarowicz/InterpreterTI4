@@ -1,211 +1,595 @@
 package Scanner;
 
-import Source.FileSource;
 import Source.Position;
-import Source.ResourceFileSource;
 import Source.StringSource;
 import org.junit.jupiter.api.Test;
+
+import java.util.HashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class ScannerTest {
-    private void checkToken(Scanner scanner, Token token){
+    private void checkTokenNoValue(Scanner scanner, Token token) throws Exception{
+        scanner.next();
+        Token t = scanner.get();
+        assertEquals(token.getType(), t.getType());
+        assertEquals(token.getPosition().toString(), t.getPosition().toString());
+    }
+
+    private void checkTokenWithValue(Scanner scanner, Token token) throws Exception {
+        scanner.next();
+        Token t = scanner.get();
+        assertEquals(token.getType(), t.getType());
+        assertEquals(token.getPosition().toString(), t.getPosition().toString());
+        assertEquals(token.getValue(), t.getValue());
+    }
+
+    @Test
+    void simplest() throws Exception {
+        StringSource source = new StringSource("var x = 2;");
+        Scanner scanner = new Scanner(source);
+
+        checkTokenWithValue(scanner, new Token(Token.Type.VarType, new Position(1,1), "var"));
+        checkTokenWithValue(scanner, new Token(Token.Type.Identifier, new Position(1,5), "x"));
+        checkTokenNoValue(scanner, new Token(Token.Type.Equals, new Position(1,7)));
+        checkTokenWithValue(scanner, new Token(Token.Type.NumberLiteral, new Position(1,9), "2"));
+        checkTokenNoValue(scanner, new Token(Token.Type.Semicolon, new Position(1,10)));
+    }
+
+    @Test
+    void properNumberLiteral(){
+        StringBuilder goodStringBuilder = new StringBuilder();
+
+        goodStringBuilder.append("64152 ");
+        goodStringBuilder.append("62467 ");
+
+        String[] goodStrings = goodStringBuilder.toString().split(" ");
+
+        StringSource source = new StringSource(goodStringBuilder.toString());
+        Scanner scanner = new Scanner(source);
+
+        for (String string : goodStrings) {
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+            assertEquals(token.getType(), Token.Type.NumberLiteral);
+            assertEquals(token.getValue(), string);
+        }
+
+        assertThrows(Exception.class, scanner::next);
         try {
             scanner.next();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
-        Token t = scanner.get();
-        assertEquals(token.getType(), t.getType());
-        assertEquals(token.getPosition().toString(), t.getPosition().toString());
-        assertEquals(token.getValue(), token.getValue());
+        assertThrows(Exception.class, scanner::next);
+        try {
+            scanner.next();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+
+        try {
+            scanner.next();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        Token token = scanner.get();
+        assertEquals(token.getType(), Token.Type.EOF);
+        assertEquals(token.getValue(), "eof");
     }
 
     @Test
-    void simplest() {
-        StringSource source = new StringSource("var x = 2;");
+    void numberLiteral(){
+        StringBuilder goodStringBuilder = new StringBuilder();
+
+        goodStringBuilder.append("64152 ");
+        goodStringBuilder.append("62467 ");
+
+        String[] goodStrings = goodStringBuilder.toString().split(" ");
+
+        String badString = "0123 " + "999999999999 ";
+        StringSource source = new StringSource(goodStringBuilder.toString()+ badString);
         Scanner scanner = new Scanner(source);
 
-        checkToken(scanner, new Token(Token.Type.VarType, new Position(1,1), "var"));
-        checkToken(scanner, new Token(Token.Type.Identifier, new Position(1,5), "x"));
-        checkToken(scanner, new Token(Token.Type.Equals, new Position(1,7), "="));
-        checkToken(scanner, new Token(Token.Type.NumberLiteral, new Position(1,9), "2"));
-        checkToken(scanner, new Token(Token.Type.Semicolon, new Position(1,10), ";"));
-    }
-
-    @Test
-    void simple() {
-        /*
-        int main( string s ){
-            color c = Red;
-            int x12 = h9;
-        }
-        */
-        try{
-            ResourceFileSource source = new ResourceFileSource("simple.twlan");
-
-            Scanner scanner = new Scanner(source);
-
-            checkToken(scanner, new Token(Token.Type.Type, new Position(1,1), "main"));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(1,5), "main"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisLeft, new Position(1,9), "("));
-            checkToken(scanner, new Token(Token.Type.Type, new Position(1,11), "string"));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(1,18), "s"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisRight, new Position(1,20), ")"));
-            checkToken(scanner, new Token(Token.Type.BracesLeft, new Position(1,21), "{"));
-            checkToken(scanner, new Token(Token.Type.Type, new Position(2,5), "color"));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(2,11), "c"));
-            checkToken(scanner, new Token(Token.Type.Equals, new Position(2,13), "="));
-            checkToken(scanner, new Token(Token.Type.ColorLiteral, new Position(2,15), "Red"));
-            checkToken(scanner, new Token(Token.Type.Semicolon, new Position(2,18), ";"));
-            checkToken(scanner, new Token(Token.Type.Type, new Position(3,5), "int"));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(3,9), "x12"));
-            checkToken(scanner, new Token(Token.Type.Equals, new Position(3,13), "="));
-            checkToken(scanner, new Token(Token.Type.HexLiteral, new Position(3,15), "h9"));
-            checkToken(scanner, new Token(Token.Type.Semicolon, new Position(3,17), ";"));
-            checkToken(scanner, new Token(Token.Type.BracesRight, new Position(4,1), "}"));
-
-        } catch (Exception exception) {
-            // TODO: lepsza obsluga wyjatkow
-            exception.printStackTrace();
-        }
-    }
-
-    @Test
-    void advanced() {
-        /*
-        int increment(int x){
-            print("Before incrementation: ", x);
-            return x+1;
-        }
-
-        int main(){
-            color[] players = color[]{Red, Blue};
-            if( player(Yellow) has command >= 1 ){
-                foreach(var p:players){
-                        print(p);
-                }
-            }else{
-                print("Tak");
+        for (String string : goodStrings) {
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
             }
-            var[] units = unit[2];
-            unit[0] = Fighter;
-            unit[1] = Infantry;
-
-            return 0;
+            Token token = scanner.get();
+            assertEquals(token.getType(), Token.Type.NumberLiteral);
+            assertEquals(token.getValue(), string);
         }
-        */
-        try{
-            FileSource source = new FileSource("code/advance.twlan");
 
-            Scanner scanner = new Scanner(source);
-
-            checkToken(scanner, new Token(Token.Type.Type, new Position(1,1), "int"));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(1,5), "increment"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisLeft, new Position(1,14), "("));
-            checkToken(scanner, new Token(Token.Type.Type, new Position(1,15), "int"));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(1,19), "x"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisRight, new Position(1,20), ")"));
-            checkToken(scanner, new Token(Token.Type.BracesLeft, new Position(1,21), "{"));
-            checkToken(scanner, new Token(Token.Type.Print, new Position(2,2), "print"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisLeft, new Position(2,7), "("));
-            checkToken(scanner, new Token(Token.Type.StringLiteral, new Position(2,8), "\"Before incrementation: \""));
-            checkToken(scanner, new Token(Token.Type.Comma, new Position(2,33), ","));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(2,35), "x"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisRight, new Position(2,36), ")"));
-            checkToken(scanner, new Token(Token.Type.Semicolon, new Position(2,37), ";"));
-            checkToken(scanner, new Token(Token.Type.Return, new Position(3,2), "return"));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(3,9), "x"));
-            checkToken(scanner, new Token(Token.Type.Plus, new Position(3,10), "+"));
-            checkToken(scanner, new Token(Token.Type.NumberLiteral, new Position(3,11), "1"));
-            checkToken(scanner, new Token(Token.Type.Semicolon, new Position(3,12), ";"));
-            checkToken(scanner, new Token(Token.Type.BracesRight, new Position(4,1), "}"));
-            checkToken(scanner, new Token(Token.Type.Type, new Position(6,1), "int"));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(6,5), "main"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisLeft, new Position(6,9), "("));
-            checkToken(scanner, new Token(Token.Type.ParenthesisRight, new Position(6,10), ")"));
-            checkToken(scanner, new Token(Token.Type.BracesLeft, new Position(6,11), "{"));
-            checkToken(scanner, new Token(Token.Type.Type, new Position(7,5), "color"));
-            checkToken(scanner, new Token(Token.Type.BracketsLeft, new Position(7,10), "["));
-            checkToken(scanner, new Token(Token.Type.BracketsRight, new Position(7,11), "]"));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(7,13), "players"));
-            checkToken(scanner, new Token(Token.Type.Equals, new Position(7,21), "="));
-            checkToken(scanner, new Token(Token.Type.Type, new Position(7,23), "color"));
-            checkToken(scanner, new Token(Token.Type.BracketsLeft, new Position(7,28), "["));
-            checkToken(scanner, new Token(Token.Type.BracketsRight, new Position(7,29), "]"));
-            checkToken(scanner, new Token(Token.Type.BracesLeft, new Position(7,30), "{"));
-            checkToken(scanner, new Token(Token.Type.ColorLiteral, new Position(7,31), "Red"));
-            checkToken(scanner, new Token(Token.Type.Comma, new Position(7,34), ","));
-            checkToken(scanner, new Token(Token.Type.ColorLiteral, new Position(7,36), "Blue"));
-            checkToken(scanner, new Token(Token.Type.BracesRight, new Position(7,40), "}"));
-            checkToken(scanner, new Token(Token.Type.Semicolon, new Position(7,41), ";"));
-            checkToken(scanner, new Token(Token.Type.If, new Position(8,2), "if"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisLeft, new Position(8,4), "("));
-            checkToken(scanner, new Token(Token.Type.Planet, new Position(8,6), "planet"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisLeft, new Position(8,12), "("));
-            checkToken(scanner, new Token(Token.Type.PlanetLiteral, new Position(8,13), "p4"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisRight, new Position(8,15), ")"));
-            checkToken(scanner, new Token(Token.Type.Has, new Position(8,17), "has"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisLeft, new Position(8,20), "("));
-            checkToken(scanner, new Token(Token.Type.UnitLiteral, new Position(8,21), "Carrier"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisRight, new Position(8,28), ")"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisRight, new Position(8,30), ")"));
-            checkToken(scanner, new Token(Token.Type.BracesLeft, new Position(8,31), "{"));
-            checkToken(scanner, new Token(Token.Type.Foreach, new Position(9,3), "foreach"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisLeft, new Position(9,10), "("));
-            checkToken(scanner, new Token(Token.Type.VarType, new Position(9,11), "var"));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(9,15), "p"));
-            checkToken(scanner, new Token(Token.Type.Colon, new Position(9,16), ":"));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(9,17), "players"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisRight, new Position(9,24), ")"));
-            checkToken(scanner, new Token(Token.Type.BracesLeft, new Position(9,25), "{"));
-            checkToken(scanner, new Token(Token.Type.Print, new Position(10,11), "print"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisLeft, new Position(10,16), "("));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(10,17), "p"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisRight, new Position(10,18), ")"));
-            checkToken(scanner, new Token(Token.Type.Semicolon, new Position(10,19), ";"));
-            checkToken(scanner, new Token(Token.Type.BracesRight, new Position(11,9), "}"));
-            checkToken(scanner, new Token(Token.Type.BracesRight, new Position(12,2), "}"));
-            checkToken(scanner, new Token(Token.Type.Else, new Position(12,3), "else"));
-            checkToken(scanner, new Token(Token.Type.BracesLeft, new Position(12,7), "{"));
-            checkToken(scanner, new Token(Token.Type.Print, new Position(13,9), "print"));
-            checkToken(scanner, new Token(Token.Type.ParenthesisLeft, new Position(13,14), "("));
-            checkToken(scanner, new Token(Token.Type.StringLiteral, new Position(13,15), "\"Tak\""));
-            checkToken(scanner, new Token(Token.Type.ParenthesisRight, new Position(13,20), ")"));
-            checkToken(scanner, new Token(Token.Type.Semicolon, new Position(13,21), ";"));
-            checkToken(scanner, new Token(Token.Type.BracesRight, new Position(14,2), "}"));
-            checkToken(scanner, new Token(Token.Type.VarType, new Position(15,2), "var"));
-            checkToken(scanner, new Token(Token.Type.BracketsLeft, new Position(15,5), "["));
-            checkToken(scanner, new Token(Token.Type.BracketsRight, new Position(15,6), "]"));
-            checkToken(scanner, new Token(Token.Type.Identifier, new Position(15,8), "units"));
-            checkToken(scanner, new Token(Token.Type.Equals, new Position(15,14), "="));
-            checkToken(scanner, new Token(Token.Type.Type, new Position(15,16), "unit"));
-            checkToken(scanner, new Token(Token.Type.BracketsLeft, new Position(15,20), "["));
-            checkToken(scanner, new Token(Token.Type.NumberLiteral, new Position(15,21), "2"));
-            checkToken(scanner, new Token(Token.Type.BracketsRight, new Position(15,22), "]"));
-            checkToken(scanner, new Token(Token.Type.Semicolon, new Position(15,23), ";"));
-            checkToken(scanner, new Token(Token.Type.Type, new Position(16,2), "unit"));
-            checkToken(scanner, new Token(Token.Type.BracketsLeft, new Position(16,6), "["));
-            checkToken(scanner, new Token(Token.Type.NumberLiteral, new Position(16,7), "0"));
-            checkToken(scanner, new Token(Token.Type.BracketsRight, new Position(16,8), "]"));
-            checkToken(scanner, new Token(Token.Type.Equals, new Position(16,10), "="));
-            checkToken(scanner, new Token(Token.Type.UnitLiteral, new Position(16,12), "Fighter"));
-            checkToken(scanner, new Token(Token.Type.Semicolon, new Position(16,19), ";"));
-            checkToken(scanner, new Token(Token.Type.Type, new Position(17,2), "unit"));
-            checkToken(scanner, new Token(Token.Type.BracketsLeft, new Position(17,6), "["));
-            checkToken(scanner, new Token(Token.Type.NumberLiteral, new Position(17,7), "1"));
-            checkToken(scanner, new Token(Token.Type.BracketsRight, new Position(17,8), "]"));
-            checkToken(scanner, new Token(Token.Type.Equals, new Position(17,10), "="));
-            checkToken(scanner, new Token(Token.Type.UnitLiteral, new Position(17,12), "Infantry"));
-            checkToken(scanner, new Token(Token.Type.Semicolon, new Position(17,20), ";"));
-            checkToken(scanner, new Token(Token.Type.Return, new Position(19,2), "return"));
-            checkToken(scanner, new Token(Token.Type.NumberLiteral, new Position(19,9), "0"));
-            checkToken(scanner, new Token(Token.Type.Semicolon, new Position(19,10), ";"));
-            checkToken(scanner, new Token(Token.Type.BracesRight, new Position(20,1), "}"));
-            checkToken(scanner, new Token(Token.Type.EOF, new Position(20,2), "eof"));
+        assertThrows(Exception.class, scanner::next);
+        try {
+            scanner.next();
         } catch (Exception exception) {
-            // TODO: lepsza obsluga wyjatkow
             exception.printStackTrace();
         }
+        assertThrows(Exception.class, scanner::next);
+        try {
+            scanner.next();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+
+        try {
+            scanner.next();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        Token token = scanner.get();
+        assertEquals(token.getType(), Token.Type.EOF);
+        assertEquals(token.getValue(), "eof");
+    }
+
+    @Test
+    void stringLiteral(){
+        StringBuilder goodStringBuilder = new StringBuilder();
+
+        String[] goodStrings = new String[3];
+        String tempStr = "\"tak\"";
+        goodStringBuilder.append(tempStr).append(" ");
+        goodStrings[0] = tempStr;
+        tempStr = "\"._.,\"";
+        goodStringBuilder.append(tempStr).append(" ");
+        goodStrings[1] = tempStr;
+        tempStr = "\"taki: \"";
+        goodStringBuilder.append(tempStr).append(" ");
+        goodStrings[2] = tempStr;
+
+
+        StringBuilder badStringBuilder = new StringBuilder();
+
+        tempStr = "\"tak?\"";
+        badStringBuilder.append(tempStr).append(" ");
+
+        StringSource source = new StringSource(goodStringBuilder.toString()+badStringBuilder.toString());
+        Scanner scanner = new Scanner(source);
+
+        for (String string : goodStrings) {
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+            assertEquals(token.getType(), Token.Type.StringLiteral);
+            assertEquals(token.getValue(), string);
+        }
+
+        assertThrows(Exception.class, scanner::next);
+        assertThrows(Exception.class, scanner::next);
+        assertThrows(Exception.class, scanner::next);
+
+        try {
+            scanner.next();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        Token token = scanner.get();
+        assertEquals(token.getType(), Token.Type.EOF);
+        assertEquals(token.getValue(), "eof");
+    }
+
+    @Test
+    void boolLiteral(){
+        StringBuilder goodStringBuilder = new StringBuilder();
+
+        goodStringBuilder.append("true ");
+        goodStringBuilder.append("false ");
+
+        String[] goodStrings = goodStringBuilder.toString().split(" ");
+
+        StringBuilder badStringBuilder = new StringBuilder();
+
+        badStringBuilder.append("truew ");
+        badStringBuilder.append("fawse ");
+
+        String[] badStrings = badStringBuilder.toString().split(" ");
+
+        StringSource source = new StringSource(goodStringBuilder.toString()+badStringBuilder.toString());
+        Scanner scanner = new Scanner(source);
+
+        for (String string : goodStrings) {
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+            assertEquals(token.getType(), Token.Type.BoolLiteral);
+            assertEquals(token.getValue(), string);
+        }
+
+        for (String string : badStrings) {
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+            assertEquals(token.getType(), Token.Type.Identifier);
+            assertEquals(token.getValue(), string);
+        }
+
+        try {
+            scanner.next();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        Token token = scanner.get();
+        assertEquals(token.getType(), Token.Type.EOF);
+        assertEquals(token.getValue(), "eof");
+    }
+
+    @Test
+    void planetLiteral(){
+        StringBuilder goodStringBuilder = new StringBuilder();
+
+        goodStringBuilder.append("p1 ");
+        goodStringBuilder.append("p14 ");
+        goodStringBuilder.append("p17 ");
+
+        String[] goodStrings = goodStringBuilder.toString().split(" ");
+
+        StringBuilder badStringBuilder = new StringBuilder();
+
+        badStringBuilder.append("p63 ");
+        badStringBuilder.append("p99 ");
+        badStringBuilder.append("p59 ");
+
+        String[] badStrings = badStringBuilder.toString().split(" ");
+
+        StringSource source = new StringSource(goodStringBuilder.toString()+badStringBuilder.toString());
+        Scanner scanner = new Scanner(source);
+
+        for (String string : goodStrings) {
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+            assertEquals(token.getType(), Token.Type.PlanetLiteral);
+            assertEquals(token.getValue(), string);
+        }
+
+        for (String string : badStrings) {
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+            assertEquals(token.getType(), Token.Type.Identifier);
+            assertEquals(token.getValue(), string);
+        }
+
+        try {
+            scanner.next();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        Token token = scanner.get();
+        assertEquals(token.getType(), Token.Type.EOF);
+        assertEquals(token.getValue(), "eof");
+    }
+
+    @Test
+    void hexLiteral(){
+        StringBuilder goodStringBuilder = new StringBuilder();
+
+        // TODO: krotsze i oddzielnie dobre i zle
+        goodStringBuilder.append("h1 ");
+        goodStringBuilder.append("h14 ");
+        goodStringBuilder.append("h17 ");
+
+        String[] goodStrings = goodStringBuilder.toString().split(" ");
+
+        StringBuilder badStringBuilder = new StringBuilder();
+
+        badStringBuilder.append("h63 ");
+        badStringBuilder.append("h99 ");
+        badStringBuilder.append("h51 ");
+
+        String[] badStrings = badStringBuilder.toString().split(" ");
+
+        StringSource source = new StringSource(goodStringBuilder.toString()+badStringBuilder.toString());
+        Scanner scanner = new Scanner(source);
+
+        for (String string : goodStrings) {
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+            assertEquals(token.getType(), Token.Type.HexLiteral);
+            assertEquals(token.getValue(), string);
+        }
+
+        for (String string : badStrings) {
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+            assertEquals(token.getType(), Token.Type.Identifier);
+            assertEquals(token.getValue(), string);
+        }
+
+        try {
+            scanner.next();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        Token token = scanner.get();
+        assertEquals(token.getType(), Token.Type.EOF);
+        assertEquals(token.getValue(), "eof");
+    }
+
+    @Test
+    void colorAndBoolAndUnitLiteral(){
+        for ( String key : Keywords.literalToType.keySet() ) {
+            StringSource source = new StringSource(key);
+            Scanner scanner = new Scanner(source);
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+
+            assertEquals(token.getType(), Keywords.literalToType.get(key));
+            assertEquals(token.getPosition().toString(), new Position().toString());
+            assertEquals(token.getValue(), key);
+        }
+    }
+
+    @Test
+    void badIdentifiers() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("x_ ");
+        stringBuilder.append("x1_ ");
+        stringBuilder.append("_x1_ ");
+
+        String[] strings = stringBuilder.toString().split(" ");
+
+        StringSource source = new StringSource(stringBuilder.toString());
+        Scanner scanner = new Scanner(source);
+        for (String string : strings) {
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+            assertEquals(token.getType(), Token.Type.Identifier);
+            assertEquals(token.getValue(), string.substring(0, string.length()-1));
+
+            assertThrows(Exception.class, scanner::next);
+        }
+
+        try {
+            scanner.next();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        Token token = scanner.get();
+        assertEquals(token.getType(), Token.Type.EOF);
+        assertEquals(token.getValue(), "eof");
+    }
+
+    @Test
+    void goodIdentifiers() {
+        StringBuilder stringBuilder = new StringBuilder();
+
+        stringBuilder.append("x ");
+        stringBuilder.append("_a ");
+        stringBuilder.append("_f1 ");
+        stringBuilder.append("____c1 ");
+        stringBuilder.append("__xfa ");
+        stringBuilder.append("__fwa123 ");
+
+        String[] strings = stringBuilder.toString().split(" ");
+
+        StringSource source = new StringSource(stringBuilder.toString());
+        Scanner scanner = new Scanner(source);
+        for (String string : strings) {
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+            assertEquals(token.getType(), Token.Type.Identifier);
+            assertEquals(token.getValue(), string);
+        }
+
+        try {
+            scanner.next();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        Token token = scanner.get();
+        assertEquals(token.getType(), Token.Type.EOF);
+        assertEquals(token.getValue(), "eof");
+    }
+
+    @Test
+    void everyTokenSeparately(){
+        HashMap<String, Token.Type> stringToType = new HashMap<>(){{
+            put("player", Token.Type.Player);
+            put("planet", Token.Type.Planet);
+            put("hex", Token.Type.Hex);
+            put("move", Token.Type.UnitsAction);
+            put("add", Token.Type.UnitsAction);
+            put("remove", Token.Type.UnitsAction);
+            put("from", Token.Type.From);
+            put("to", Token.Type.To);
+            put("has", Token.Type.Has);
+            put("at", Token.Type.At);
+            put("activated", Token.Type.Activated);
+            put("activate", Token.Type.Activation);
+            put("deactivate", Token.Type.Activation);
+
+            put("(", Token.Type.ParenthesisLeft);
+            put(")", Token.Type.ParenthesisRight);
+            put("[", Token.Type.BracketsLeft);
+            put("]", Token.Type.BracketsRight);
+            put("{", Token.Type.BracesLeft);
+            put("}", Token.Type.BracesRight);
+
+            put(",", Token.Type.Comma);
+            put(":", Token.Type.Colon);
+            put(";", Token.Type.Semicolon);
+            put("-", Token.Type.Minus);
+            put("+", Token.Type.Plus);
+            put("*", Token.Type.Multiply);
+            put("/", Token.Type.Divide);
+
+            put("&&", Token.Type.And);
+            put("||", Token.Type.Or);
+
+            put(">", Token.Type.Greater);
+            put("<", Token.Type.Less);
+            put("=", Token.Type.Equals);
+            put("!", Token.Type.Not);
+
+            put(">=", Token.Type.GreaterEqual);
+            put("<=", Token.Type.LessEqual);
+            put("==", Token.Type.Equal);
+            put("!=", Token.Type.NotEqual);
+
+            put("foreach", Token.Type.Foreach);
+            put("continue", Token.Type.Continue);
+            put("break", Token.Type.Break);
+            put("return", Token.Type.Return);
+            put("print", Token.Type.Print);
+            put("if", Token.Type.If);
+            put("else", Token.Type.Else);
+        }};
+
+        for ( String key : stringToType.keySet() ) {
+            StringSource source = new StringSource(key);
+            Scanner scanner = new Scanner(source);
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+
+            assertEquals(token.getType(), stringToType.get(key));
+            assertEquals(token.getPosition().toString(), new Position().toString());
+            assertEquals(token.getValue(), key);
+        }
+    }
+
+    @Test
+    void everyTokenTogether(){
+        HashMap<String, Token.Type> stringToType = new HashMap<>(){{
+            put("player", Token.Type.Player);
+            put("planet", Token.Type.Planet);
+            put("hex", Token.Type.Hex);
+            put("move", Token.Type.UnitsAction);
+            put("add", Token.Type.UnitsAction);
+            put("remove", Token.Type.UnitsAction);
+            put("from", Token.Type.From);
+            put("to", Token.Type.To);
+            put("has", Token.Type.Has);
+            put("at", Token.Type.At);
+            put("activated", Token.Type.Activated);
+            put("activate", Token.Type.Activation);
+            put("deactivate", Token.Type.Activation);
+
+            put("(", Token.Type.ParenthesisLeft);
+            put(")", Token.Type.ParenthesisRight);
+            put("[", Token.Type.BracketsLeft);
+            put("]", Token.Type.BracketsRight);
+            put("{", Token.Type.BracesLeft);
+            put("}", Token.Type.BracesRight);
+
+            put(",", Token.Type.Comma);
+            put(":", Token.Type.Colon);
+            put(";", Token.Type.Semicolon);
+            put("-", Token.Type.Minus);
+            put("+", Token.Type.Plus);
+            put("*", Token.Type.Multiply);
+            put("/", Token.Type.Divide);
+
+            put("&&", Token.Type.And);
+            put("||", Token.Type.Or);
+
+            put(">", Token.Type.Greater);
+            put("<", Token.Type.Less);
+            put("=", Token.Type.Equals);
+            put("!", Token.Type.Not);
+
+            put(">=", Token.Type.GreaterEqual);
+            put("<=", Token.Type.LessEqual);
+            put("==", Token.Type.Equal);
+            put("!=", Token.Type.NotEqual);
+
+            put("foreach", Token.Type.Foreach);
+            put("continue", Token.Type.Continue);
+            put("break", Token.Type.Break);
+            put("return", Token.Type.Return);
+            put("print", Token.Type.Print);
+            put("if", Token.Type.If);
+            put("else", Token.Type.Else);
+        }};
+        StringBuilder stringBuilder = new StringBuilder();
+        for ( String key : stringToType.keySet() ) {
+            stringBuilder.append(key).append(" ");
+        }
+        String[] strings = stringBuilder.toString().split(" ");
+        StringSource source = new StringSource(stringBuilder.toString());
+        Scanner scanner = new Scanner(source);
+        for (String string : strings) {
+            try {
+                scanner.next();
+            } catch (Exception exception) {
+                // TODO: czy mozna
+                exception.printStackTrace();
+            }
+            Token token = scanner.get();
+            assertEquals(token.getType(), stringToType.get(string));
+            assertEquals(token.getValue(), string);
+        }
+
+        try {
+            scanner.next();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        Token token = scanner.get();
+        assertEquals(token.getType(), Token.Type.EOF);
+        assertEquals(token.getValue(), "eof");
+    }
+
+    @Test
+    void get() {
+        StringSource source = new StringSource("var");
+        Scanner scanner = new Scanner(source);
+        try {
+            scanner.next();
+        } catch (Exception exception) {
+            exception.printStackTrace();
+        }
+        Token token = scanner.get();
+
+        assertEquals(token.getType(), Token.Type.VarType);
+        assertEquals(token.getPosition().toString(), new Position().toString());
+        assertEquals(token.getValue(), "var");
     }
 }

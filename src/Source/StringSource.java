@@ -1,5 +1,12 @@
 package Source;
 
+import Scanner.Constants;
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ *
+ * Source implementation that uses single string as a source.
+ */
 public class StringSource implements ISource {
     private final Position position;
     private int character;
@@ -14,7 +21,7 @@ public class StringSource implements ISource {
     }
 
     @Override
-    public int get() {
+    public int get(){
         int tempChar = character;
         next();
         return tempChar;
@@ -26,12 +33,12 @@ public class StringSource implements ISource {
     }
 
     @Override
-    public void next() {
-        try{
-            character = text.charAt(++index);
-        } catch (StringIndexOutOfBoundsException exception ){
-            // TODO: lepsza obsluga wyjatkow
-            character = -1;
+    public void next(){
+        if(++index < text.length()){
+            character = text.charAt(index);
+        }else{
+            index = text.length();
+            character = Constants.Source.EOF;
         }
         if (character == '\n') {
             position.advanceLine();

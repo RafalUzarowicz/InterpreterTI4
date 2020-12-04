@@ -19,15 +19,9 @@ public class Position implements Cloneable{
     }
 
     @Override
-    public Object clone(){
-        Position cloned = null;
-        try {
-            cloned = (Position)super.clone();
-            cloned.position = (Pair)cloned.getPosition().clone();
-        } catch (CloneNotSupportedException e) {
-            // TODO: lepsza obsluga wyjatkow
-            e.printStackTrace();
-        }
+    public Object clone() throws CloneNotSupportedException {
+        Position cloned = (Position)super.clone();
+        cloned.position = (Pair)cloned.getPosition().clone();
         return cloned;
     }
 
@@ -38,12 +32,15 @@ public class Position implements Cloneable{
     public void advanceLine(){
         advanceLine(1);
     }
+
     public void advanceLine(int amount){
         position.setFirst(position.getFirst()+amount);
     }
+
     public void advanceColumn(){
         advanceColumn(1);
     }
+
     public void advanceColumn(int amount){
         position.setSecond(position.getSecond()+amount);
     }
@@ -52,8 +49,7 @@ public class Position implements Cloneable{
         position.setSecond(Constants.Position.FIRST_INDEX);
     }
 
-    public String toString()
-    {
+    public String toString(){
         return position.toString();
     }
 }

@@ -22,4 +22,8 @@ public class Constants {
     public final static class Position{
         public final static int FIRST_INDEX = 1;
     }
+    // TODO: -1 jako EOF
+    public final static class Source{
+        public final static int EOF = -1;
+    }
 }

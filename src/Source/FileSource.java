@@ -14,24 +14,14 @@ public class FileSource implements ISource {
 
     public FileSource(String filePath) throws Exception {
         position = new Position();
-
-        try {
-            File file = new File(filePath);
-            FileReader fileReader = new FileReader(file);
-            bufferedReader = new BufferedReader(fileReader);
-            character = bufferedReader.read();
-        } catch (FileNotFoundException e) {
-            // TODO: lepsza obsluga wyjatkow
-            throw new Exception("File not found.");
-        } catch (IOException e) {
-            // TODO: lepsza obsluga wyjatkow
-            throw new Exception("I/O error.");
-        }
-
+        File file = new File(filePath);
+        FileReader fileReader = new FileReader(file);
+        bufferedReader = new BufferedReader(fileReader);
+        character = bufferedReader.read();
     }
 
     @Override
-    public int get() {
+    public int get() throws Exception {
         int tempChar = character;
         next();
         return tempChar;
@@ -43,13 +33,8 @@ public class FileSource implements ISource {
     }
 
     @Override
-    public void next() {
-        try{
-            character = bufferedReader.read();
-        } catch (IOException e) {
-            System.out.println("I/O error.");
-            e.printStackTrace();
-        }
+    public void next() throws Exception {
+        character = bufferedReader.read();
         if (character == '\n') {
             position.advanceLine();
             position.resetColumn();
