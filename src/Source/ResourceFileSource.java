@@ -1,29 +1,29 @@
 package Source;
 
 import java.io.*;
+import java.util.Objects;
 
 public class ResourceFileSource implements ISource {
-    private Position position;
-    private File file;
-    private FileReader fileReader;
-    private BufferedReader bufferedReader;
+    private final Position position;
+    private final BufferedReader bufferedReader;
     private int character;
 
-    public ResourceFileSource(String filePath){
+    public ResourceFileSource(String fileName) throws Exception {
         position = new Position();
 
         try {
             ClassLoader classLoader = getClass().getClassLoader();
-            file = new File(classLoader.getResource(filePath).getFile());
-            fileReader = new FileReader(file);
+            String filePath = Objects.requireNonNull(classLoader.getResource(fileName)).getFile();
+            File file = new File(filePath);
+            FileReader fileReader = new FileReader(file);
             bufferedReader = new BufferedReader(fileReader);
             character = bufferedReader.read();
         } catch (FileNotFoundException e) {
-            System.out.println("File not found.");
-            e.printStackTrace();
+            // TODO: lepsza obsluga wyjatkow
+            throw new Exception("File not found.");
         } catch (IOException e) {
-            System.out.println("I/O error.");
-            e.printStackTrace();
+            // TODO: lepsza obsluga wyjatkow
+            throw new Exception("I/O error.");
         }
 
     }
@@ -48,15 +48,12 @@ public class ResourceFileSource implements ISource {
             System.out.println("I/O error.");
             e.printStackTrace();
         }
-        switch (character){
-            case '\n':
-                position.advanceLine();
-                position.resetColumn();
-                position.advanceColumn(-1);
-                break;
-            default:
-                position.advanceColumn();
-                break;
+        if (character == '\n') {
+            position.advanceLine();
+            position.resetColumn();
+            position.advanceColumn(-1);
+        } else {
+            position.advanceColumn();
         }
     }
 

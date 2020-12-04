@@ -26,9 +26,6 @@ public class Keywords {
     }};
 
     public final static HashMap<String, Token.Type> singleToType = new HashMap<>(){{
-        put("h", Token.Type.HexLiteral);
-        put("p", Token.Type.PlanetLiteral);
-
         put("(", Token.Type.ParenthesisLeft);
         put(")", Token.Type.ParenthesisRight);
         put("[", Token.Type.BracketsLeft);

@@ -1,25 +1,24 @@
 package Source;
 
-public class Pair<FirstType, SecondType>{
-    private FirstType first;
-    private SecondType second;
+public class Pair implements Cloneable{
+    private int first;
+    private int second;
 
-    public Pair(FirstType first, SecondType second) {
+    public Pair(int first, int second) {
         super();
         this.first = first;
         this.second = second;
     }
 
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
+
     public boolean equals(Object other) {
         if (other instanceof Pair) {
             Pair otherPair = (Pair) other;
-            return
-                    ( this.first == otherPair.first ||
-                            ( this.first != null && otherPair.first != null && this.first.equals(otherPair.first)))
-                            &&
-                            (  this.second == otherPair.second ||
-                                    ( this.second != null && otherPair.second != null &&
-                                            this.second.equals(otherPair.second)));
+            return this.first == otherPair.first && this.second == otherPair.second;
         }
         return false;
     }
@@ -29,19 +28,19 @@ public class Pair<FirstType, SecondType>{
         return "<" + first + " : " + second + ">";
     }
 
-    public FirstType getFirst() {
+    public int getFirst() {
         return first;
     }
 
-    public void setFirst(FirstType first) {
+    public void setFirst(int first) {
         this.first = first;
     }
 
-    public SecondType getSecond() {
+    public int getSecond() {
         return second;
     }
 
-    public void setSecond(SecondType second) {
+    public void setSecond(int second) {
         this.second = second;
     }
 }

@@ -67,9 +67,9 @@ public class Token {
         Undefined               // Unknown token
     }
 
-    private Type type;
-    private String value;
-    private Position position;
+    private final Type type;
+    private final String value;
+    private final Position position;
 
     public Token(Type type, Position position){
         this(type, position, null);

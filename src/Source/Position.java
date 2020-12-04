@@ -1,18 +1,33 @@
 package Source;
 
-public class Position {
-    public Pair<Integer, Integer> getPosition() {
+import Scanner.Constants;
+
+public class Position implements Cloneable{
+    public Pair getPosition() {
         return position;
     }
 
-    private Pair<Integer, Integer> position;
+    private Pair position;
 
     public Position(){
-        this(0,0);
+        this(Constants.Position.FIRST_INDEX,Constants.Position.FIRST_INDEX);
+    }
+
+    @Override
+    public Object clone(){
+        Position cloned = null;
+        try {
+            cloned = (Position)super.clone();
+            cloned.position = (Pair)cloned.getPosition().clone();
+        } catch (CloneNotSupportedException e) {
+            // TODO: lepsza obsluga wyjatkow
+            e.printStackTrace();
+        }
+        return cloned;
     }
 
     public Position(int line, int column){
-        position = new Pair<>(line, column);
+        position = new Pair(line, column);
     }
 
     public void advanceLine(){
@@ -29,7 +44,7 @@ public class Position {
     }
 
     public void resetColumn(){
-        position.setSecond(0);
+        position.setSecond(Constants.Position.FIRST_INDEX);
     }
 
     public String toString()

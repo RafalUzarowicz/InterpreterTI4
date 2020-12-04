@@ -5,8 +5,9 @@ import Source.Position;
 
 public class Scanner {
     private Token token;
-    private ISource source;
+    private final ISource source;
     private Token.Type tempType;
+    private Position position;
 
     public Scanner(ISource source){
         this.source = source;
@@ -15,6 +16,7 @@ public class Scanner {
 
     public void next(){
         ignoreWhiteSpaces();
+        position = (Position) source.getPosition().clone();
         if(tryEof()){
             return;
         } else if(trySingleSymbols()){
@@ -25,6 +27,7 @@ public class Scanner {
                 return;
             }
         } catch (Exception exception) {
+            // TODO: lepsza obsluga wyjatkow
             System.out.println(exception.getMessage());
             exception.printStackTrace();
         }
@@ -36,6 +39,7 @@ public class Scanner {
                 return;
             }
         } catch (Exception exception) {
+            // TODO: lepsza obsluga wyjatkow
             System.out.println(exception.getMessage());
             exception.printStackTrace();
         }
@@ -44,6 +48,7 @@ public class Scanner {
                 return;
             }
         } catch (Exception exception) {
+            // TODO: lepsza obsluga wyjatkow
             System.out.println(exception.getMessage());
             exception.printStackTrace();
         }
@@ -52,7 +57,7 @@ public class Scanner {
         }
 
 
-        this.token = new Token(Token.Type.Undefined, source.getPosition());
+        this.token = new Token(Token.Type.Undefined, position);
     }
 
     public Token get(){
@@ -61,7 +66,7 @@ public class Scanner {
 
     private boolean tryEof(){
         if(source.peek() == -1){
-            token = new Token(Token.Type.EOF, source.getPosition());
+            token = new Token(Token.Type.EOF, (Position) source.getPosition().clone());
             source.next();
             return true;
         }
@@ -71,7 +76,8 @@ public class Scanner {
     private boolean trySingleSymbols(){
         tempType = Keywords.singleToType.get(""+(char)source.peek());
         if(tempType != null){
-            token = new Token(tempType, source.getPosition());
+            token = new Token(tempType, (Position) source.getPosition().clone());
+            source.next();
             return true;
         }
         return false;
@@ -79,7 +85,6 @@ public class Scanner {
 
     private boolean tryDoubleSymbol() throws Exception {
         char tempChar = (char) source.peek();
-        Position position = source.getPosition();
         if(Keywords.doubleSymbols.get(tempChar) != null){
             source.next();
             if(tempChar == (char) source.peek()){
@@ -108,7 +113,6 @@ public class Scanner {
     private boolean tryMultiSymbols(){
         StringBuilder symbols = new StringBuilder();
         symbols.append((char) source.peek());
-        Position position = source.getPosition();
         if(Keywords.multiSymbols.get(symbols.charAt(0)) != null){
             source.next();
             symbols.append((char) source.peek());
@@ -141,7 +145,6 @@ public class Scanner {
     }
 
     private boolean tryString() throws Exception {
-        Position position = source.getPosition();
         if((char)source.peek() == '\"'){
             source.next();
             StringBuilder stringBuilder = new StringBuilder();
@@ -149,7 +152,6 @@ public class Scanner {
                 stringBuilder.append((char)source.get());
             }
             if( (char)source.peek() == '\"'){
-
                 token = new Token(Token.Type.StringLiteral, position, stringBuilder.toString());
                 source.next();
                 return true;
@@ -167,14 +169,13 @@ public class Scanner {
 
     private boolean isSpecialCharacter(char c){
         // TODO: escape characters
-        return c == '_' || c =='.'|| c == ',' || c == '-' || c ==' ' || c== '/' || c =='\\';
+        return Constants.Token.SPECIAL_CHARS.contains(c);
     }
 
     private boolean tryIdentifierOrKeywordOrLiteral() throws Exception {
-        Position position = source.getPosition();
         if((char)source.peek() == '_'){
             try{
-                return tryIdentifier(new StringBuilder());
+                return tryIdentifier(null);
             } catch (Exception exception) {
                 // TODO: lepsza obsluga wyjatkow
                 throw new Exception(exception.getMessage());
@@ -185,15 +186,14 @@ public class Scanner {
             stringBuilder.append((char)source.get());
 
             if(stringBuilder.charAt(0) == 'h' || stringBuilder.charAt(0) =='p'){
-                if(tryHexOrPlanet(stringBuilder, position)){
+                if(tryHexOrPlanet(stringBuilder)){
                     return true;
                 }
             }
             int currLen = stringBuilder.length();
             do{
-                if(tryKeyword(stringBuilder, position)){
-                    return true;
-                } else if(tryLiteral(stringBuilder, position)){
+                if((tryKeyword(stringBuilder) || tryLiteral(stringBuilder)) && !isLetter((char)source.peek()) && !isDigit((char)source.peek()) ){
+                    token = new Token(tempType, position, stringBuilder.toString());
                     return true;
                 }
                 if(isLetter((char)source.peek())){
@@ -205,6 +205,9 @@ public class Scanner {
                 // TODO: zamiast iden len to najwieksza dlugosc slowa z keywords
             }while(currLen < Constants.Token.MAX_IDENTIFIER_LEN);
 
+            if(currLen == Constants.Token.MAX_IDENTIFIER_LEN){
+                throw new Exception("Too long identifier at "+position+".");
+            }
             try{
                 return tryIdentifier(stringBuilder);
             } catch (Exception exception) {
@@ -215,29 +218,23 @@ public class Scanner {
         return false;
     }
 
-    private boolean isDigitOrLetter(char c){
-        return isDigit(c)||isLetter(c);
-    }
-
-    private boolean tryKeyword(StringBuilder stringBuilder, Position position){
-        tempType = Keywords.keywordToType.get(stringBuilder.toString());
-        if(tempType != null){
-            token = new Token(tempType, position);
-            return true;
+    private boolean tryKeyword(StringBuilder stringBuilder){
+        if( stringBuilder != null ){
+            tempType = Keywords.keywordToType.get(stringBuilder.toString());
+            return tempType != null;
         }
         return false;
     }
 
-    private boolean tryLiteral(StringBuilder stringBuilder, Position position){
-        tempType = Keywords.literalToType.get(stringBuilder.toString());
-        if(tempType != null){
-            token = new Token(tempType, position, stringBuilder.toString());
-            return true;
+    private boolean tryLiteral(StringBuilder stringBuilder){
+        if( stringBuilder != null ) {
+            tempType = Keywords.literalToType.get(stringBuilder.toString());
+            return tempType != null;
         }
         return false;
     }
 
-    private boolean tryHexOrPlanet(StringBuilder stringBuilder, Position position){
+    private boolean tryHexOrPlanet(StringBuilder stringBuilder){
         if(isDigit((char)source.peek())){
             stringBuilder.append((char)source.get());
             if(isDigit((char)source.peek())){
@@ -258,28 +255,31 @@ public class Scanner {
     }
 
     private boolean tryIdentifier(StringBuilder stringBuilder) throws Exception {
-        Position position = source.getPosition();
-        boolean isIdentifier = false;
-        while((char)source.peek() == '_'){
-            stringBuilder.append((char)source.get());
-        }
-        if(isLetter((char)source.peek())){
-            stringBuilder.append((char)source.get());
-            isIdentifier = true;
-        }else{
-            // TODO: lepsza obsluga wyjatkow
-            throw new Exception("Wrong identifier at "+position+".");
+        if (stringBuilder == null || stringBuilder.length() <= 0) {
+            stringBuilder = new StringBuilder();
+            while((char)source.peek() == '_'){
+                stringBuilder.append((char)source.get());
+            }
+            if(isLetter((char)source.peek())){
+                stringBuilder.append((char)source.get());
+            }else{
+                return false;
+            }
         }
         while(isLetter((char)source.peek())){
             stringBuilder.append((char)source.get());
+            if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN){
+                throw new Exception("Identifier name too long at "+position+".");
+            }
         }
         while(isDigit((char)source.peek())){
             stringBuilder.append((char)source.get());
+            if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN){
+                throw new Exception("Identifier name too long at "+position+".");
+            }
         }
-
         token = new Token(Token.Type.Identifier, position, stringBuilder.toString());
-        source.next();
-        return isIdentifier;
+        return true;
     }
 
     private boolean isLetter(char c){
@@ -291,6 +291,26 @@ public class Scanner {
     }
 
     private boolean tryNumber(){
+        tempType = Token.Type.NumberLiteral;
+        if((char)source.peek() == '0'){
+            token = new Token(tempType, position, "" + (char) source.get());
+            return true;
+        }else if(isNonZeroDigit((char)source.peek())){
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append((char)source.get());
+            char current;
+            try {
+                while (isDigit(current = (char) source.peek()) && Integer.parseInt(stringBuilder.toString() + current) < Constants.Token.MAX_NUMBER_VAL) {
+                    stringBuilder.append((char)source.get());
+                }
+            } catch (NumberFormatException exception){
+                // TODO: lepsza obsluga wyjatkow
+                System.out.println(exception.getMessage());
+                exception.printStackTrace();
+            }
+            token = new Token(tempType, position, stringBuilder.toString());
+            return true;
+        }
         return false;
     }
 
