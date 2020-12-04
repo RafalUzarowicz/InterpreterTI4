@@ -8,56 +8,33 @@ public class Scanner {
     private final ISource source;
     private Token.Type tempType;
     private Position position;
+    private StringBuilder undefString;
 
     public Scanner(ISource source){
         this.source = source;
         this.token = new Token(Token.Type.Undefined, new Position());
     }
 
-    public void next(){
+    public void next() throws Exception {
         ignoreWhiteSpaces();
         position = (Position) source.getPosition().clone();
+        undefString = new StringBuilder();
         if(tryEof()){
             return;
-        } else if(trySingleSymbols()){
+        }else if(trySingleSymbols()){
+            return;
+        }else if(tryDoubleSymbol()){
+            return;
+        }else if(tryMultiSymbols()){
+            return;
+        }else if(tryString()){
+            return;
+        }else if(tryIdentifierOrKeywordOrLiteral()){
+            return;
+        }else if(tryNumber()){
             return;
         }
-        try {
-            if(tryDoubleSymbol()){
-                return;
-            }
-        } catch (Exception exception) {
-            // TODO: lepsza obsluga wyjatkow
-            System.out.println(exception.getMessage());
-            exception.printStackTrace();
-        }
-        if(tryMultiSymbols()){
-            return;
-        }
-        try {
-            if(tryString()){
-                return;
-            }
-        } catch (Exception exception) {
-            // TODO: lepsza obsluga wyjatkow
-            System.out.println(exception.getMessage());
-            exception.printStackTrace();
-        }
-        try {
-            if(tryIdentifierOrKeywordOrLiteral()){
-                return;
-            }
-        } catch (Exception exception) {
-            // TODO: lepsza obsluga wyjatkow
-            System.out.println(exception.getMessage());
-            exception.printStackTrace();
-        }
-        if(tryNumber()){
-            return;
-        }
-
-
-        this.token = new Token(Token.Type.Undefined, position);
+        this.token = new Token(Token.Type.Undefined, position, undefString.toString());
     }
 
     public Token get(){
@@ -182,7 +159,7 @@ public class Scanner {
             }
         }
         if(!isDigit((char)source.peek())){
-            StringBuilder stringBuilder = new StringBuilder();
+            StringBuilder stringBuilder = undefString;
             stringBuilder.append((char)source.get());
 
             if(stringBuilder.charAt(0) == 'h' || stringBuilder.charAt(0) =='p'){
@@ -190,23 +167,25 @@ public class Scanner {
                     return true;
                 }
             }
-            int currLen = stringBuilder.length();
-            do{
-                if((tryKeyword(stringBuilder) || tryLiteral(stringBuilder)) && !isLetter((char)source.peek()) && !isDigit((char)source.peek()) ){
-                    token = new Token(tempType, position, stringBuilder.toString());
-                    return true;
-                }
-                if(isLetter((char)source.peek())){
-                    stringBuilder.append((char)source.get());
-                }else{
-                    break;
-                }
-                ++currLen;
-                // TODO: zamiast iden len to najwieksza dlugosc slowa z keywords
-            }while(currLen < Constants.Token.MAX_IDENTIFIER_LEN);
+            if(isLetter(stringBuilder.charAt(stringBuilder.length()-1))) {
+                int currLen = stringBuilder.length();
+                do {
+                    if ((tryKeyword(stringBuilder) || tryLiteral(stringBuilder)) && !isLetter((char) source.peek()) && !isDigit((char) source.peek())) {
+                        token = new Token(tempType, position, stringBuilder.toString());
+                        return true;
+                    }
+                    if (isLetter((char) source.peek())) {
+                        stringBuilder.append((char) source.get());
+                    } else {
+                        break;
+                    }
+                    ++currLen;
+                    // TODO: zamiast iden len to najwieksza dlugosc slowa z keywords
+                } while (currLen < Constants.Token.MAX_IDENTIFIER_LEN);
 
-            if(currLen == Constants.Token.MAX_IDENTIFIER_LEN){
-                throw new Exception("Too long identifier at "+position+".");
+                if (currLen == Constants.Token.MAX_IDENTIFIER_LEN) {
+                    throw new Exception("Too long identifier at " + position + ".");
+                }
             }
             try{
                 return tryIdentifier(stringBuilder);
@@ -241,7 +220,7 @@ public class Scanner {
                 stringBuilder.append((char)source.get());
             }
             int value = Integer.parseInt(stringBuilder.substring(1));
-            if( checkPlanetOrHexIndex(value, stringBuilder.charAt(0)) ){
+            if( !(isDigit((char)source.peek())||isLetter((char)source.peek())) && checkPlanetOrHexIndex(value, stringBuilder.charAt(0)) ){
                 tempType = Keywords.hexOrPlanetToType.get(stringBuilder.substring(0, 1));
                 token = new Token(tempType, position, stringBuilder.toString());
                 return true;
@@ -255,10 +234,13 @@ public class Scanner {
     }
 
     private boolean tryIdentifier(StringBuilder stringBuilder) throws Exception {
-        if (stringBuilder == null || stringBuilder.length() <= 0) {
+        if (stringBuilder == null) {
             stringBuilder = new StringBuilder();
             while((char)source.peek() == '_'){
                 stringBuilder.append((char)source.get());
+                if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN-1){
+                    throw new Exception("Identifier name too long at "+position+".");
+                }
             }
             if(isLetter((char)source.peek())){
                 stringBuilder.append((char)source.get());
@@ -266,20 +248,36 @@ public class Scanner {
                 return false;
             }
         }
-        while(isLetter((char)source.peek())){
-            stringBuilder.append((char)source.get());
-            if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN){
-                throw new Exception("Identifier name too long at "+position+".");
-            }
+        if( stringBuilder.length() > 0 && isDigit(stringBuilder.charAt(stringBuilder.length()-1)) && isLetter((char)source.peek())){
+            throw new Exception("Wrong identifier name: "+stringBuilder.toString()+(char)source.peek()+" at "+position+".");
         }
-        while(isDigit((char)source.peek())){
-            stringBuilder.append((char)source.get());
-            if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN){
-                throw new Exception("Identifier name too long at "+position+".");
+        if( stringBuilder.length() > 0 && isLetter(stringBuilder.charAt(stringBuilder.length()-1)) ){
+            while(isLetter((char)source.peek())){
+                stringBuilder.append((char)source.get());
+                if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN){
+                    throw new Exception("Identifier name too long at "+position+".");
+                }
             }
+            while(isDigit((char)source.peek())){
+                stringBuilder.append((char)source.get());
+                if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN){
+                    throw new Exception("Identifier name too long at "+position+".");
+                }
+            }
+            token = new Token(Token.Type.Identifier, position, stringBuilder.toString());
+            return true;
         }
-        token = new Token(Token.Type.Identifier, position, stringBuilder.toString());
-        return true;
+        if( stringBuilder.length() > 0 && isDigit(stringBuilder.charAt(stringBuilder.length()-1)) ) {
+            while(isDigit((char)source.peek())){
+                stringBuilder.append((char)source.get());
+                if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN){
+                    throw new Exception("Identifier name too long at "+position+".");
+                }
+            }
+            token = new Token(Token.Type.Identifier, position, stringBuilder.toString());
+            return true;
+        }
+        return false;
     }
 
     private boolean isLetter(char c){

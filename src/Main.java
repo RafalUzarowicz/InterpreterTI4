@@ -16,6 +16,7 @@ public class Main {
                 System.out.println(scanner.get());
             }
         } catch (Exception exception) {
+            // TODO: lepsza obsluga wyjatkow
             exception.printStackTrace();
         }
     }

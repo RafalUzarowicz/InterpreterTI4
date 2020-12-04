@@ -95,6 +95,6 @@ public class Token {
 
     public String toString()
     {
-        return "( Type: "+type+"; Position: "+position+((value!=null)?("; Value: "+value):(""))+ " )";
+        return "TOKEN( Type: "+type+", Position: "+position+((value!=null)?(", Value: "+value):(""))+ " )";
     }
 }
