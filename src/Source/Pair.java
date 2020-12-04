@@ -1,11 +1,12 @@
 package Source;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
- *
+ * <p>
  * Simple class to represent indexes of position.
  */
-public class Pair implements Cloneable{
+public class Pair implements Cloneable {
     private int first;
     private int second;
 
@@ -28,8 +29,7 @@ public class Pair implements Cloneable{
         return false;
     }
 
-    public String toString()
-    {
+    public String toString() {
         return "<" + first + " : " + second + ">";
     }
 

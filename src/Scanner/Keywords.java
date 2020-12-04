@@ -1,30 +1,31 @@
 package Scanner;
 
 import java.util.*;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
- *
+ * <p>
  * Class that associate symbols and words with proper token types.
  */
 public class Keywords {
-    public final static HashMap<Character, ArrayList<Character>> doubleSymbols = new HashMap<>(){{
+    public final static HashMap<Character, ArrayList<Character>> doubleSymbols = new HashMap<>() {{
         put('&', new ArrayList<>(Collections.singletonList('&')));
         put('|', new ArrayList<>(Collections.singletonList('|')));
     }};
-    public final static HashMap<Character, ArrayList<Character>> multiSymbols = new HashMap<>(){{
+    public final static HashMap<Character, ArrayList<Character>> multiSymbols = new HashMap<>() {{
         put('>', new ArrayList<>(Collections.singletonList('=')));
         put('<', new ArrayList<>(Collections.singletonList('=')));
         put('!', new ArrayList<>(Collections.singletonList('=')));
         put('=', new ArrayList<>(Collections.singletonList('=')));
     }};
-    public final static HashMap<Character, Token.Type> firstFromMultiSymbol = new HashMap<>(){{
+    public final static HashMap<Character, Token.Type> firstFromMultiSymbol = new HashMap<>() {{
         put('>', Token.Type.Greater);
         put('<', Token.Type.Less);
         put('!', Token.Type.Not);
         put('=', Token.Type.Equals);
     }};
-    public final static HashMap<String, Token.Type> symbolToType = new HashMap<>(){{
+    public final static HashMap<String, Token.Type> symbolToType = new HashMap<>() {{
         put(">=", Token.Type.GreaterEqual);
         put("<=", Token.Type.LessEqual);
         put("==", Token.Type.Equal);
@@ -33,12 +34,12 @@ public class Keywords {
         put("||", Token.Type.Or);
     }};
 
-    public final static HashMap<String, Token.Type> hexOrPlanetToType = new HashMap<>(){{
+    public final static HashMap<String, Token.Type> hexOrPlanetToType = new HashMap<>() {{
         put("h", Token.Type.HexLiteral);
         put("p", Token.Type.PlanetLiteral);
     }};
 
-    public final static HashMap<String, Token.Type> singleToType = new HashMap<>(){{
+    public final static HashMap<String, Token.Type> singleToType = new HashMap<>() {{
         put("(", Token.Type.ParenthesisLeft);
         put(")", Token.Type.ParenthesisRight);
         put("[", Token.Type.BracketsLeft);
@@ -55,7 +56,7 @@ public class Keywords {
         put("/", Token.Type.Divide);
     }};
 
-    public final static HashMap<String, Token.Type> literalToType = new HashMap<>(){{
+    public final static HashMap<String, Token.Type> literalToType = new HashMap<>() {{
         put("true", Token.Type.BoolLiteral);
         put("false", Token.Type.BoolLiteral);
 
@@ -79,7 +80,7 @@ public class Keywords {
         put("NoColor", Token.Type.ColorLiteral);
     }};
 
-    public final static HashMap<String, Token.Type> keywordToType = new HashMap<>(){{
+    public final static HashMap<String, Token.Type> keywordToType = new HashMap<>() {{
         put("int", Token.Type.Type);
         put("string", Token.Type.Type);
         put("bool", Token.Type.Type);

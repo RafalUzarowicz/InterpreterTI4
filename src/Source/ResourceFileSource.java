@@ -2,10 +2,11 @@ package Source;
 
 import java.io.*;
 import java.util.Objects;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
- *
+ * <p>
  * Source implementation that searches file in resources.
  */
 public class ResourceFileSource implements ISource {

@@ -1,10 +1,11 @@
 package Source;
 
 import java.io.*;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
- *
+ * <p>
  * Source implementation that uses path to file.
  */
 public class FileSource implements ISource {

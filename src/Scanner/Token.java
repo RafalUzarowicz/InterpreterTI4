@@ -1,12 +1,13 @@
 package Scanner;
 
 import Source.Position;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
  */
 public class Token {
-    public enum Type{
+    public enum Type {
         Identifier,             // identifier = {underscore}, letter, {letter}, {digit}
         Type,                   // "int", "string", "bool" etc.
         VarType,                // "var"
@@ -77,11 +78,11 @@ public class Token {
     private final String value;
     private final Position position;
 
-    public Token(Type type, Position position){
+    public Token(Type type, Position position) {
         this(type, position, null);
     }
 
-    public Token(Type type, Position position, String value){
+    public Token(Type type, Position position, String value) {
         this.position = position;
         this.value = value;
         this.type = type;
@@ -99,8 +100,7 @@ public class Token {
         return position;
     }
 
-    public String toString()
-    {
-        return "TOKEN( Type: "+type+", Position: "+position+((value!=null)?(", Value: "+value):(""))+ " )";
+    public String toString() {
+        return "TOKEN( Type: " + type + ", Position: " + position + ((value != null) ? (", Value: " + value) : ("")) + " )";
     }
 }
