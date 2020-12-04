@@ -6,7 +6,7 @@ import java.util.Arrays;
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
  *
- * Class for all constants.
+ * Class for all constants
  */
 public class Constants {
     public final static class Board{

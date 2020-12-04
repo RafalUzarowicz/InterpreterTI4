@@ -19,7 +19,7 @@ int main(){
 	bool isActivated = player(Red) activated hex(h2);
 	int fightersCount = player(Green) has (u) at hex(h17);
 
-	if( isActivated && fightersCount > 2 || planet(p4) has(Carrier) || player(Yellow) has command >= 1 ){
+	if( isActivated && fightersCount > 2 || planet(p4) has(Carrier) ){
 		player(currentPlayer) activate hex(h12);
 		player(currentPlayer) claim planet(p4);
 		player(currentPlayer) add(Figher:3, Carrier:1, Flagship:1) to hex(h12);

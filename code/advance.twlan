@@ -1,0 +1,20 @@
+int increment(int x){
+	print("Before incrementation: ", x);
+	return x+1;
+}
+
+int main(){
+    color[] players = color[]{Red, Blue};
+	if( planet(p4) has(Carrier) ){
+		foreach(var p:players){
+        		print(p);
+        }
+	}else{
+        print("Tak");
+	}
+	var[] units = unit[2];
+	unit[0] = Fighter;
+	unit[1] = Infantry;
+
+	return 0;
+}
