@@ -147,11 +147,11 @@ public class Scanner {
         if (isHexOrPlanet((char) source.peek())) {
             undefString = new StringBuilder();
             undefString.append((char) source.get());
-            if ((char) source.peek() == '0') {
+            if (isZeroDigit((char) source.peek())) {
                 undefString.append((char) source.get());
             } else if (isNonZeroDigit((char) source.peek())) {
                 undefString.append((char) source.get());
-                while (isDigit((char) source.peek()) && Integer.parseInt(undefString.substring(1) + (char) source.peek()) < Constants.Token.MAX_NUMBER_VAL) {
+                while (isDigit((char) source.peek()) && checkNumber(undefString.substring(1) + (char) source.peek())) {
                     undefString.append((char) source.get());
                 }
             } else {
@@ -166,6 +166,10 @@ public class Scanner {
         return false;
     }
 
+    private boolean checkNumber(String string) throws NumberFormatException {
+        return Integer.parseInt(string) < Constants.Token.MAX_NUMBER_VAL;
+    }
+
     private boolean isHexOrPlanet(char c) {
         return c == 'h' || c == 'p';
     }
@@ -177,14 +181,14 @@ public class Scanner {
             }
             undefString = new StringBuilder();
         } else if (isDigit(undefString.charAt(undefString.length() - 1))) {
-            // It wasn't hex/planet because after "h/p", number appeared identifierCharacter - we need to include him.
+            // It wasn't hex/planet because after ("h/p", number) appeared identifierCharacter - we need to include him.
             undefString.append((char) source.get());
         }
         while (undefString.length() < Constants.Token.MAX_IDENTIFIER_LEN) {
             if (isIdentifierCharacter((char) source.peek())) {
                 undefString.append((char) source.get());
             } else {
-                if (checkIfKeyword(undefString) || checkIfLiteral(undefString) || checkIfIdentifier(undefString)) {
+                if (checkKeywordLiteralIdentifier()) {
                     token = new Token(tempType, position, undefString.toString());
                     return true;
                 } else {
@@ -198,25 +202,29 @@ public class Scanner {
         return false;
     }
 
-    private boolean checkIfKeyword(StringBuilder stringBuilder) {
-        if (stringBuilder != null) {
-            tempType = Keywords.keywordToType.get(stringBuilder.toString());
+    private boolean checkKeywordLiteralIdentifier() {
+        return checkIfKeyword() || checkIfLiteral() || checkIfIdentifier();
+    }
+
+    private boolean checkIfKeyword() {
+        if (undefString != null) {
+            tempType = Keywords.keywordToType.get(undefString.toString());
             return tempType != null;
         }
         return false;
     }
 
-    private boolean checkIfLiteral(StringBuilder stringBuilder) {
-        if (stringBuilder != null) {
-            tempType = Keywords.literalToType.get(stringBuilder.toString());
+    private boolean checkIfLiteral() {
+        if (undefString != null) {
+            tempType = Keywords.literalToType.get(undefString.toString());
             return tempType != null;
         }
         return false;
     }
 
-    private boolean checkIfIdentifier(StringBuilder stringBuilder) {
-        if (stringBuilder.length() > 0) {
-            if (isLetter(stringBuilder.charAt(0)) || (isUnderscore(stringBuilder.charAt(0)) && stringBuilder.length() > 1)) {
+    private boolean checkIfIdentifier() {
+        if (undefString != null && undefString.length() > 0) {
+            if (isLetter(undefString.charAt(0)) || (isUnderscore(undefString.charAt(0)) && undefString.length() > 1)) {
                 tempType = Token.Type.Identifier;
                 return true;
             }
@@ -242,7 +250,7 @@ public class Scanner {
 
     private boolean tryNumber() throws Exception {
         // Either only zero or non zero digit with different digits next.
-        if ((char) source.peek() == '0') {
+        if (isZeroDigit((char) source.peek())) {
             token = new Token(Token.Type.NumberLiteral, position, "" + (char) source.get());
             if (isDigit((char) source.peek())) {
                 throw new Exception("Wrong number at " + position);
@@ -252,7 +260,7 @@ public class Scanner {
             undefString = new StringBuilder();
             undefString.append((char) source.get());
             char current;
-            while (isDigit(current = (char) source.peek()) && Integer.parseInt(undefString.toString() + current) < Constants.Token.MAX_NUMBER_VAL) {
+            while (isDigit(current = (char) source.peek()) && checkNumber(undefString.toString() + current)) {
                 undefString.append((char) source.get());
             }
             if (isIdentifierCharacter((char) source.peek())) {
@@ -267,6 +275,10 @@ public class Scanner {
 
     private boolean isNonZeroDigit(char c) {
         return c > '0' && c <= '9';
+    }
+
+    private boolean isZeroDigit(char c) {
+        return c == '0';
     }
 
     private void ignoreWhiteSpaces() throws Exception {
