@@ -18,7 +18,7 @@ public class Scanner {
     public void next() throws Exception {
         ignoreWhiteSpaces();
         position = (Position) source.getPosition().clone();
-        undefString = new StringBuilder();
+        undefString = null;
         if(tryEof()){
             return;
         }else if(trySingleSymbols()){
@@ -34,7 +34,8 @@ public class Scanner {
         }else if(tryNumber()){
             return;
         }
-        this.token = new Token(Token.Type.Undefined, position, undefString.toString());
+//        this.token = new Token(Token.Type.Undefined, position, (undefString != null?undefString.toString():""+(char)source.peek()));
+        throw new Exception("Undefined symbol: "+(undefString != null?undefString.toString():""+(char)source.peek())+" at "+position+".");
     }
 
     public Token get(){
@@ -43,7 +44,7 @@ public class Scanner {
 
     private boolean tryEof(){
         if(source.peek() == -1){
-            token = new Token(Token.Type.EOF, (Position) source.getPosition().clone());
+            token = new Token(Token.Type.EOF, position, "eof");
             source.next();
             return true;
         }
@@ -53,8 +54,7 @@ public class Scanner {
     private boolean trySingleSymbols(){
         tempType = Keywords.singleToType.get(""+(char)source.peek());
         if(tempType != null){
-            token = new Token(tempType, (Position) source.getPosition().clone());
-            source.next();
+            token = new Token(tempType, position, ""+(char)source.get());
             return true;
         }
         return false;
@@ -65,16 +65,7 @@ public class Scanner {
         if(Keywords.doubleSymbols.get(tempChar) != null){
             source.next();
             if(tempChar == (char) source.peek()){
-                switch(tempChar){
-                    case '&':
-                        tempType = Token.Type.And;
-                        break;
-                    case '|':
-                        tempType = Token.Type.Or;
-                        break;
-                    default:
-                        break;
-                }
+                tempType = Keywords.symbolToType.get(""+tempChar+tempChar);
             }else{
                 // TODO: lepsza obsluga wyjatkow
                 throw new Exception("Double symbol error at "+position+".");
@@ -82,7 +73,7 @@ public class Scanner {
         }else{
             return false;
         }
-        token = new Token(tempType, position);
+        token = new Token(tempType, position, ""+tempChar+tempChar);
         source.next();
         return true;
     }
@@ -92,10 +83,9 @@ public class Scanner {
         symbols.append((char) source.peek());
         if(Keywords.multiSymbols.get(symbols.charAt(0)) != null){
             source.next();
-            symbols.append((char) source.peek());
-            if(Keywords.multiSymbols.get(symbols.charAt(0)).contains(symbols.charAt(1))){
+            if(Keywords.multiSymbols.get(symbols.charAt(0)).contains((char) source.peek())){
+                symbols.append((char) source.get());
                 tempType = Keywords.symbolToType.get(symbols.toString());
-                source.next();
             }else{
                 switch(symbols.charAt(0)){
                     case '>':
@@ -117,7 +107,7 @@ public class Scanner {
         }else{
             return false;
         }
-        token = new Token(tempType, position);
+        token = new Token(tempType, position, symbols.toString());
         return true;
     }
 
@@ -125,12 +115,13 @@ public class Scanner {
         if((char)source.peek() == '\"'){
             source.next();
             StringBuilder stringBuilder = new StringBuilder();
-            while(isCharacter((char)source.peek())){
+            stringBuilder.append('\"');
+            while(isCharacter((char)source.peek()) && stringBuilder.length()<Constants.Token.MAX_STRING_LEN){
                 stringBuilder.append((char)source.get());
             }
             if( (char)source.peek() == '\"'){
+                stringBuilder.append((char)source.get());
                 token = new Token(Token.Type.StringLiteral, position, stringBuilder.toString());
-                source.next();
                 return true;
             }else{
                 // TODO: lepsza obsluga wyjatkow
@@ -159,6 +150,7 @@ public class Scanner {
             }
         }
         if(!isDigit((char)source.peek())){
+            undefString = new StringBuilder();
             StringBuilder stringBuilder = undefString;
             stringBuilder.append((char)source.get());
 
@@ -236,6 +228,7 @@ public class Scanner {
     private boolean tryIdentifier(StringBuilder stringBuilder) throws Exception {
         if (stringBuilder == null) {
             stringBuilder = new StringBuilder();
+            undefString = stringBuilder;
             while((char)source.peek() == '_'){
                 stringBuilder.append((char)source.get());
                 if(stringBuilder.length()>=Constants.Token.MAX_IDENTIFIER_LEN-1){
@@ -248,7 +241,7 @@ public class Scanner {
                 return false;
             }
         }
-        if( stringBuilder.length() > 0 && isDigit(stringBuilder.charAt(stringBuilder.length()-1)) && isLetter((char)source.peek())){
+        if( stringBuilder.length() > 0 && isDigit(stringBuilder.charAt(stringBuilder.length()-1)) && (isLetter((char)source.peek())||(char)source.peek()=='_')){
             throw new Exception("Wrong identifier name: "+stringBuilder.toString()+(char)source.peek()+" at "+position+".");
         }
         if( stringBuilder.length() > 0 && isLetter(stringBuilder.charAt(stringBuilder.length()-1)) ){
@@ -288,10 +281,13 @@ public class Scanner {
         return c >= '0' && c <= '9';
     }
 
-    private boolean tryNumber(){
+    private boolean tryNumber() throws Exception {
         tempType = Token.Type.NumberLiteral;
         if((char)source.peek() == '0'){
             token = new Token(tempType, position, "" + (char) source.get());
+            if(isDigit((char)source.peek())){
+                throw new Exception("Wrong number at "+position);
+            }
             return true;
         }else if(isNonZeroDigit((char)source.peek())){
             StringBuilder stringBuilder = new StringBuilder();
@@ -303,8 +299,7 @@ public class Scanner {
                 }
             } catch (NumberFormatException exception){
                 // TODO: lepsza obsluga wyjatkow
-                System.out.println(exception.getMessage());
-                exception.printStackTrace();
+                throw new Exception("Number too large at "+position);
             }
             token = new Token(tempType, position, stringBuilder.toString());
             return true;

@@ -18,6 +18,8 @@ public class Keywords {
         put("<=", Token.Type.LessEqual);
         put("==", Token.Type.Equal);
         put("!=", Token.Type.NotEqual);
+        put("&&", Token.Type.And);
+        put("||", Token.Type.Or);
     }};
 
     public final static HashMap<String, Token.Type> hexOrPlanetToType = new HashMap<>(){{
