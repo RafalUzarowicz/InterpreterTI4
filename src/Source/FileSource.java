@@ -1,7 +1,12 @@
 package Source;
 
 import java.io.*;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ *
+ * Source implementation that uses path to file.
+ */
 public class FileSource implements ISource {
     private final Position position;
     private final BufferedReader bufferedReader;

@@ -2,7 +2,12 @@ package Scanner;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ *
+ * Class for all constants.
+ */
 public class Constants {
     public final static class Board{
         public final static int HEX_NUMBER = 51;

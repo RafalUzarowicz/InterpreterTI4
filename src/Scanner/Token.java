@@ -1,7 +1,10 @@
 package Scanner;
 
 import Source.Position;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class Token {
     public enum Type{
         Identifier,             // identifier = {underscore}, letter, {letter}, {digit}
@@ -68,6 +71,9 @@ public class Token {
     }
 
     private final Type type;
+    /**
+     * value - holds literal values but also things like specific variable type. It is different based on token type.
+     */
     private final String value;
     private final Position position;
 

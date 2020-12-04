@@ -1,5 +1,10 @@
 package Source;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ *
+ * Simple class to represent indexes of position.
+ */
 public class Pair implements Cloneable{
     private int first;
     private int second;

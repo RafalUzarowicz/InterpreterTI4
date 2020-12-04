@@ -1,7 +1,12 @@
 package Scanner;
 
 import java.util.*;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ *
+ * Class that associate symbols and words with proper token types.
+ */
 public class Keywords {
     public final static HashMap<Character, ArrayList<Character>> doubleSymbols = new HashMap<>(){{
         put('&', new ArrayList<>(Collections.singletonList('&')));

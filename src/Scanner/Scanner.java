@@ -2,12 +2,18 @@ package Scanner;
 
 import Source.ISource;
 import Source.Position;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class Scanner {
     private Token token;
     private final ISource source;
+    // tempType - variable used to simplify function calls. It is used to create new Token.
     private Token.Type tempType;
+    // position - same as tempType but for position, not type of token.
     private Position position;
+    // undefString - variable used to store current string. Used for filling value member of Token.
     private StringBuilder undefString;
 
     public Scanner(ISource source){
@@ -17,8 +23,10 @@ public class Scanner {
 
     public void next() throws Exception {
         ignoreWhiteSpaces();
+
         position = (Position) source.getPosition().clone();
         undefString = null;
+
         if(tryEof()){
             return;
         }else if(trySingleSymbols()){
@@ -34,6 +42,7 @@ public class Scanner {
         }else if(tryNumber()){
             return;
         }
+        // TODO: usun to
 //        this.token = new Token(Token.Type.Undefined, position, (undefString != null?undefString.toString():""+(char)source.peek()));
         throw new Exception("Undefined symbol: "+(undefString != null?undefString.toString():""+(char)source.peek())+" at "+position+".");
     }
@@ -52,6 +61,7 @@ public class Scanner {
     }
 
     private boolean trySingleSymbols(){
+        // Single symbols = symbols that are single characters.
         tempType = Keywords.singleToType.get(""+(char)source.peek());
         if(tempType != null){
             token = new Token(tempType, position, ""+(char)source.get());
@@ -61,6 +71,7 @@ public class Scanner {
     }
 
     private boolean tryDoubleSymbol() throws Exception {
+        // Double symbols - symbols that have two same characters like "||".
         char tempChar = (char) source.peek();
         if(Keywords.doubleSymbols.get(tempChar) != null){
             source.next();
@@ -79,6 +90,7 @@ public class Scanner {
     }
 
     private boolean tryMultiSymbols(){
+        // Multi symbols - symbols that can have more than one characters that are not all the same like "<=".
         StringBuilder symbols = new StringBuilder();
         symbols.append((char) source.peek());
         if(Keywords.multiSymbols.get(symbols.charAt(0)) != null){
@@ -141,6 +153,7 @@ public class Scanner {
     }
 
     private boolean tryIdentifierOrKeywordOrLiteral() throws Exception {
+        // Only identifiers can start with '_'.
         if((char)source.peek() == '_'){
             try{
                 return tryIdentifier(null);
@@ -149,24 +162,31 @@ public class Scanner {
                 throw new Exception(exception.getMessage());
             }
         }
+        // It's not '_' and not digit -> it can be keyword, literal or identifier.
         if(!isDigit((char)source.peek())){
             undefString = new StringBuilder();
+            // stringBuilder - we will hold current characters that we read in it.
             StringBuilder stringBuilder = undefString;
             stringBuilder.append((char)source.get());
-
+            // If it starts with h and p it can be hex/planet literal.
             if(stringBuilder.charAt(0) == 'h' || stringBuilder.charAt(0) =='p'){
                 if(tryHexOrPlanet(stringBuilder)){
                     return true;
                 }
             }
+            // It doesnt start with h/p or it starts with h/p but it doesn't fulfills proper requirements.
+            // If last character is not letter we move on.
             if(isLetter(stringBuilder.charAt(stringBuilder.length()-1))) {
+                // currLen - just to check if we didn't pass limits.
                 int currLen = stringBuilder.length();
+                // Add new letter and then check if current string is keyword/literal.
                 do {
                     if ((tryKeyword(stringBuilder) || tryLiteral(stringBuilder)) && !isLetter((char) source.peek()) && !isDigit((char) source.peek())) {
                         token = new Token(tempType, position, stringBuilder.toString());
                         return true;
                     }
                     if (isLetter((char) source.peek())) {
+                        // Only letters can be used for keywords/literals.
                         stringBuilder.append((char) source.get());
                     } else {
                         break;
@@ -176,9 +196,12 @@ public class Scanner {
                 } while (currLen < Constants.Token.MAX_IDENTIFIER_LEN);
 
                 if (currLen == Constants.Token.MAX_IDENTIFIER_LEN) {
+                    // TODO: lepsza obsluga wyjatkow
                     throw new Exception("Too long identifier at " + position + ".");
                 }
             }
+
+            // We try to create identifier with what we have.
             try{
                 return tryIdentifier(stringBuilder);
             } catch (Exception exception) {
@@ -186,6 +209,7 @@ public class Scanner {
                 throw new Exception(exception.getMessage());
             }
         }
+        // It is digit so we move on.
         return false;
     }
 
@@ -226,6 +250,7 @@ public class Scanner {
     }
 
     private boolean tryIdentifier(StringBuilder stringBuilder) throws Exception {
+        // If we didn't collected something already we need to start from scratch.
         if (stringBuilder == null) {
             stringBuilder = new StringBuilder();
             undefString = stringBuilder;
@@ -235,6 +260,7 @@ public class Scanner {
                     throw new Exception("Identifier name too long at "+position+".");
                 }
             }
+            // We must have at least one letter.
             if(isLetter((char)source.peek())){
                 stringBuilder.append((char)source.get());
             }else{
@@ -244,6 +270,7 @@ public class Scanner {
         if( stringBuilder.length() > 0 && isDigit(stringBuilder.charAt(stringBuilder.length()-1)) && (isLetter((char)source.peek())||(char)source.peek()=='_')){
             throw new Exception("Wrong identifier name: "+stringBuilder.toString()+(char)source.peek()+" at "+position+".");
         }
+        // If last character is letter we can continue creating identifier.
         if( stringBuilder.length() > 0 && isLetter(stringBuilder.charAt(stringBuilder.length()-1)) ){
             while(isLetter((char)source.peek())){
                 stringBuilder.append((char)source.get());
@@ -260,6 +287,7 @@ public class Scanner {
             token = new Token(Token.Type.Identifier, position, stringBuilder.toString());
             return true;
         }
+        // If lst character is digit we can continue creating identifier.
         if( stringBuilder.length() > 0 && isDigit(stringBuilder.charAt(stringBuilder.length()-1)) ) {
             while(isDigit((char)source.peek())){
                 stringBuilder.append((char)source.get());
@@ -283,6 +311,7 @@ public class Scanner {
 
     private boolean tryNumber() throws Exception {
         tempType = Token.Type.NumberLiteral;
+        // Either only zero or non zero digit with different digits next.
         if((char)source.peek() == '0'){
             token = new Token(tempType, position, "" + (char) source.get());
             if(isDigit((char)source.peek())){
@@ -290,7 +319,9 @@ public class Scanner {
             }
             return true;
         }else if(isNonZeroDigit((char)source.peek())){
-            StringBuilder stringBuilder = new StringBuilder();
+            undefString = new StringBuilder();
+            // stringBuilder - we will hold current characters that we read in it.
+            StringBuilder stringBuilder = undefString;
             stringBuilder.append((char)source.get());
             char current;
             try {

@@ -1,7 +1,12 @@
 package Source;
 
 import Scanner.Constants;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ *
+ * Simple class that takes care of position in source.
+ */
 public class Position implements Cloneable{
     public Pair getPosition() {
         return position;

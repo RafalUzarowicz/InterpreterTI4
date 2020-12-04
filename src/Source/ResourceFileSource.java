@@ -2,7 +2,12 @@ package Source;
 
 import java.io.*;
 import java.util.Objects;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ *
+ * Source implementation that searches file in resources.
+ */
 public class ResourceFileSource implements ISource {
     private final Position position;
     private final BufferedReader bufferedReader;
