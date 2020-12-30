@@ -194,7 +194,7 @@ public class Board {
             }
             // Units
             for (Dictionary.PlayerColors color: Dictionary.PlayerColors.values() ) {
-                for (Dictionary.SpaceUnits unit : Dictionary.SpaceUnits.values()){ ;
+                for (Dictionary.SpaceUnits unit : Dictionary.SpaceUnits.values()){
                     hexes.get(i).setPlayerUnitNumber(color, unit, 0);
                 }
             }
