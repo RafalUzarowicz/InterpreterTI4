@@ -117,6 +117,10 @@ public class Board {
     }
 
     public void saveState() throws IOException {
+        saveStateToFile(boardFile);
+    }
+
+    public void saveStateToFile(String file) throws IOException {
         JSONObject boardState = new JSONObject();
 
         // Hexes
@@ -182,7 +186,7 @@ public class Board {
         }
 
         // Save
-        Files.write(Paths.get(boardFile), boardState.toJSONString().getBytes());
+        Files.write(Paths.get(file), boardState.toJSONString().getBytes());
     }
 
     public void resetState(){
