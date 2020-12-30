@@ -1,4 +1,4 @@
-package Scanner;
+package Utilities;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -7,12 +7,14 @@ import java.util.Arrays;
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
  * <p>
- * Class for all constants
+ * Class for all constants.
  */
 public class Constants {
+    private Constants(){}
+
     public final static class Board {
-        public final static int HEX_NUMBER = 51;
-        public final static int PLANET_NUMBER = 59;
+        public final static int HEX_NUMBER = 50;
+        public final static int PLANET_NUMBER = 58;
     }
 
     public final static class Token {

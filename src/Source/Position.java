@@ -1,6 +1,6 @@
 package Source;
 
-import Scanner.Constants;
+import Utilities.Constants;
 
 /**
  * Author: Rafal Uzarowicz

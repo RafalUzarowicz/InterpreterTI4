@@ -1,6 +1,7 @@
-package Scanner;
+package Utilities;
 
 import java.util.*;
+import Scanner.Token;
 
 /**
  * Author: Rafal Uzarowicz

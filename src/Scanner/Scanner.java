@@ -2,6 +2,8 @@ package Scanner;
 
 import Source.ISource;
 import Source.Position;
+import Utilities.Constants;
+import Utilities.Keywords;
 
 /**
  * Author: Rafal Uzarowicz
