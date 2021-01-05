@@ -3,7 +3,7 @@ package Scanner;
 import Source.ISource;
 import Source.Position;
 import Utilities.Constants;
-import Utilities.Keywords;
+import Utilities.ScannerKeywords;
 
 /**
  * Author: Rafal Uzarowicz
@@ -53,8 +53,14 @@ public class Scanner {
         throw new Exception("Undefined symbol: " + unknownSymbol + " at " + position + ".");
     }
 
-    public Token get() {
-        return token;
+    public Token get() throws Exception {
+        Token tempToken = this.token;
+        this.next();
+        return tempToken;
+    }
+
+    public Token peek(){
+        return this.token;
     }
 
     private boolean tryEof() throws Exception {
@@ -68,7 +74,7 @@ public class Scanner {
 
     private boolean trySingleSymbols() throws Exception {
         // Single symbols = symbols that are single characters.
-        tempType = Keywords.singleToType.get("" + (char) source.peek());
+        tempType = ScannerKeywords.singleToType.get("" + (char) source.peek());
         if (tempType != null) {
             token = new Token(tempType, position);
             source.next();
@@ -80,10 +86,10 @@ public class Scanner {
     private boolean tryDoubleSymbol() throws Exception {
         // Double symbols - symbols that have two same characters like "||".
         char tempChar = (char) source.peek();
-        if (Keywords.doubleSymbols.get(tempChar) != null) {
+        if (ScannerKeywords.doubleSymbols.get(tempChar) != null) {
             source.next();
             if (tempChar == (char) source.peek()) {
-                tempType = Keywords.symbolToType.get("" + tempChar + tempChar);
+                tempType = ScannerKeywords.symbolToType.get("" + tempChar + tempChar);
             } else {
                 throw new Exception("Double symbol error at " + position + ".");
             }
@@ -99,13 +105,13 @@ public class Scanner {
         // Multi symbols - symbols that can have more than one characters that are not all the same like "<=".
         StringBuilder symbols = new StringBuilder();
         symbols.append((char) source.peek());
-        if (Keywords.multiSymbols.get(symbols.charAt(0)) != null) {
+        if (ScannerKeywords.multiSymbols.get(symbols.charAt(0)) != null) {
             source.next();
-            if (Keywords.multiSymbols.get(symbols.charAt(0)).contains((char) source.peek())) {
+            if (ScannerKeywords.multiSymbols.get(symbols.charAt(0)).contains((char) source.peek())) {
                 symbols.append((char) source.get());
-                tempType = Keywords.symbolToType.get(symbols.toString());
+                tempType = ScannerKeywords.symbolToType.get(symbols.toString());
             } else {
-                tempType = Keywords.firstFromMultiSymbol.get(symbols.charAt(0));
+                tempType = ScannerKeywords.firstFromMultiSymbol.get(symbols.charAt(0));
                 if (tempType != null) {
                     token = new Token(tempType, position);
                     return true;
@@ -160,7 +166,7 @@ public class Scanner {
                 return false;
             }
             if (!isIdentifierCharacter((char) source.peek())) {
-                tempType = Keywords.hexOrPlanetToType.get(undefString.substring(0, 1));
+                tempType = ScannerKeywords.hexOrPlanetToType.get(undefString.substring(0, 1));
                 token = new Token(tempType, position, undefString.toString());
                 return true;
             }
@@ -210,7 +216,7 @@ public class Scanner {
 
     private boolean checkIfKeyword() {
         if (undefString != null) {
-            tempType = Keywords.keywordToType.get(undefString.toString());
+            tempType = ScannerKeywords.keywordToType.get(undefString.toString());
             return tempType != null;
         }
         return false;
@@ -218,7 +224,7 @@ public class Scanner {
 
     private boolean checkIfLiteral() {
         if (undefString != null) {
-            tempType = Keywords.literalToType.get(undefString.toString());
+            tempType = ScannerKeywords.literalToType.get(undefString.toString());
             return tempType != null;
         }
         return false;

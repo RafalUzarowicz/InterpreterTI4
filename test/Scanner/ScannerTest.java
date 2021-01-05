@@ -2,7 +2,7 @@ package Scanner;
 
 import Source.Position;
 import Source.StringSource;
-import Utilities.Keywords;
+import Utilities.ScannerKeywords;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -249,8 +249,8 @@ class ScannerTest {
 
     private static Stream<Arguments> provideColorBoolAndUnitLiterals() {
         ArrayList<Arguments> list = new ArrayList<>();
-        for (String key : Keywords.literalToType.keySet()) {
-            list.add(Arguments.of(key, Keywords.literalToType.get(key)));
+        for (String key : ScannerKeywords.literalToType.keySet()) {
+            list.add(Arguments.of(key, ScannerKeywords.literalToType.get(key)));
         }
         return list.stream();
     }

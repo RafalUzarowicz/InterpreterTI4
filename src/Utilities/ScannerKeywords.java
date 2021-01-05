@@ -9,7 +9,7 @@ import Scanner.Token;
  * <p>
  * Class that associate symbols and words with proper token types.
  */
-public class Keywords {
+public class ScannerKeywords {
     public final static HashMap<Character, ArrayList<Character>> doubleSymbols = new HashMap<>() {{
         put('&', new ArrayList<>(Collections.singletonList('&')));
         put('|', new ArrayList<>(Collections.singletonList('|')));
