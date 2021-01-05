@@ -8,7 +8,7 @@ import java.util.HashMap;
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
  * <p>
- * Class that represents current board state.
+ * Class that represents single hex state.
  */
 public class Hex {
     private final HashMap<Dictionary.PlayerColors, Boolean> tokens;

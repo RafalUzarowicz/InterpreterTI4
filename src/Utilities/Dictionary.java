@@ -2,6 +2,12 @@ package Utilities;
 
 import java.util.HashMap;
 
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ * <p>
+ * Dictionary class used to represent board state.
+ */
 public class Dictionary {
     public enum PlayerColors{
         Red,
