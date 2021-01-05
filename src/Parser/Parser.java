@@ -12,9 +12,11 @@ import java.util.ArrayList;
 
 public class Parser {
     private final Scanner scanner;
+
     public Parser(Scanner scanner){
         this.scanner = scanner;
     }
+
     public Program parse() throws Exception {
         ArrayList<Function> functions = new ArrayList<>();
         Function function;
