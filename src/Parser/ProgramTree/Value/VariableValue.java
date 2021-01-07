@@ -1,0 +1,14 @@
+package Parser.ProgramTree.Value;
+
+public class VariableValue extends Value {
+    private String name;
+    private int index;
+    public VariableValue(String name, int index){
+        this.name = name;
+        this.index = index;
+    }
+    public VariableValue(String name){
+        this.name = name;
+        this.index = -1;
+    }
+}

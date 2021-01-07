@@ -1,6 +1,6 @@
 package Parser.ProgramTree.BoardChange;
 
-import Parser.ProgramTree.Value;
+import Parser.ProgramTree.Value.Value;
 
 public class UnitsAction extends PlayerAction{
     private Value fromWhere;

@@ -1,15 +1,15 @@
 package Parser.ProgramTree.Statements;
 
-import Parser.ProgramTree.ConditionExpresion.OrCondition;
+import Parser.ProgramTree.ConditionExpresion.ConditionExpression;
 
 import java.util.ArrayList;
 
 public class Print extends Statement{
-    ArrayList<OrCondition> orConditions;
+    ArrayList<ConditionExpression> conditionExpressions;
     public Print(){
-        orConditions = new ArrayList<>();
+        conditionExpressions = new ArrayList<>();
     }
-    public void add(OrCondition orCondition){
-        orConditions.add(orCondition);
+    public void add(ConditionExpression conditionExpression){
+        conditionExpressions.add(conditionExpression);
     }
 }

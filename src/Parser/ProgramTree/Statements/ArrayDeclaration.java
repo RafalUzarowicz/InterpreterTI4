@@ -1,6 +1,6 @@
 package Parser.ProgramTree.Statements;
 
-import Parser.ProgramTree.Value;
+import Parser.ProgramTree.Value.Value;
 import Parser.ProgramTree.Variable;
 
 import java.util.ArrayList;

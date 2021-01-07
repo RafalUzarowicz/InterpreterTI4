@@ -18,7 +18,7 @@ public class StringSource implements ISource {
         this.text = string;
         position = new Position();
         index = 0;
-        character = text.charAt(index);
+        character = this.text.length() > 0 ? text.charAt(index) : Constants.Source.EOF;
     }
 
     @Override

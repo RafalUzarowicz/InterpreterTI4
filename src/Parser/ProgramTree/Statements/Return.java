@@ -1,13 +1,13 @@
 package Parser.ProgramTree.Statements;
 
-import Parser.ProgramTree.ConditionExpresion.OrCondition;
+import Parser.ProgramTree.ConditionExpresion.ConditionExpression;
 
 public class Return extends Statement{
-    private final OrCondition returnValue;
+    private final ConditionExpression returnValue;
     public Return(){
         returnValue = null;
     }
-    public Return(OrCondition orCondition){
-        returnValue = orCondition;
+    public Return(ConditionExpression conditionExpression){
+        returnValue = conditionExpression;
     }
 }

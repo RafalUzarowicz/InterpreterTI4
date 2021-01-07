@@ -63,10 +63,10 @@ typeOrVar : type | "var";
 assign : identifier ["[" number "]"]  "="  orCondition  ";";
 functionCall : identifier  "("  arguments  ")";
 arguments : [orCondition  {","  orCondition}];
-print : "print"  "("  orCondition  {","  orCondition}  ")"  ";";
+print : "print"  "("  [orCondition  {","  orCondition}]  ")"  ";";
 break : "break"  ";";
 continue : "continue"  ";";
-return : "return"  [orCondition]  ";";
+return : "return"  orCondition  ";";
 
 #(* Operators' order. *)
 orCondition : andCondition  { or  andCondition };

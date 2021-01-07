@@ -2,7 +2,7 @@ package Scanner;
 
 import Source.Position;
 import Source.StringSource;
-import Utilities.ScannerKeywords;
+import Utilities.ScannerUtils;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -73,7 +73,6 @@ class ScannerTest {
 
     private void checkTokenNoValue(Scanner scanner, Token token) throws Exception {
         // Act
-        scanner.next();
         Token t = scanner.get();
         // Assert
         assertEquals(token.getType(), t.getType());
@@ -82,7 +81,6 @@ class ScannerTest {
 
     private void checkTokenWithValue(Scanner scanner, Token token) throws Exception {
         // Act
-        scanner.next();
         Token t = scanner.get();
         // Assert
         assertEquals(token.getType(), t.getType());
@@ -95,6 +93,7 @@ class ScannerTest {
         // Arrange
         StringSource source = new StringSource("var x = 2;");
         Scanner scanner = new Scanner(source);
+        scanner.next();
         // Act + Assert
         checkTokenWithValue(scanner, new Token(Token.Type.VarType, new Position(1, 1), "var"));
         checkTokenWithValue(scanner, new Token(Token.Type.Identifier, new Position(1, 5), "x"));
@@ -249,8 +248,8 @@ class ScannerTest {
 
     private static Stream<Arguments> provideColorBoolAndUnitLiterals() {
         ArrayList<Arguments> list = new ArrayList<>();
-        for (String key : ScannerKeywords.literalToType.keySet()) {
-            list.add(Arguments.of(key, ScannerKeywords.literalToType.get(key)));
+        for (String key : ScannerUtils.literalToType.keySet()) {
+            list.add(Arguments.of(key, ScannerUtils.literalToType.get(key)));
         }
         return list.stream();
     }

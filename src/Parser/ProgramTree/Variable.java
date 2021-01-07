@@ -1,8 +1,5 @@
 package Parser.ProgramTree;
 
-import Parser.Parser;
-import Scanner.Token;
-
 public class Variable {
     public enum VariableType{
         Int,
@@ -17,6 +14,7 @@ public class Variable {
     private String value;
     private VariableType type;
     private String name;
+
     public Variable(VariableType type){
         this.type = type;
         name = null;

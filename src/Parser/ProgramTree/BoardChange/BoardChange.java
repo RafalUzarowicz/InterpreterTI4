@@ -1,7 +1,7 @@
 package Parser.ProgramTree.BoardChange;
 
 import Parser.ProgramTree.Statements.Statement;
-import Parser.ProgramTree.Value;
+import Parser.ProgramTree.Value.Value;
 
 public class BoardChange extends Statement {
     private Value player;

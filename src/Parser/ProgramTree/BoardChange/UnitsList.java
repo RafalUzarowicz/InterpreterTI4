@@ -1,6 +1,6 @@
 package Parser.ProgramTree.BoardChange;
 
-import Parser.ProgramTree.Value;
+import Parser.ProgramTree.Value.Value;
 
 import java.util.ArrayList;
 

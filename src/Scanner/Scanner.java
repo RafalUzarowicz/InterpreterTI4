@@ -3,7 +3,7 @@ package Scanner;
 import Source.ISource;
 import Source.Position;
 import Utilities.Constants;
-import Utilities.ScannerKeywords;
+import Utilities.ScannerUtils;
 
 /**
  * Author: Rafal Uzarowicz
@@ -74,7 +74,7 @@ public class Scanner {
 
     private boolean trySingleSymbols() throws Exception {
         // Single symbols = symbols that are single characters.
-        tempType = ScannerKeywords.singleToType.get("" + (char) source.peek());
+        tempType = ScannerUtils.singleToType.get("" + (char) source.peek());
         if (tempType != null) {
             token = new Token(tempType, position);
             source.next();
@@ -86,10 +86,10 @@ public class Scanner {
     private boolean tryDoubleSymbol() throws Exception {
         // Double symbols - symbols that have two same characters like "||".
         char tempChar = (char) source.peek();
-        if (ScannerKeywords.doubleSymbols.get(tempChar) != null) {
+        if (ScannerUtils.doubleSymbols.get(tempChar) != null) {
             source.next();
             if (tempChar == (char) source.peek()) {
-                tempType = ScannerKeywords.symbolToType.get("" + tempChar + tempChar);
+                tempType = ScannerUtils.symbolToType.get("" + tempChar + tempChar);
             } else {
                 throw new Exception("Double symbol error at " + position + ".");
             }
@@ -105,13 +105,13 @@ public class Scanner {
         // Multi symbols - symbols that can have more than one characters that are not all the same like "<=".
         StringBuilder symbols = new StringBuilder();
         symbols.append((char) source.peek());
-        if (ScannerKeywords.multiSymbols.get(symbols.charAt(0)) != null) {
+        if (ScannerUtils.multiSymbols.get(symbols.charAt(0)) != null) {
             source.next();
-            if (ScannerKeywords.multiSymbols.get(symbols.charAt(0)).contains((char) source.peek())) {
+            if (ScannerUtils.multiSymbols.get(symbols.charAt(0)).contains((char) source.peek())) {
                 symbols.append((char) source.get());
-                tempType = ScannerKeywords.symbolToType.get(symbols.toString());
+                tempType = ScannerUtils.symbolToType.get(symbols.toString());
             } else {
-                tempType = ScannerKeywords.firstFromMultiSymbol.get(symbols.charAt(0));
+                tempType = ScannerUtils.firstFromMultiSymbol.get(symbols.charAt(0));
                 if (tempType != null) {
                     token = new Token(tempType, position);
                     return true;
@@ -166,7 +166,7 @@ public class Scanner {
                 return false;
             }
             if (!isIdentifierCharacter((char) source.peek())) {
-                tempType = ScannerKeywords.hexOrPlanetToType.get(undefString.substring(0, 1));
+                tempType = ScannerUtils.hexOrPlanetToType.get(undefString.substring(0, 1));
                 token = new Token(tempType, position, undefString.toString());
                 return true;
             }
@@ -216,7 +216,7 @@ public class Scanner {
 
     private boolean checkIfKeyword() {
         if (undefString != null) {
-            tempType = ScannerKeywords.keywordToType.get(undefString.toString());
+            tempType = ScannerUtils.keywordToType.get(undefString.toString());
             return tempType != null;
         }
         return false;
@@ -224,7 +224,7 @@ public class Scanner {
 
     private boolean checkIfLiteral() {
         if (undefString != null) {
-            tempType = ScannerKeywords.literalToType.get(undefString.toString());
+            tempType = ScannerUtils.literalToType.get(undefString.toString());
             return tempType != null;
         }
         return false;

@@ -1,12 +1,12 @@
 package Parser.ProgramTree.Statements;
 
-import Parser.ProgramTree.ConditionExpresion.OrCondition;
+import Parser.ProgramTree.ConditionExpresion.ConditionExpression;
 
 public class Assignment extends Statement{
     private String index;
     private String identifier;
-    private OrCondition value;
-    public Assignment(String index, String identifier, OrCondition value){
+    private ConditionExpression value;
+    public Assignment(String index, String identifier, ConditionExpression value){
         this.index = index;
         this.identifier = identifier;
         this.value = value;
