@@ -496,16 +496,7 @@ public class Parser {
                     break;
                 }
                 while(!operatorStack.isEmpty() && operatorStack.peek().parenthesis != Node.Parenthesis.Left){
-                    Node parent = operatorStack.pop();
-                    Node rightChild = operandStack.pop();
-                    Node leftChild = null;
-
-                    if(ParserUtils.operatorOperandsNumber.get(parent.operator)>1){
-                        leftChild = operandStack.pop();
-                    }
-                    parent.left = leftChild;
-                    parent.right = rightChild;
-                    operandStack.push(parent);
+                    prepareNode(operandStack, operatorStack);
                 }
                 if(operatorStack.isEmpty()){
                     throw new ParserException(token, "Wrong number of opening parenthesis.");
@@ -526,17 +517,8 @@ public class Parser {
                     operator = new Node(ParserUtils.forConditionExpression.get(token.getType()));
                 }
 
-                while( !operatorStack.isEmpty() && operatorStack.peek().parenthesis == Node.Parenthesis.Non && ParserUtils.compareOperators(operatorStack.peek().operator, operator.operator )){
-                    Node parent = operatorStack.pop();
-                    Node rightChild = operandStack.pop();
-                    Node leftChild = null;
-
-                    if(ParserUtils.operatorOperandsNumber.get(parent.operator)>1){
-                        leftChild = operandStack.pop();
-                    }
-                    parent.left = leftChild;
-                    parent.right = rightChild;
-                    operandStack.push(parent);
+                while( !operatorStack.isEmpty() && operatorStack.peek().parenthesis == Node.Parenthesis.Non && ParserUtils.compareOperators(operatorStack.peek().operator, operator.operator ) && operator.operator != Node.Operator.Negative){
+                    prepareNode(operandStack, operatorStack);
                 }
                 operatorStack.push(operator);
             }else{
@@ -548,21 +530,25 @@ public class Parser {
             }
         }
         while(!operatorStack.isEmpty()){
-            Node parent = operatorStack.pop();
-            Node rightChild = operandStack.pop();
-            Node leftChild = null;
-
-            if(ParserUtils.operatorOperandsNumber.get(parent.operator)>1){
-                leftChild = operandStack.pop();
-            }
-            parent.left = leftChild;
-            parent.right = rightChild;
-            operandStack.push(parent);
+            prepareNode(operandStack, operatorStack);
         }
         if(operandStack.size() != 1){
             throw new ParserException(scanner.peek(), "Wrong expression.");
         }
         return new ConditionExpression(operandStack.pop());
+    }
+
+    private void prepareNode(Stack<Node> operandStack, Stack<Node> operatorStack){
+        Node parent = operatorStack.pop();
+        Node rightChild = operandStack.pop();
+        Node leftChild = null;
+
+        if(ParserUtils.operatorOperandsNumber.get(parent.operator)>1){
+            leftChild = operandStack.pop();
+        }
+        parent.left = leftChild;
+        parent.right = rightChild;
+        operandStack.push(parent);
     }
 
     private boolean isForValueOrCondition(Token.Type type){

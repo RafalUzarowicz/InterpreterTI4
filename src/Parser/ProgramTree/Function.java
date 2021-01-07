@@ -1,7 +1,5 @@
 package Parser.ProgramTree;
 
-import Parser.Parser;
-
 public class Function {
     private Variable returnValue;
     private Parameters parameters;
