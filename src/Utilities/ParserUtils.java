@@ -14,6 +14,8 @@ public class ParserUtils {
         put("bool", Variable.VariableType.Bool);
         put("unit", Variable.VariableType.Unit);
         put("color", Variable.VariableType.Color);
+        put("hex", Variable.VariableType.Hex);
+        put("planet", Variable.VariableType.Planet);
         put("var", Variable.VariableType.Var);
     }};
     public final static HashMap<Token.Type, Literal.LiteralType> tokenTypeToLiteralType = new HashMap<>() {{

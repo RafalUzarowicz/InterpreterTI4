@@ -20,8 +20,8 @@ import java.util.Stack;
 public class Main {
     public static void main(String[] args) {
         try {
-            FileSource source = new FileSource("code/simple.twlan");
-//            ResourceFileSource source = new ResourceFileSource("first.twlan");
+//            FileSource source = new FileSource("code/simple.twlan");
+            ResourceFileSource source = new ResourceFileSource("first.twlan");
 //            StringSource source = new StringSource("int _main(){\nvar x_1d = !(2+3)*6--(7+2*3); var y = player(x)has(Fighter)at(h12);\n\tfuncall(2, 7);int[] x = int[2];}");
             Scanner scanner = new Scanner(source);
 

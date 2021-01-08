@@ -88,10 +88,10 @@ public class ScannerUtils {
         put("unit", Token.Type.Type);
         put("color", Token.Type.Type);
         put("var", Token.Type.VarType);
+        put("hex", Token.Type.Type);
+        put("planet", Token.Type.Type);
 
         put("player", Token.Type.Player);
-        put("planet", Token.Type.Planet);
-        put("hex", Token.Type.Hex);
         put("move", Token.Type.UnitsAction);
         put("add", Token.Type.UnitsAction);
         put("remove", Token.Type.UnitsAction);

@@ -20,12 +20,11 @@ public class ArrayDeclaration extends Statement{
     }
     public void add(Value value) throws Exception {
         values.add(value);
-        ++count;
-        if( count >= size ){
-            throw new Exception("Index out of bound.");
-        }
     }
     public void setSize(int size){
         this.size = size;
+    }
+    public int getSize(){
+        return this.size;
     }
 }

@@ -5,7 +5,7 @@ int increment(int x){
 
 color whoOccupy(hex h, color[] players){
 	foreach(var p:players){
-		if( player(p) activated hex(h) ){
+		if( player(p) activated (h) ){
 			return p;
 		}
 	}
@@ -16,31 +16,30 @@ int main(){
 
 	color currentPlayer = Black;
 	unit u = Carrier;
-	bool isActivated = player(Red) activated hex(h2);
-	int fightersCount = player(Green) has (u) at hex(h17);
+	bool isActivated = player(Red) activated(h2);
+	int fightersCount = player(Green) has (u) at (h17);
 
 	if( isActivated && fightersCount > 2 || planet(p4) has(Carrier) ){
-		player(currentPlayer) activate hex(h12);
-		player(currentPlayer) claim planet(p4);
-		player(currentPlayer) add(Figher:3, Carrier:1, Flagship:1) to hex(h12);
-		player(currentPlayer) move(Destroyer:2, WarSun:1) from hex(h9) to hex(h12);
+		player(currentPlayer) activate (h12);
+		player(currentPlayer) add(Figher:3, Carrier:1, Flagship:1) to (h12);
+		player(currentPlayer) move(Destroyer:2, WarSun:1) from (h9) to (h12);
 	}else{
-		int destroyedFighters =  player(Red) has(u) at hex(h17);
+		int destroyedFighters =  player(Red) has(u) at (h17);
 		if(increment(destroyedFighters) <= 1){
-			player(Black) remove(Figher:destroyedFighters) from hex(h17);
+			player(Black) remove(Figher:destroyedFighters) from (h17);
 		}
 	}
 
 	var[] players = color[]{Black, Red, Blue};
 	var[] units = unit[2];
-	unit[0] = Fighter;
-	unit[1] = Infantry;
+	units[0] = Fighter;
+	units[1] = Infantry;
 
 	var sourceHex = h3;
 
 	var enemy = whoOccupy(h29, players);
 	if(enemy == Red){
-		player(Green) move(units) from(sourceHex) to(h29);
+		player(Green) move(units:1) from(sourceHex) to(h29);
 	}
 
 	return 0;

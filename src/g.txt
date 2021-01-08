@@ -4,7 +4,7 @@ program : functionDefinition  {functionDefinition};
 
 functionDefinition : type  identifier  "("  parameters  ")" block;
 
-parameters : [type  identifier {","  type  identifier}];
+parameters : [type ["[" "]"]  identifier {","  type["[" "]"]  identifier}];
 
 block : "{"  [statement  {statement}]  "}";
 

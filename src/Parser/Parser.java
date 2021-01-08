@@ -62,11 +62,22 @@ public class Parser {
         Parameters parameters = new Parameters();
         while(compareTokenType(Token.Type.Type)){
             Token type = scanner.get();
+            boolean isArray= false;
+
+            if(compareTokenType(Token.Type.BracketsLeft)){
+                checkNextToken(Token.Type.BracketsRight);
+                scanner.next();
+                isArray = true;
+            }
 
             checkCurrentToken(Token.Type.Identifier);
             Token identifier = scanner.get();
 
-            parameters.add(new Variable(ParserUtils.keywordToVariableType.get(type.getValue()), identifier.getValue()));
+            if(isArray){
+                parameters.add(new Variable(ParserUtils.keywordToVariableType.get(type.getValue()), identifier.getValue()));
+            }else{
+                parameters.add(new Array(ParserUtils.keywordToVariableType.get(type.getValue()), identifier.getValue()));
+            }
 
             if(!compareTokenType(Token.Type.Comma)){
                 break;
@@ -155,9 +166,16 @@ public class Parser {
             ConditionExpression conditionExpression;
             while((conditionExpression = tryConditionExpression()) != null){
                 print.add(conditionExpression);
+
+                if(!compareTokenType(Token.Type.Comma)){
+                    break;
+                }
+                scanner.next();
             }
 
             checkCurrentToken(Token.Type.ParenthesisRight);
+            scanner.next();
+            checkCurrentToken(Token.Type.Semicolon);
             scanner.next();
             return print;
         }
@@ -282,7 +300,7 @@ public class Parser {
                 scanner.next();
             }
             Value toWhere = null;
-            if(unitsAction.getValue().equals("move")||unitsAction.getValue().equals("remove")){
+            if(unitsAction.getValue().equals("move")||unitsAction.getValue().equals("add")){
                 checkCurrentToken(Token.Type.To);
                 scanner.next();
                 checkCurrentToken(Token.Type.ParenthesisLeft);
@@ -460,10 +478,13 @@ public class Parser {
 
         if(compareTokenType(Token.Type.BracesLeft)){
             scanner.next();
-
             Value value;
             while((value = tryValue()) != null){
                 arrayDeclaration.add(value);
+                if(!compareTokenType(Token.Type.Comma)){
+                    break;
+                }
+                scanner.next();
             }
 
             checkCurrentToken(Token.Type.BracesRight);
@@ -498,7 +519,9 @@ public class Parser {
                 while(!operatorStack.isEmpty() && operatorStack.peek().parenthesis != Node.Parenthesis.Left){
                     prepareNode(operandStack, operatorStack);
                 }
-                if(operatorStack.isEmpty()){
+                if(operatorStack.isEmpty() && operandStack.size() == 1){
+                    break;
+                }else if(operatorStack.isEmpty()){
                     throw new ParserException(token, "Wrong number of opening parenthesis.");
                 }
                 operatorStack.pop();
@@ -565,7 +588,7 @@ public class Parser {
     }
 
     private boolean isBoardCheck(Token.Type type){
-        return type == Token.Type.Player || type == Token.Type.Planet || type == Token.Type.Hex;
+        return type == Token.Type.Player || type == Token.Type.Type;
     }
 
     private Value tryValue() throws Exception {
@@ -604,9 +627,6 @@ public class Parser {
         checkCurrentToken(Token.Type.ParenthesisRight);
         scanner.next();
 
-        checkCurrentToken(Token.Type.Semicolon);
-        scanner.next();
-
         return new FunctionCallValue(identifier.getValue(), arguments);
     }
 
@@ -619,7 +639,7 @@ public class Parser {
     }
 
     private Value tryPlanetOrHexStateCheck() throws Exception {
-        if(compareTokenType(Token.Type.Planet)||compareTokenType(Token.Type.Hex)){
+        if(compareTokenType(Token.Type.Type) &&(scanner.peek().getValue().equals("hex") || scanner.peek().getValue().equals("planet"))){
             Token type = scanner.peek();
             checkNextToken(Token.Type.ParenthesisLeft);
             scanner.next();
@@ -631,9 +651,9 @@ public class Parser {
             Value unit = tryValue();
             checkCurrentToken(Token.Type.ParenthesisRight);
             scanner.next();
-            if(type.getType() == Token.Type.Planet){
+            if(type.getValue().equals("planet")){
                 return new PlanetStateCheck(place, unit);
-            }else if(type.getType() == Token.Type.Hex){
+            }else if(type.getValue().equals("hex")){
                 return new HexStateCheck(place, unit);
             }
         }
