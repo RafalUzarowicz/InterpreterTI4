@@ -12,4 +12,8 @@ public class Parameters {
     public void add(Variable variable) {
         parameters.add(variable);
     }
+
+    public ArrayList<Variable> getParameters() {
+        return parameters;
+    }
 }

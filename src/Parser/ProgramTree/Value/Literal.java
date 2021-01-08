@@ -10,6 +10,15 @@ public class Literal extends Value {
         Hex,
         Planet
     }
+
+    public LiteralType getType() {
+        return type;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
     private LiteralType type;
     private String value;
     public Literal(LiteralType type, String value){

@@ -21,8 +21,10 @@ public class Main {
     public static void main(String[] args) {
         try {
 //            FileSource source = new FileSource("code/simple.twlan");
-            ResourceFileSource source = new ResourceFileSource("first.twlan");
+//            ResourceFileSource source = new ResourceFileSource("first.twlan");
 //            StringSource source = new StringSource("int _main(){\nvar x_1d = !(2+3)*6--(7+2*3); var y = player(x)has(Fighter)at(h12);\n\tfuncall(2, 7);int[] x = int[2];}");
+            StringSource source = new StringSource("int _main(){\nvar x_1d = !(x+(!y+2)); }");
+//            StringSource source = new StringSource("int _main(){\nvar x_1d = !!!!!!x; }");
             Scanner scanner = new Scanner(source);
 
 //            scanner.next();

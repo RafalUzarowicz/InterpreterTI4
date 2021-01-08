@@ -27,6 +27,11 @@ public class Node {
         Non
     }
 
+    private Value value;
+    public Operator operator;
+    public Parenthesis parenthesis;
+    public Node left, right;
+    public Node child;
 
     public Node(Value value) {
         this.value = value;
@@ -48,11 +53,4 @@ public class Node {
         value = null;
         left = right = child = null;
     }
-
-
-    private Value value;
-    public Operator operator;
-    public Parenthesis parenthesis;
-    public Node left, right;
-    public Node child;
 }

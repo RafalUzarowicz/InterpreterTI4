@@ -11,4 +11,16 @@ public class Assignment extends Statement{
         this.identifier = identifier;
         this.value = value;
     }
+
+    public String getIndex() {
+        return index;
+    }
+
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public ConditionExpression getValue() {
+        return value;
+    }
 }

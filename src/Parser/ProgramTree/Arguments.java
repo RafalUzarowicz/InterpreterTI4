@@ -1,11 +1,15 @@
-package Parser.ProgramTree.Statements;
+package Parser.ProgramTree;
 
 import Parser.ProgramTree.ConditionExpresion.ConditionExpression;
 
 import java.util.ArrayList;
 
 public class Arguments {
-    private ArrayList<ConditionExpression> arguments;
+    public ArrayList<ConditionExpression> getArguments() {
+        return arguments;
+    }
+
+    private final ArrayList<ConditionExpression> arguments;
     public Arguments(){
         arguments = new ArrayList<>();
     }

@@ -92,16 +92,16 @@ public class ScannerUtils {
         put("planet", Token.Type.Type);
 
         put("player", Token.Type.Player);
-        put("move", Token.Type.UnitsAction);
-        put("add", Token.Type.UnitsAction);
-        put("remove", Token.Type.UnitsAction);
+        put("move", Token.Type.Move);
+        put("add", Token.Type.Add);
+        put("remove", Token.Type.Remove);
         put("from", Token.Type.From);
         put("to", Token.Type.To);
         put("has", Token.Type.Has);
         put("at", Token.Type.At);
         put("activated", Token.Type.Activated);
-        put("activate", Token.Type.Activation);
-        put("deactivate", Token.Type.Activation);
+        put("activate", Token.Type.Activate);
+        put("deactivate", Token.Type.Deactivate);
 
         put("foreach", Token.Type.Foreach);
         put("continue", Token.Type.Continue);

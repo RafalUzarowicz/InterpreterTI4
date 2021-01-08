@@ -8,7 +8,7 @@ parameters : [type ["[" "]"]  identifier {","  type["[" "]"]  identifier}];
 
 block : "{"  [statement  {statement}]  "}";
 
-statement : conditional | loop | (functionCall ";") | varDeclaration | arrayDeclaration | assign | print | break | return | continue |  block | boardChange;
+statement : conditional | loop | functionCallStatement | varDeclaration | arrayDeclaration | assign | print | break | return | continue |  block | boardChange;
 
 #(* Changes to game state. *)
 boardChange : whichPlayer playerAction ";";
@@ -61,7 +61,7 @@ varDeclaration : typeOrVar  identifier  "="  orCondition ";";
 arrayDeclaration : typeOrVar  "["  "]"  identifier  "="  type  "["  [nonZeroNumber]  "]" ["{"  [value  {{","  value}}]  "}" ]  ";";
 typeOrVar : type | "var";
 assign : identifier ["[" number "]"]  "="  orCondition  ";";
-functionCall : identifier  "("  arguments  ")";
+functionCallStatement : identifier  "("  arguments  ")" ";";
 arguments : [orCondition  {","  orCondition}];
 print : "print"  "("  [orCondition  {","  orCondition}]  ")"  ";";
 break : "break"  ";";
@@ -89,7 +89,9 @@ add : "+" | "-";
 multiply : "*" | "/";
 
 #(* Variables and literals. *)
-value : literal | functionCall | (identifier  ["["  number  "]"]) | boardStateCheck;
+value : literal | functionCall | variableReference | boardStateCheck;
+functionCall : identifier  "("  arguments  ")";
+variableReference : identifier  ["["  number  "]"];
 type : "int"|"string"|"bool"|"unit"|"color"|"hex"|"planet";
 identifier : ((underscore  (letter | digit | underscore)) |letter)  {letter | digit | underscore};
 

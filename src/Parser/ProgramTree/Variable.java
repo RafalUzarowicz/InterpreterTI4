@@ -23,4 +23,16 @@ public class Variable {
         this.type = type;
         this.name = name;
     }
+
+    public String getValue() {
+        return value;
+    }
+
+    public VariableType getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
 }

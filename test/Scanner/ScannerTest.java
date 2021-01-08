@@ -21,18 +21,18 @@ import static org.junit.jupiter.api.Assertions.*;
 class ScannerTest {
     private final static HashMap<String, Token.Type> stringToType = new HashMap<>() {{
         put("player", Token.Type.Player);
-        put("planet", Token.Type.Planet);
-        put("hex", Token.Type.Hex);
-        put("move", Token.Type.UnitsAction);
-        put("add", Token.Type.UnitsAction);
-        put("remove", Token.Type.UnitsAction);
+        put("planet", Token.Type.Type);
+        put("hex", Token.Type.Type);
+        put("move", Token.Type.Move);
+        put("add", Token.Type.Add);
+        put("remove", Token.Type.Remove);
         put("from", Token.Type.From);
         put("to", Token.Type.To);
         put("has", Token.Type.Has);
         put("at", Token.Type.At);
         put("activated", Token.Type.Activated);
-        put("activate", Token.Type.Activation);
-        put("deactivate", Token.Type.Activation);
+        put("activate", Token.Type.Activate);
+        put("deactivate", Token.Type.Deactivate);
 
         put("(", Token.Type.ParenthesisLeft);
         put(")", Token.Type.ParenthesisRight);

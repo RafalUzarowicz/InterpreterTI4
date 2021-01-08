@@ -41,7 +41,7 @@ public class ParserUtils {
         put(Node.Operator.Equal, 3);
         put(Node.Operator.NotEqual, 3);
 
-        put(Node.Operator.Not, 4);
+        put(Node.Operator.Not, 8);
 
         put(Node.Operator.Plus, 5);
         put(Node.Operator.Minus, 5);
@@ -72,6 +72,29 @@ public class ParserUtils {
         put(Node.Operator.Divide, 2);
 
         put(Node.Operator.Negative, 1);
+    }};
+
+    public final static HashMap<Node.Operator, String> operatorToString = new HashMap<>() {{
+        put(Node.Operator.Or, "||");
+
+        put(Node.Operator.And, "&&");
+
+        put(Node.Operator.Greater, ">");
+        put(Node.Operator.GreaterEqual, ">=");
+        put(Node.Operator.Less, "<");
+        put(Node.Operator.LessEqual, "<=");
+        put(Node.Operator.Equal, "==");
+        put(Node.Operator.NotEqual, "!=");
+
+        put(Node.Operator.Not, "!");
+
+        put(Node.Operator.Plus, "+");
+        put(Node.Operator.Minus, "-");
+
+        put(Node.Operator.Multiply, "*");
+        put(Node.Operator.Divide, "/");
+
+        put(Node.Operator.Negative, "-");
     }};
 
     public final static HashMap<Token.Type, Node.Operator> forConditionExpression = new HashMap<>() {{

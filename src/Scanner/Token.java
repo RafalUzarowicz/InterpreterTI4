@@ -15,13 +15,16 @@ public class Token {
         Player,                 // "player"
         Planet,                 // "planet"
         Hex,                    // "hex"
-        UnitsAction,            // "move", "add", "remove"
+        Move,                   // "move"
+        Add,                    // "add"
+        Remove,                 // "remove"
         From,                   // "from"
         To,                     // "to"
         Has,                    // "has"
         At,                     // "at"
         Activated,              // "activated"
-        Activation,             // "activate", "deactivate"
+        Activate,               // "activate"
+        Deactivate,             // "activate"
 
         NumberLiteral,          // number = nonZeroNumber | "0"; nonZeroNumber = nonZeroDigit, {digit};
         StringLiteral,          // string = """, {character}, """
