@@ -10,6 +10,12 @@ public class Literal extends Value {
         Hex,
         Planet
     }
+    private LiteralType type;
+    private String value;
+    public Literal(LiteralType type, String value){
+        this.type = type;
+        this.value = value;
+    }
 
     public LiteralType getType() {
         return type;
@@ -19,10 +25,8 @@ public class Literal extends Value {
         return value;
     }
 
-    private LiteralType type;
-    private String value;
-    public Literal(LiteralType type, String value){
-        this.type = type;
-        this.value = value;
+    @Override
+    public String toString() {
+        return value;
     }
 }

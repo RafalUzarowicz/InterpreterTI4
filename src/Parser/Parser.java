@@ -489,6 +489,7 @@ public class Parser {
     }
 
     public ConditionExpression tryConditionExpression() throws Exception {
+        // Shunting-yard algorithm
         if(scanner.peek().getType() == Token.Type.ParenthesisRight){
             return null;
         }

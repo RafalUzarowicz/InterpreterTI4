@@ -6,4 +6,9 @@ public class ConditionExpression {
     public ConditionExpression(Node root){
         this.expression = root;
     }
+
+    @Override
+    public String toString() {
+        return expression.toString();
+    }
 }

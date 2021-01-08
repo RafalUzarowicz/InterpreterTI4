@@ -11,4 +11,13 @@ public class VariableValue extends Value {
         this.name = name;
         this.index = -1;
     }
+
+    @Override
+    public String toString() {
+        if(index < 0){
+            return name;
+        }else{
+            return name+"["+index+"]";
+        }
+    }
 }

@@ -102,6 +102,12 @@ public class ParserUtils {
         put(Node.Operator.Negative, "-");
     }};
 
+    public final static HashMap<Node.Parenthesis, String> parenthesisToString = new HashMap<>() {{
+        put(Node.Parenthesis.Left, "(");
+
+        put(Node.Parenthesis.Right, ")");
+    }};
+
     public final static HashMap<Token.Type, Node.Operator> forConditionExpression = new HashMap<>() {{
         put(Token.Type.Or, Node.Operator.Or);
 

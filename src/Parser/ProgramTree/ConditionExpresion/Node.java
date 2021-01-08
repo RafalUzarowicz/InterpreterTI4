@@ -1,6 +1,7 @@
 package Parser.ProgramTree.ConditionExpresion;
 
 import Parser.ProgramTree.Value.Value;
+import Utilities.ParserUtils;
 
 public class Node {
     public enum Operator {
@@ -27,7 +28,7 @@ public class Node {
         Non
     }
 
-    private Value value;
+    private final Value value;
     public Operator operator;
     public Parenthesis parenthesis;
     public Node left, right;
@@ -52,5 +53,26 @@ public class Node {
         operator = Operator.Non;
         value = null;
         left = right = child = null;
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        if(value != null){
+            stringBuilder.append(value.toString());
+        }else if(operator != Operator.Non){
+            stringBuilder.append("(");
+            if(left != null){
+                stringBuilder.append(left.toString());
+            }
+            stringBuilder.append(ParserUtils.operatorToString.get(operator));
+            if(right != null){
+                stringBuilder.append(right.toString());
+            }
+            stringBuilder.append(")");
+        }else if(parenthesis != Parenthesis.Non){
+            stringBuilder.append(ParserUtils.parenthesisToString.get(parenthesis));
+        }
+        return stringBuilder.toString();
     }
 }

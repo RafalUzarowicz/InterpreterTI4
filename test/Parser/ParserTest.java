@@ -16,6 +16,7 @@ import Scanner.Scanner;
 import Scanner.Token;
 import Source.Position;
 import Source.StringSource;
+import Utilities.ExpressionString;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -388,10 +389,12 @@ public class ParserTest {
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
+        ExpressionString expressionString = new ExpressionString(line);
         // Act
         ConditionExpression conditionExpression = parser.tryConditionExpression();
         // Assert
         assertNotEquals(null, conditionExpression);
+        assertTrue(expressionString.compareExpressions(conditionExpression.toString()));
     }
 
     private static Stream<Arguments> provideConditionExpressionBad() {
