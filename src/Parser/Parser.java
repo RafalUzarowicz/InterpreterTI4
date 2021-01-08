@@ -19,7 +19,12 @@ import Utilities.ParserUtils;
 
 import java.util.ArrayList;
 import java.util.Stack;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ * <p>
+ * Class implementing parser.
+ */
 public class Parser {
     private final Scanner scanner;
 

@@ -5,6 +5,8 @@ import Source.Position;
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
+ * <p>
+ * Class for token representation.
  */
 public class Token {
     public enum Type {

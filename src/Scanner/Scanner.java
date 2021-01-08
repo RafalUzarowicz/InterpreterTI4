@@ -1,5 +1,6 @@
 package Scanner;
 
+import Exceptions.ScannerException;
 import Source.ISource;
 import Source.Position;
 import Utilities.Constants;
@@ -8,6 +9,8 @@ import Utilities.ScannerUtils;
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
+ * <p>
+ * Class implementing scanner.
  */
 public class Scanner {
     private Token token;
@@ -50,7 +53,7 @@ public class Scanner {
         // If undefString wasn't initialized, we passed all tries so it's unknown char from source.
         // If undefString is initialized then it's unknown string created by one of tries.
         String unknownSymbol = undefString != null ? undefString.toString() : "" + (char) source.peek();
-        throw new Exception("Undefined symbol: " + unknownSymbol + " at " + position + ".");
+        throw new ScannerException("Undefined symbol: " + unknownSymbol + " at " + position + ".");
     }
 
     public Token get() throws Exception {
@@ -91,7 +94,7 @@ public class Scanner {
             if (tempChar == (char) source.peek()) {
                 tempType = ScannerUtils.symbolToType.get("" + tempChar + tempChar);
             } else {
-                throw new Exception("Double symbol error at " + position + ".");
+                throw new ScannerException("Double symbol error at " + position + ".");
             }
         } else {
             return false;
@@ -137,7 +140,7 @@ public class Scanner {
                 token = new Token(Token.Type.StringLiteral, position, stringBuilder.toString());
                 return true;
             } else {
-                throw new Exception("String not valid at " + position + ".");
+                throw new ScannerException("String not valid at " + position + ".");
             }
         }
         return false;
@@ -205,7 +208,7 @@ public class Scanner {
             }
         }
         if (undefString.length() == Constants.Token.MAX_IDENTIFIER_LEN) {
-            throw new Exception("Too long identifier at " + position + ".");
+            throw new ScannerException("Too long identifier at " + position + ".");
         }
         return false;
     }
@@ -261,7 +264,7 @@ public class Scanner {
         if (isZeroDigit((char) source.peek())) {
             token = new Token(Token.Type.NumberLiteral, position, "" + (char) source.get());
             if (isDigit((char) source.peek())) {
-                throw new Exception("Wrong number at " + position);
+                throw new ScannerException("Wrong number at " + position);
             }
             return true;
         } else if (isNonZeroDigit((char) source.peek())) {

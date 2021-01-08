@@ -6,7 +6,12 @@ import Parser.ProgramTree.Variable;
 import Scanner.Token;
 
 import java.util.HashMap;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ * <p>
+ * Class with useful maps for Parser.
+ */
 public class ParserUtils {
     public final static HashMap<String, Variable.VariableType> keywordToVariableType = new HashMap<>() {{
         put("int", Variable.VariableType.Int);
