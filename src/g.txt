@@ -1,0 +1,110 @@
+#(* Main program parts. *)
+
+program : functionDefinition  {functionDefinition};
+
+functionDefinition : type  identifier  "("  parameters  ")" block;
+
+parameters : [type ["[" "]"]  identifier {","  type["[" "]"]  identifier}];
+
+block : "{"  [statement  {statement}]  "}";
+
+statement : conditional | loop | functionCallStatement | varDeclaration | arrayDeclaration | assign | print | break | return | continue |  block | boardChange;
+
+#(* Changes to game state. *)
+boardChange : whichPlayer playerAction ";";
+
+playerAction : unitsAction | activation;
+unitsAction : moveUnits | addUnits | removeUnits;
+moveUnits : "move" unitsList fromWhere toWhere;
+addUnits : "add" unitsList toWhere;
+removeUnits : "remove" unitsList fromWhere;
+activation : activateHex | deactivateHex;
+activateHex : "activate" "(" value ")";
+deactivateHex : "deactivate" "(" value ")";
+
+fromWhere : "from" "(" value ")";
+toWhere : "to" "(" value ")";
+
+unitsList : "(" unitAmount {"," unitAmount} ")";
+unitAmount : value ":" value;
+
+#(* Checking game state. *)
+boardStateCheck : playerStateCheck | planetOrHexStateCheck | hexActivationCheck;
+
+hexActivationCheck : whichPlayer  "activated"  "("  value  ")";
+
+planetOrHexStateCheck : (whichPlanet|whichHex)  "has"  "("  value  ")";
+
+playerStateCheck : whichPlayer  "has"  playerUnitsCheck;
+playerUnitsCheck : "("  value  ")"  "at"  "(" value ")";
+
+whichPlayer : "player"  "("  value  ")";
+whichPlanet : "planet"  "("  value  ")";
+whichHex : "hex"  "("  value  ")";
+
+#(* Specific values for unit, hex and planet. *)
+unit : ships | ground | structures;
+ships : "Fighter" | "Destroyer" | "Carrier" | "Cruiser" | "Dreadnought" | "WarSun" | "Flagship";
+ground : "Infantry";
+structures : "SpaceDock" | "PDS";
+
+color : "Red" | "Yellow" | "Green" | "Blue" | "Purple" | "Black" | "NoColor";
+
+hex : "h"  "0'-'50";
+planet : "p"  "0'-'58";
+
+#(* Basic statements. *)
+conditional : "if"  "("  orCondition  ")"  block  ["else"  block];
+loop : "foreach"  "("  typeOrVar  identifier  ":"  identifier  ")"  block;
+
+varDeclaration : typeOrVar  identifier  "="  orCondition ";";
+arrayDeclaration : typeOrVar  "["  "]"  identifier  "="  type  "["  [nonZeroNumber]  "]" ["{"  [value  {{","  value}}]  "}" ]  ";";
+typeOrVar : type | "var";
+assign : identifier ["[" number "]"]  "="  orCondition  ";";
+functionCallStatement : identifier  "("  arguments  ")" ";";
+arguments : [orCondition  {","  orCondition}];
+print : "print"  "("  [orCondition  {","  orCondition}]  ")"  ";";
+break : "break"  ";";
+continue : "continue"  ";";
+return : "return"  orCondition  ";";
+
+#(* Operators' order. *)
+orCondition : andCondition  { or  andCondition };
+andCondition : relationCondition  { and  relationCondition };
+relationCondition : condition  { relation  condition };
+condition : [not] addExpression;
+
+addExpression : multiplyExpression  { add  multiplyExpression };
+multiplyExpression : expression  { multiply  expression};
+expression : [negative]( value | "("  orCondition  ")");
+
+#(* Basic operators. *)
+or : "||";
+and : "&&";
+relation : ">" | "<" | "<=" | ">=" | "==" | "!=";
+not : "!";
+
+negative : "-";
+add : "+" | "-";
+multiply : "*" | "/";
+
+#(* Variables and literals. *)
+value : literal | functionCall | variableReference | boardStateCheck;
+functionCall : identifier  "("  arguments  ")";
+variableReference : identifier  ["["  number  "]"];
+type : "int"|"string"|"bool"|"unit"|"color"|"hex"|"planet";
+identifier : ((underscore  (letter | digit | underscore)) |letter)  {letter | digit | underscore};
+
+literal : number | string | bool | unit | color | hex | planet;
+
+number : nonZeroNumber | "0";
+nonZeroNumber : nonZeroDigit  {digit};
+string : "\""  {character}  "\"";
+bool : "true" | "false";
+
+character : letter | digit | special;
+letter : 'a'-'z' | 'A'-'Z';
+digit : "0" | nonZeroDigit;
+special : underscore | "." | "," | "-" | " " | "/" | "\\";
+nonZeroDigit : '1'-'9';
+underscore : '_';
