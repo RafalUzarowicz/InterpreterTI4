@@ -1,8 +1,7 @@
 package Utilities;
 
-import Parser.ProgramTree.ConditionExpresion.Node;
-import Parser.ProgramTree.Value.Literal;
-import Parser.ProgramTree.Variable;
+import Parser.ProgramTree.ConditionExpresion.OperatorType;
+import Parser.ProgramTree.ConditionExpresion.Operators.*;
 import Scanner.Token;
 
 import java.util.HashMap;
@@ -13,122 +12,97 @@ import java.util.HashMap;
  * Class with useful maps for Parser.
  */
 public class ParserUtils {
-    public final static HashMap<String, Variable.VariableType> keywordToVariableType = new HashMap<>() {{
-        put("int", Variable.VariableType.Int);
-        put("string", Variable.VariableType.String);
-        put("bool", Variable.VariableType.Bool);
-        put("unit", Variable.VariableType.Unit);
-        put("color", Variable.VariableType.Color);
-        put("hex", Variable.VariableType.Hex);
-        put("planet", Variable.VariableType.Planet);
-        put("var", Variable.VariableType.Var);
+    public final static HashMap<Class, Integer> operatorPriority = new HashMap<>() {{
+        put(OrOperator.class, 1);
+
+        put(AndOperator.class, 2);
+
+        put(GreaterOperator.class, 3);
+        put(GreaterEqualOperator.class, 3);
+        put(LessOperator.class, 3);
+        put(LessEqualOperator.class, 3);
+        put(EqualOperator.class, 3);
+        put(NotEqualOperator.class, 3);
+
+        put(NotOperator.class, 8);
+
+        put(PlusOperator.class, 5);
+        put(MinusOperator.class, 5);
+
+        put(MultiplyOperator.class, 6);
+        put(DivideOperator.class, 6);
+
+        put(NegativeOperator.class, 7);
     }};
-    public final static HashMap<Token.Type, Literal.LiteralType> tokenTypeToLiteralType = new HashMap<>() {{
-        put(Token.Type.NumberLiteral, Literal.LiteralType.Int);
-        put(Token.Type.StringLiteral, Literal.LiteralType.String);
-        put(Token.Type.BoolLiteral, Literal.LiteralType.Bool);
-        put(Token.Type.UnitLiteral, Literal.LiteralType.Unit);
-        put(Token.Type.ColorLiteral, Literal.LiteralType.Color);
-        put(Token.Type.HexLiteral, Literal.LiteralType.Hex);
-        put(Token.Type.PlanetLiteral, Literal.LiteralType.Planet);
-    }};
-    public final static HashMap<Node.Operator, Integer> operatorPriority = new HashMap<>() {{
-        put(Node.Operator.Non, 0);
+    public final static HashMap<Class, Integer> operatorOperandsNumber = new HashMap<>() {{
+        put(OrOperator.class, 2);
 
-        put(Node.Operator.Or, 1);
+        put(AndOperator.class, 2);
 
-        put(Node.Operator.And, 2);
+        put(GreaterOperator.class, 2);
+        put(GreaterEqualOperator.class, 2);
+        put(LessOperator.class, 2);
+        put(LessEqualOperator.class, 2);
+        put(EqualOperator.class, 2);
+        put(NotEqualOperator.class, 2);
 
-        put(Node.Operator.Greater, 3);
-        put(Node.Operator.GreaterEqual, 3);
-        put(Node.Operator.Less, 3);
-        put(Node.Operator.LessEqual, 3);
-        put(Node.Operator.Equal, 3);
-        put(Node.Operator.NotEqual, 3);
+        put(NotOperator.class, 1);
 
-        put(Node.Operator.Not, 8);
+        put(PlusOperator.class, 2);
+        put(MinusOperator.class, 2);
 
-        put(Node.Operator.Plus, 5);
-        put(Node.Operator.Minus, 5);
+        put(MultiplyOperator.class, 2);
+        put(DivideOperator.class, 2);
 
-        put(Node.Operator.Multiply, 6);
-        put(Node.Operator.Divide, 6);
-
-        put(Node.Operator.Negative, 7);
-    }};
-    public final static HashMap<Node.Operator, Integer> operatorOperandsNumber = new HashMap<>() {{
-        put(Node.Operator.Or, 2);
-
-        put(Node.Operator.And, 2);
-
-        put(Node.Operator.Greater, 2);
-        put(Node.Operator.GreaterEqual, 2);
-        put(Node.Operator.Less, 2);
-        put(Node.Operator.LessEqual, 2);
-        put(Node.Operator.Equal, 2);
-        put(Node.Operator.NotEqual, 2);
-
-        put(Node.Operator.Not, 1);
-
-        put(Node.Operator.Plus, 2);
-        put(Node.Operator.Minus, 2);
-
-        put(Node.Operator.Multiply, 2);
-        put(Node.Operator.Divide, 2);
-
-        put(Node.Operator.Negative, 1);
+        put(NegativeOperator.class, 1);
     }};
 
-    public final static HashMap<Node.Operator, String> operatorToString = new HashMap<>() {{
-        put(Node.Operator.Or, "||");
+    public final static HashMap<OperatorType, String> operatorToString = new HashMap<>() {{
+        put(OperatorType.Or, "||");
 
-        put(Node.Operator.And, "&&");
+        put(OperatorType.And, "&&");
 
-        put(Node.Operator.Greater, ">");
-        put(Node.Operator.GreaterEqual, ">=");
-        put(Node.Operator.Less, "<");
-        put(Node.Operator.LessEqual, "<=");
-        put(Node.Operator.Equal, "==");
-        put(Node.Operator.NotEqual, "!=");
+        put(OperatorType.Greater, ">");
+        put(OperatorType.GreaterEqual, ">=");
+        put(OperatorType.Less, "<");
+        put(OperatorType.LessEqual, "<=");
+        put(OperatorType.Equal, "==");
+        put(OperatorType.NotEqual, "!=");
 
-        put(Node.Operator.Not, "!");
+        put(OperatorType.Not, "!");
 
-        put(Node.Operator.Plus, "+");
-        put(Node.Operator.Minus, "-");
+        put(OperatorType.Plus, "+");
+        put(OperatorType.Minus, "-");
 
-        put(Node.Operator.Multiply, "*");
-        put(Node.Operator.Divide, "/");
+        put(OperatorType.Multiply, "*");
+        put(OperatorType.Divide, "/");
 
-        put(Node.Operator.Negative, "-");
+        put(OperatorType.Negative, "-");
     }};
 
-    public final static HashMap<Node.Parenthesis, String> parenthesisToString = new HashMap<>() {{
-        put(Node.Parenthesis.Left, "(");
+    public final static HashMap<Token.Type, OperatorType> forConditionExpression = new HashMap<>() {{
+        put(Token.Type.Or, OperatorType.Or);
 
-        put(Node.Parenthesis.Right, ")");
+        put(Token.Type.And, OperatorType.And);
+
+        put(Token.Type.Greater, OperatorType.Greater);
+        put(Token.Type.GreaterEqual, OperatorType.GreaterEqual);
+        put(Token.Type.Less, OperatorType.Less);
+        put(Token.Type.LessEqual, OperatorType.LessEqual);
+        put(Token.Type.Equal, OperatorType.Equal);
+        put(Token.Type.NotEqual, OperatorType.NotEqual);
+
+        put(Token.Type.Not, OperatorType.Not);
+
+        put(Token.Type.Plus, OperatorType.Plus);
+        put(Token.Type.Minus, OperatorType.Minus);
+
+        put(Token.Type.Multiply, OperatorType.Multiply);
+        put(Token.Type.Divide, OperatorType.Divide);
     }};
-
-    public final static HashMap<Token.Type, Node.Operator> forConditionExpression = new HashMap<>() {{
-        put(Token.Type.Or, Node.Operator.Or);
-
-        put(Token.Type.And, Node.Operator.And);
-
-        put(Token.Type.Greater, Node.Operator.Greater);
-        put(Token.Type.GreaterEqual, Node.Operator.GreaterEqual);
-        put(Token.Type.Less, Node.Operator.Less);
-        put(Token.Type.LessEqual,Node.Operator.LessEqual);
-        put(Token.Type.Equal, Node.Operator.Equal);
-        put(Token.Type.NotEqual, Node.Operator.NotEqual);
-
-        put(Token.Type.Not, Node.Operator.Not);
-
-        put(Token.Type.Plus, Node.Operator.Plus);
-        put(Token.Type.Minus, Node.Operator.Minus);
-
-        put(Token.Type.Multiply, Node.Operator.Multiply);
-        put(Token.Type.Divide, Node.Operator.Divide);
-    }};
-    public static boolean compareOperators(Node.Operator first, Node.Operator second){
-        return operatorPriority.get(first) >= operatorPriority.get(second);
+    public static boolean compareOperators(Class first, Class second){
+        int firstPriority = operatorPriority.get(first) != null ? operatorPriority.get(first) : 0;
+        int secondPriority = operatorPriority.get(second) != null ? operatorPriority.get(second) : 0;
+        return firstPriority >= secondPriority;
     }
 }

@@ -1,20 +1,18 @@
 package Parser.ProgramTree.Statements;
 
 import Parser.ProgramTree.Value.Value;
-import Parser.ProgramTree.Variable;
+import Parser.ProgramTree.Variables.Variable;
 
 import java.util.ArrayList;
 
 public class ArrayDeclaration extends Statement{
     private final ArrayList<Value> values;
-    private final String identifier;
-    private final Variable.VariableType type;
+    private final Variable type;
     private int size;
     private int count;
 
-    public ArrayDeclaration(Variable.VariableType type, String identifier){
+    public ArrayDeclaration(Variable type){
         this.type = type;
-        this.identifier = identifier;
         this.values = new ArrayList<>();
         this.size = 0;
         this.count = 0;
@@ -33,10 +31,10 @@ public class ArrayDeclaration extends Statement{
     }
 
     public String getIdentifier() {
-        return identifier;
+        return type.getName();
     }
 
-    public Variable.VariableType getType() {
+    public Variable getType() {
         return type;
     }
 }

@@ -1,5 +1,7 @@
 package Parser.ProgramTree;
 
+import Parser.ProgramTree.Variables.Variable;
+
 import java.util.ArrayList;
 
 public class Parameters {

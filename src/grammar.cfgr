@@ -72,12 +72,16 @@ return : "return"  orCondition  ";";
 #(* Operators' order. *)
 orCondition : andCondition  { or  andCondition };
 andCondition : relationCondition  { and  relationCondition };
-relationCondition : condition  { relation  condition };
-condition : addExpression;
+relationCondition : addExpression  { relation  addExpression };
 
 addExpression : multiplyExpression  { add  multiplyExpression };
-multiplyExpression : expression  { multiply  expression};
-expression : [not][negative]( value | "("  orCondition  ")");
+multiplyExpression : unaryExpression  { multiply  unaryExpression};
+
+unaryExpression : expression | notUnaryExpression | negativeUnaryExpression;
+notUnaryExpression : not unaryExpression;
+negativeUnaryExpression : negative unaryExpression;
+
+expression : value | "("  orCondition  ")";
 
 #(* Basic operators. *)
 or : "||";

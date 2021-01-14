@@ -1,7 +1,7 @@
 package Parser.ProgramTree.Statements;
 
 import Parser.ProgramTree.ConditionExpresion.ConditionExpression;
-import Parser.ProgramTree.Variable;
+import Parser.ProgramTree.Variables.Variable;
 
 public class VariableDeclaration extends Statement{
     private final Variable variable;

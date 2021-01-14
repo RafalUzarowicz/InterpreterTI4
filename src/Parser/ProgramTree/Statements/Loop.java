@@ -1,7 +1,7 @@
 package Parser.ProgramTree.Statements;
 
 import Parser.ProgramTree.Block;
-import Parser.ProgramTree.Variable;
+import Parser.ProgramTree.Variables.Variable;
 
 public class Loop extends Statement{
     private Variable variable;

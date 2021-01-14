@@ -1,4 +1,6 @@
 package Parser.ProgramTree.Value;
 
-public class Value {
+import Parser.ProgramTree.ConditionExpresion.Expression;
+
+public class Value extends Expression {
 }

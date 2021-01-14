@@ -1,19 +1,7 @@
-import Board.Board;
 import Parser.Parser;
 import Parser.ProgramTree.ConditionExpresion.ConditionExpression;
-import Parser.ProgramTree.Program;
 import Scanner.Scanner;
-import Scanner.Token;
-import Source.FileSource;
-import Source.ResourceFileSource;
 import Source.StringSource;
-import Utilities.Dictionary;
-import Utilities.ExpressionString;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
-import java.io.FileReader;
-import java.util.Stack;
 
 /**
  * Author: Rafal Uzarowicz
@@ -26,7 +14,7 @@ public class Main {
 //            ResourceFileSource source = new ResourceFileSource("first.twlan");
 //            StringSource source = new StringSource("int _main(){\nvar x_1d = !(2+3)*6--(7+2*3); var y = player(x)has(Fighter)at(h12);\n\tfuncall(2, 7);int[] x = int[2];}");
 //            StringSource source = new StringSource("!(x+(!y+funCall(2,!(x[2]+(!y+funCall(2,4,x))+3),x))+3)");
-            StringSource source = new StringSource("hex(h1)has(Carrier)");
+            StringSource source = new StringSource("hex(h1)has(Carrier)+2");
 //            StringSource source = new StringSource("int _main(){\nvar x_1d = !!!!!!x; }");
             Scanner scanner = new Scanner(source);
 

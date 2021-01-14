@@ -54,29 +54,29 @@ hex : "h"  "0'-'50";
 planet : "p"  "0'-'58";
 
 #(* Basic statements. *)
-conditional : "if"  "("  orCondition  ")"  block  ["else"  block];
+conditional : "if"  "("  conditionExpression  ")"  block  ["else"  block];
 loop : "foreach"  "("  typeOrVar  identifier  ":"  identifier  ")"  block;
 
-varDeclaration : typeOrVar  identifier  "="  orCondition ";";
+varDeclaration : typeOrVar  identifier  "="  conditionExpression ";";
 arrayDeclaration : typeOrVar  "["  "]"  identifier  "="  type  "["  [nonZeroNumber]  "]" ["{"  [value  {{","  value}}]  "}" ]  ";";
 typeOrVar : type | "var";
-assign : identifier ["[" number "]"]  "="  orCondition  ";";
+assign : identifier ["[" number "]"]  "="  conditionExpression  ";";
 functionCallStatement : identifier  "("  arguments  ")" ";";
-arguments : [orCondition  {","  orCondition}];
-print : "print"  "("  [orCondition  {","  orCondition}]  ")"  ";";
+arguments : [conditionExpression  {","  conditionExpression}];
+print : "print"  "("  [conditionExpression  {","  conditionExpression}]  ")"  ";";
 break : "break"  ";";
 continue : "continue"  ";";
-return : "return"  orCondition  ";";
+return : "return"  conditionExpression  ";";
 
 #(* Operators' order. *)
-orCondition : andCondition  { or  andCondition };
+conditionExpression : andCondition  { or  andCondition };
 andCondition : relationCondition  { and  relationCondition };
 relationCondition : condition  { relation  condition };
 condition : [not] addExpression;
 
 addExpression : multiplyExpression  { add  multiplyExpression };
 multiplyExpression : expression  { multiply  expression};
-expression : [negative]( value | "("  orCondition  ")");
+expression : [negative]( value | "("  conditionExpression  ")");
 
 #(* Basic operators. *)
 or : "||";

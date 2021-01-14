@@ -10,8 +10,9 @@ import Parser.ProgramTree.Value.BoardStateCheck.HexStateCheck;
 import Parser.ProgramTree.Value.BoardStateCheck.PlanetStateCheck;
 import Parser.ProgramTree.Value.BoardStateCheck.PlayerStateCheck;
 import Parser.ProgramTree.Value.FunctionCallValue;
-import Parser.ProgramTree.Value.Literal;
+import Parser.ProgramTree.Value.Literals.*;
 import Parser.ProgramTree.Value.Value;
+import Parser.ProgramTree.Variables.IntVariable;
 import Scanner.Scanner;
 import Scanner.Token;
 import Source.Position;
@@ -46,11 +47,11 @@ public class ParserTest {
         // Act
         PlayerStateCheck playerStateCheck = (PlayerStateCheck) parser.tryPlayerStateCheckOrActivationCheck();
         // Assert
-        assertEquals(Literal.LiteralType.Color, ((Literal) playerStateCheck.getPlayer()).getType());
+        assertEquals(ColorLiteral.class, playerStateCheck.getPlayer().getClass());
         assertEquals(player, ((Literal) playerStateCheck.getPlayer()).getValue());
-        assertEquals(Literal.LiteralType.Unit, ((Literal) playerStateCheck.getUnit()).getType());
+        assertEquals(UnitLiteral.class, playerStateCheck.getUnit().getClass());
         assertEquals(unit, ((Literal) playerStateCheck.getUnit()).getValue());
-        assertEquals(Literal.LiteralType.Hex, ((Literal) playerStateCheck.getPlace()).getType());
+        assertEquals(HexLiteral.class, playerStateCheck.getPlace().getClass());
         assertEquals(place, ((Literal) playerStateCheck.getPlace()).getValue());
     }
 
@@ -95,9 +96,9 @@ public class ParserTest {
         // Act
         ActivationCheck activationCheck = (ActivationCheck) parser.tryPlayerStateCheckOrActivationCheck();
         // Assert
-        assertEquals(Literal.LiteralType.Color, ((Literal) activationCheck.getPlayer()).getType());
+        assertEquals(ColorLiteral.class, activationCheck.getPlayer().getClass());
         assertEquals(player, ((Literal) activationCheck.getPlayer()).getValue());
-        assertEquals(Literal.LiteralType.Hex, ((Literal) activationCheck.getHex()).getType());
+        assertEquals(HexLiteral.class, activationCheck.getHex().getClass());
         assertEquals(place, ((Literal) activationCheck.getHex()).getValue());
     }
 
@@ -141,9 +142,9 @@ public class ParserTest {
         // Act
         HexStateCheck hexStateCheck = (HexStateCheck) parser.tryPlanetOrHexStateCheck();
         // Assert
-        assertEquals(Literal.LiteralType.Unit, ((Literal) hexStateCheck.getUnit()).getType());
+        assertEquals(UnitLiteral.class, hexStateCheck.getUnit().getClass());
         assertEquals(unit, ((Literal) hexStateCheck.getUnit()).getValue());
-        assertEquals(Literal.LiteralType.Hex, ((Literal) hexStateCheck.getHex()).getType());
+        assertEquals(HexLiteral.class, hexStateCheck.getHex().getClass());
         assertEquals(place, ((Literal) hexStateCheck.getHex()).getValue());
     }
 
@@ -188,9 +189,9 @@ public class ParserTest {
         // Act
         PlanetStateCheck planetStateCheck = (PlanetStateCheck) parser.tryPlanetOrHexStateCheck();
         // Assert
-        assertEquals(Literal.LiteralType.Unit, ((Literal) planetStateCheck.getUnit()).getType());
+        assertEquals(UnitLiteral.class, planetStateCheck.getUnit().getClass());
         assertEquals(unit, ((Literal) planetStateCheck.getUnit()).getValue());
-        assertEquals(Literal.LiteralType.Planet, ((Literal) planetStateCheck.getPlanet()).getType());
+        assertEquals(PlanetLiteral.class, planetStateCheck.getPlanet().getClass());
         assertEquals(place, ((Literal) planetStateCheck.getPlanet()).getValue());
     }
 
@@ -445,7 +446,7 @@ public class ParserTest {
         ArrayDeclaration arrayDeclaration = parser.tryArrayDeclaration(scanner.peek());
         // Assert
         assertNotEquals(null, arrayDeclaration);
-        assertEquals(Variable.VariableType.Int, arrayDeclaration.getType());
+        assertEquals(IntVariable.class, arrayDeclaration.getType().getClass());
         assertEquals("x", arrayDeclaration.getIdentifier());
     }
 
@@ -497,7 +498,7 @@ public class ParserTest {
         VariableDeclaration variableDeclaration = parser.tryVariableDeclaration(type);
         // Assert
         assertNotEquals(null, variableDeclaration);
-        assertEquals(Variable.VariableType.valueOf(variableDeclaration.getVariable().getType().toString()), variableDeclaration.getVariable().getType());
+        assertEquals(parser.keywordToVariable(strings[0], "name").getClass(), variableDeclaration.getVariable().getClass());
         assertEquals(strings[1], variableDeclaration.getVariable().getName());
         assertNotEquals(null, variableDeclaration.getValue());
     }
