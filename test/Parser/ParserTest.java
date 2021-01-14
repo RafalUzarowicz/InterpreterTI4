@@ -3,7 +3,7 @@ package Parser;
 import Exceptions.ParserException;
 import Parser.ProgramTree.*;
 import Parser.ProgramTree.BoardChange.*;
-import Parser.ProgramTree.ConditionExpresion.ConditionExpression;
+import Parser.ProgramTree.ConditionExpresion.OrCondition;
 import Parser.ProgramTree.Statements.*;
 import Parser.ProgramTree.Value.BoardStateCheck.ActivationCheck;
 import Parser.ProgramTree.Value.BoardStateCheck.HexStateCheck;
@@ -392,20 +392,14 @@ public class ParserTest {
         Parser parser = new Parser(scanner);
         ExpressionString expressionString = new ExpressionString(line);
         // Act
-        ConditionExpression conditionExpression = parser.tryConditionExpression();
+        OrCondition orCondition = parser.tryOrCondition();
         // Assert
-        assertNotEquals(null, conditionExpression);
-        assertTrue(expressionString.compareExpressions(conditionExpression.toString()));
+        assertNotEquals(null, orCondition);
+        assertTrue(expressionString.compareExpressions(orCondition.toString()));
     }
 
     private static Stream<Arguments> provideConditionExpressionBad() {
         return Stream.of(
-                Arguments.of("int x;"),
-                Arguments.of("if"),
-                Arguments.of("foreach"),
-                Arguments.of(","),
-                Arguments.of(";"),
-                Arguments.of("var"),
                 Arguments.of("7*2++3"),
                 Arguments.of("(3+4)*(8-1||2("),
                 Arguments.of("!(x+(!y+2)")
@@ -421,7 +415,7 @@ public class ParserTest {
         Parser parser = new Parser(scanner);
         // Act
         // Assert
-        assertThrows(ParserException.class, parser::tryConditionExpression);
+        assertThrows(ParserException.class, parser::tryOrCondition);
     }
 
 
@@ -643,9 +637,7 @@ public class ParserTest {
 
     private static Stream<Arguments> provideArgumentsBad() {
         return Stream.of(
-                Arguments.of("activated"),
-                Arguments.of("x2(3"),
-                Arguments.of(";")
+                Arguments.of("x2(3")
         );
     }
 

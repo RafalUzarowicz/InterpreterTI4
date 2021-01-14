@@ -11,4 +11,20 @@ public class OrCondition extends Expression{
     public void add(AndCondition andCondition){
         andConditions.add(andCondition);
     }
+
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("(");
+        stringBuilder.append(andConditions.get(0).toString());
+
+        for(int i = 1; i<andConditions.size(); ++i){
+            stringBuilder.append("||");
+            stringBuilder.append(andConditions.get(i).toString());
+        }
+        stringBuilder.append(")");
+
+        return stringBuilder.toString();
+    }
 }

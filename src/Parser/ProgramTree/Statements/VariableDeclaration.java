@@ -1,12 +1,12 @@
 package Parser.ProgramTree.Statements;
 
-import Parser.ProgramTree.ConditionExpresion.ConditionExpression;
+import Parser.ProgramTree.ConditionExpresion.OrCondition;
 import Parser.ProgramTree.Variables.Variable;
 
 public class VariableDeclaration extends Statement{
     private final Variable variable;
-    private final ConditionExpression value;
-    public VariableDeclaration(Variable variable, ConditionExpression value){
+    private final OrCondition value;
+    public VariableDeclaration(Variable variable, OrCondition value){
         this.variable = variable;
         this.value = value;
     }
@@ -15,7 +15,7 @@ public class VariableDeclaration extends Statement{
         return variable;
     }
 
-    public ConditionExpression getValue() {
+    public OrCondition getValue() {
         return value;
     }
 }

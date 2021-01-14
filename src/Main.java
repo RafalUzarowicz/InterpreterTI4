@@ -1,6 +1,9 @@
 import Parser.Parser;
-import Parser.ProgramTree.ConditionExpresion.ConditionExpression;
+import Parser.ProgramTree.ConditionExpresion.OrCondition;
+import Parser.ProgramTree.Program;
 import Scanner.Scanner;
+import Scanner.Token;
+import Source.FileSource;
 import Source.StringSource;
 
 /**
@@ -19,17 +22,17 @@ public class Main {
             Scanner scanner = new Scanner(source);
 
 //            scanner.next();
-//            while (scanner.peek().getType() != Token.Type.EOF) {
-//                System.out.println(scanner.get());
-//            }
-            Parser parser = new Parser(scanner);
-            ConditionExpression conditionExpression = parser.tryConditionExpression();
+            while (scanner.peek().getType() != Token.Type.EOF) {
+                System.out.println(scanner.get());
+            }
+//            Parser parser = new Parser(scanner);
+//            OrCondition condition = parser.tryOrCondition();
 
 
-            //Program program = parser.parse();
+//            Program program = parser.parse();
 
             System.out.print("TAK\n");
-            System.out.print(conditionExpression.toString());
+//            System.out.print(condition.toString());
 
 //             Board board = new Board();
 //             board.loadState("board/boardstate.json");

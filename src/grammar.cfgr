@@ -87,11 +87,12 @@ expression : value | "("  orCondition  ")";
 or : "||";
 and : "&&";
 relation : ">" | "<" | "<=" | ">=" | "==" | "!=";
-not : "!";
 
-negative : "-";
 add : "+" | "-";
 multiply : "*" | "/";
+
+not : "!";
+negative : "-";
 
 #(* Variables and literals. *)
 value : literal | functionCall | variableReference | boardStateCheck;

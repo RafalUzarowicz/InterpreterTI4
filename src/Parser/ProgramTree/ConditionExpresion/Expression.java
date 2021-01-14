@@ -1,5 +1,5 @@
 package Parser.ProgramTree.ConditionExpresion;
 
-public class Expression extends UnaryExpression{
+public class Expression{
 
 }

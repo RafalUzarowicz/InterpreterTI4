@@ -5,8 +5,6 @@ import Parser.ProgramTree.*;
 import Parser.ProgramTree.BoardChange.*;
 import Parser.ProgramTree.ConditionExpresion.*;
 import Parser.ProgramTree.ConditionExpresion.Operators.*;
-import Parser.ProgramTree.ConditionExpresion.Parenthesis.LeftParenthesis;
-import Parser.ProgramTree.ConditionExpresion.Parenthesis.RightParenthesis;
 import Parser.ProgramTree.Statements.*;
 import Parser.ProgramTree.Value.BoardStateCheck.ActivationCheck;
 import Parser.ProgramTree.Value.BoardStateCheck.HexStateCheck;
@@ -171,9 +169,9 @@ public class Parser {
 
             Print print = new Print();
 
-            ConditionExpression conditionExpression;
-            while((conditionExpression = tryConditionExpression()) != null){
-                print.add(conditionExpression);
+            OrCondition orCondition;
+            while((orCondition = tryOrCondition()) != null){
+                print.add(orCondition);
 
                 if(!compareTokenType(Token.Type.Comma)){
                     break;
@@ -193,10 +191,13 @@ public class Parser {
     public Return tryReturn() throws Exception {
         if(compareTokenType(Token.Type.Return)){
             scanner.next();
-            ConditionExpression conditionExpression = tryConditionExpression();
+            OrCondition orCondition = tryOrCondition();
+            if(orCondition == null){
+                throw new ParserException(scanner.peek(), "Missing value to return.");
+            }
             checkCurrentToken(Token.Type.Semicolon);
             scanner.next();
-            return new Return(conditionExpression);
+            return new Return(orCondition);
         }
         return null;
     }
@@ -206,7 +207,7 @@ public class Parser {
             checkNextToken(Token.Type.ParenthesisLeft);
             scanner.next();
 
-            ConditionExpression conditionExpression = tryConditionExpression();
+            OrCondition orCondition = tryOrCondition();
 
             checkCurrentToken(Token.Type.ParenthesisRight);
             scanner.next();
@@ -217,9 +218,9 @@ public class Parser {
                 scanner.next();
                 Block elseBlock = tryBlock();
 
-                return new Conditional(conditionExpression, ifBlock, elseBlock);
+                return new Conditional(orCondition, ifBlock, elseBlock);
             }
-            return new Conditional(conditionExpression, ifBlock);
+            return new Conditional(orCondition, ifBlock);
         }
         return null;
     }
@@ -389,9 +390,9 @@ public class Parser {
 
     public Arguments tryArguments() throws Exception {
         Arguments arguments = new Arguments();
-        ConditionExpression conditionExpression;
-        while((conditionExpression = tryConditionExpression()) != null){
-            arguments.add(conditionExpression);
+        OrCondition orCondition;
+        while((orCondition = tryOrCondition()) != null){
+            arguments.add(orCondition);
 
             if(!compareTokenType(Token.Type.Comma)){
                 break;
@@ -412,12 +413,15 @@ public class Parser {
         checkCurrentToken(Token.Type.Equals);
         scanner.next();
 
-        ConditionExpression conditionExpression = tryConditionExpression();
+        OrCondition orCondition = tryOrCondition();
+        if(orCondition == null){
+            throw new ParserException(scanner.peek(), "Wrong value for assignment.");
+        }
 
         checkCurrentToken(Token.Type.Semicolon);
         scanner.next();
 
-        return new Assignment(index, identifier.getValue(), conditionExpression);
+        return new Assignment(index, identifier.getValue(), orCondition);
     }
 
     public Statement tryVarOrArrayDeclaration() throws Exception {
@@ -438,12 +442,15 @@ public class Parser {
         checkCurrentToken(Token.Type.Equals);
         scanner.next();
 
-        ConditionExpression conditionExpression = tryConditionExpression();
+        OrCondition orCondition = tryOrCondition();
+        if(orCondition == null){
+            throw new ParserException(scanner.peek(), "Missing value for variable declaration");
+        }
 
         checkCurrentToken(Token.Type.Semicolon);
         scanner.next();
 
-        return new VariableDeclaration(keywordToVariable(type.getValue(), identifier.getValue()), conditionExpression);
+        return new VariableDeclaration(keywordToVariable(type.getValue(), identifier.getValue()), orCondition);
     }
 
     public ArrayDeclaration tryArrayDeclaration(Token type) throws Exception {
@@ -522,10 +529,18 @@ public class Parser {
 
         AndCondition andCondition = tryAndCondition();
 
+        if(andCondition == null){
+            return null;
+        }
+
         orCondition.add(andCondition);
         while(scanner.peek().getType() == Token.Type.Or){
             scanner.next();
             andCondition = tryAndCondition();
+
+            if(andCondition == null){
+                throw new ParserException(scanner.peek(), "Wrong expression.");
+            }
 
             orCondition.add(andCondition);
         }
@@ -537,10 +552,18 @@ public class Parser {
 
         RelationalCondition relationalCondition = tryRelationalCondition();
 
+        if(relationalCondition == null){
+            return null;
+        }
+
         andCondition.add(relationalCondition);
         while(scanner.peek().getType() == Token.Type.And){
             scanner.next();
             relationalCondition = tryRelationalCondition();
+
+            if(relationalCondition == null){
+                throw new ParserException(scanner.peek(), "Wrong expression.");
+            }
 
             andCondition.add(relationalCondition);
         }
@@ -552,12 +575,23 @@ public class Parser {
 
         AddExpression addExpression = tryAddExpression();
 
+        if(addExpression == null){
+            return null;
+        }
+
         relationalCondition.add(addExpression);
+
+        Token token;
+
         while(isRelation(scanner.peek().getType())){
-            scanner.next();
+            token = scanner.get();
             addExpression = tryAddExpression();
 
-            relationalCondition.add(addExpression);
+            if(addExpression == null){
+                throw new ParserException(scanner.peek(), "Wrong expression.");
+            }
+
+            relationalCondition.add(tokenTypeToOperator(token.getType()), addExpression);
         }
         return relationalCondition;
     }
@@ -571,20 +605,30 @@ public class Parser {
 
         MultiplyExpression multiplyExpression = tryMultiplyExpression();
 
+        if(multiplyExpression == null){
+            return null;
+        }
+
         addExpression.add(multiplyExpression);
 
+        Token token;
+
         while(isAdd(scanner.peek().getType())){
-            scanner.next();
+            token = scanner.get();
 
             multiplyExpression = tryMultiplyExpression();
 
-            addExpression.add(multiplyExpression);
+            if(multiplyExpression == null){
+                throw new ParserException(scanner.peek(), "Wrong expression.");
+            }
+
+            addExpression.add(tokenTypeToOperator(token.getType()), multiplyExpression);
         }
         return addExpression;
     }
 
     public boolean isAdd(Token.Type type){
-        return type == Token.Type.Add || type == Token.Type.Minus;
+        return type == Token.Type.Plus || type == Token.Type.Minus;
     }
 
     public MultiplyExpression tryMultiplyExpression() throws Exception {
@@ -592,13 +636,23 @@ public class Parser {
 
         UnaryExpression expression = tryUnaryExpression();
 
+        if(expression == null){
+            return null;
+        }
+
         multiplyExpression.add(expression);
+
+        Token token;
         while(isMultiply(scanner.peek().getType())){
-            scanner.next();
+            token = scanner.get();
 
             expression = tryUnaryExpression();
 
-            multiplyExpression.add(expression);
+            if(expression == null){
+                throw new ParserException(scanner.peek(), "Wrong expression.");
+            }
+
+            multiplyExpression.add(tokenTypeToOperator(token.getType()), expression);
         }
         return multiplyExpression;
     }
@@ -608,20 +662,22 @@ public class Parser {
     }
 
     public UnaryExpression tryUnaryExpression() throws Exception {
-        UnaryExpression unaryExpression;
-        if((unaryExpression = tryNegativeUnaryExpression()) != null){
-            return unaryExpression;
+        Expression expression;
+        if ((expression = tryNegativeUnaryExpression()) != null || (expression = tryNotUnaryExpression()) != null) {
+            return new UnaryExpression(expression);
         }
-        if((unaryExpression = tryNotUnaryExpression()) != null){
-            return unaryExpression;
+        expression = tryExpression();
+        if(expression == null){
+            return null;
         }
-        return tryExpression();
+        return new UnaryExpression(expression);
     }
 
     public NegativeUnaryExpression tryNegativeUnaryExpression() throws Exception {
         if(compareTokenType(Token.Type.Minus)){
             scanner.next();
-            return (NegativeUnaryExpression) tryUnaryExpression();
+            UnaryExpression unaryExpression = tryUnaryExpression();
+            return new NegativeUnaryExpression(unaryExpression);
         }
         return null;
     }
@@ -629,7 +685,8 @@ public class Parser {
     public NotUnaryExpression tryNotUnaryExpression() throws Exception {
         if(compareTokenType(Token.Type.Not)){
             scanner.next();
-            return (NotUnaryExpression) tryUnaryExpression();
+            UnaryExpression unaryExpression = tryUnaryExpression();
+            return new NotUnaryExpression(unaryExpression);
         }
         return null;
     }
@@ -647,72 +704,6 @@ public class Parser {
         }else{
             return tryValue();
         }
-    }
-
-    public ConditionExpression tryConditionExpression() throws Exception {
-        // Shunting-yard algorithm
-        if(scanner.peek().getType() == Token.Type.ParenthesisRight){
-            return null;
-        }
-
-        Stack<Node> operandStack = new Stack<>();
-        Stack<Node> operatorStack = new Stack<>();
-        Token previousToken = null;
-
-        while(isForValueOrCondition(scanner.peek().getType())){
-            Token token = scanner.peek();
-            Value value = tryValue();
-            if(value != null && (previousToken == null || !isForValue(previousToken.getType()))){
-                operandStack.push(new ValueNode(value));
-            }else if(token.getType() == Token.Type.ParenthesisLeft){
-                operatorStack.push(new LeftParenthesis());
-            }else if(token.getType() == Token.Type.ParenthesisRight){
-                if(operatorStack.isEmpty() && !operandStack.isEmpty()){
-                    break;
-                }
-                while(!operatorStack.isEmpty() && operatorStack.peek().getClass() != LeftParenthesis.class){
-                    prepareNode(operandStack, operatorStack);
-                }
-                if(operatorStack.isEmpty() && operandStack.size() == 1){
-                    break;
-                }else if(operatorStack.isEmpty()){
-                    throw new ParserException(token, "Wrong number of opening parenthesis.");
-                }
-                operatorStack.pop();
-            }else if(ParserUtils.forConditionExpression.get(token.getType()) != null){
-                Node operator;
-
-                if(previousToken == null || previousToken.getType() == Token.Type.ParenthesisLeft || ParserUtils.forConditionExpression.get(previousToken.getType()) != null){
-                    if(token.getType() == Token.Type.Minus){
-                        operator = new NegativeOperator();
-                    }else if(token.getType() == Token.Type.Not){
-                        operator = new NotOperator();
-                    }else{
-                        throw new ParserException(token, "Wrong expression.");
-                    }
-                }else{
-                    operator = tokenTypeToOperator(token.getType());
-                }
-
-                while( !operatorStack.isEmpty() && !operandStack.isEmpty() && operatorStack.peek().getClass() != LeftParenthesis.class && operatorStack.peek().getClass() != RightParenthesis.class && ParserUtils.compareOperators(operatorStack.peek().getClass(), operator.getClass() ) && operator.getClass() != NegativeOperator.class){
-                    prepareNode(operandStack, operatorStack);
-                }
-                operatorStack.push(operator);
-            }else{
-                throw new ParserException(token, "Wrong expression.");
-            }
-            previousToken = token;
-            if(value == null){
-                scanner.next();
-            }
-        }
-        while(!operatorStack.isEmpty()){
-            prepareNode(operandStack, operatorStack);
-        }
-        if(operandStack.size() != 1){
-            throw new ParserException(scanner.peek(), "Wrong expression.");
-        }
-        return new ConditionExpression(operandStack.pop());
     }
 
     public Operator tokenTypeToOperator(Token.Type type) throws ParserException {
@@ -733,8 +724,6 @@ public class Parser {
                 return new EqualOperator();
             case NotEqual:
                 return new NotEqualOperator();
-            case Not:
-                return new NotOperator();
             case Plus:
                 return new PlusOperator();
             case Minus:
@@ -746,37 +735,7 @@ public class Parser {
             default:
                 break;
         }
-        // TODO: co z tym wyjatkiem?
         throw new ParserException(scanner.peek(), "Unknown operator type.");
-    }
-
-    private void prepareNode(Stack<Node> operandStack, Stack<Node> operatorStack) throws ParserException {
-        Node parent = operatorStack.pop();
-        if(parent.getClass() == LeftParenthesis.class || parent.getClass() == RightParenthesis.class){
-            throw new ParserException(scanner.peek(), "Wrong parenthesis number.");
-        }
-        Node rightChild = operandStack.pop();
-        Node leftChild = null;
-
-        if(ParserUtils.operatorOperandsNumber.get(parent.getClass())>1){
-            leftChild = operandStack.pop();
-        }
-        parent.left = leftChild;
-        parent.right = rightChild;
-        operandStack.push(parent);
-    }
-
-    private boolean isForValueOrCondition(Token.Type type){
-        return isForValue(type) || (ParserUtils.forConditionExpression.get(type) != null) || type == Token.Type.ParenthesisLeft || type == Token.Type.ParenthesisRight;
-    }
-
-    private boolean isForValue(Token.Type type){
-        return type == Token.Type.Identifier || isLiteral(type) || isBoardCheck(type);
-    }
-
-    private boolean isLiteral(Token.Type type){
-        return type == Token.Type.NumberLiteral || type == Token.Type.StringLiteral || type == Token.Type.BoolLiteral || type == Token.Type.UnitLiteral ||
-                type == Token.Type.ColorLiteral || type == Token.Type.HexLiteral || type == Token.Type.PlanetLiteral;
     }
 
     private boolean isBoardCheck(Token.Type type){
@@ -810,6 +769,11 @@ public class Parser {
         return null;
     }
 
+    private boolean isLiteral(Token.Type type){
+        return type == Token.Type.NumberLiteral || type == Token.Type.StringLiteral || type == Token.Type.BoolLiteral || type == Token.Type.UnitLiteral ||
+                type == Token.Type.ColorLiteral || type == Token.Type.HexLiteral || type == Token.Type.PlanetLiteral;
+    }
+
     public Literal tokenTypeToLiteral(Token.Type type, String value) throws ParserException {
         switch(type){
             case NumberLiteral:
@@ -827,10 +791,8 @@ public class Parser {
             case PlanetLiteral:
                 return new PlanetLiteral(value);
             default:
-                // TODO: co tutaj?
                 break;
         }
-        // TODO: co z tym wyjatkiem?
         throw new ParserException(scanner.peek(), "Unknown literal type.");
     }
 
