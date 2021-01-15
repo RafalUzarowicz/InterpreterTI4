@@ -1,9 +1,5 @@
-import Parser.Parser;
-import Parser.ProgramTree.ConditionExpresion.OrCondition;
-import Parser.ProgramTree.Program;
 import Scanner.Scanner;
-import Scanner.Token;
-import Source.FileSource;
+import Utilities.Token;
 import Source.StringSource;
 
 /**
@@ -17,21 +13,20 @@ public class Main {
 //            ResourceFileSource source = new ResourceFileSource("first.twlan");
 //            StringSource source = new StringSource("int _main(){\nvar x_1d = !(2+3)*6--(7+2*3); var y = player(x)has(Fighter)at(h12);\n\tfuncall(2, 7);int[] x = int[2];}");
 //            StringSource source = new StringSource("!(x+(!y+funCall(2,!(x[2]+(!y+funCall(2,4,x))+3),x))+3)");
-            StringSource source = new StringSource("hex(h1)has(Carrier)+2");
+//            StringSource source = new StringSource("hex(h1)has(Carrier)+2");
 //            StringSource source = new StringSource("int _main(){\nvar x_1d = !!!!!!x; }");
-            Scanner scanner = new Scanner(source);
+//            Scanner scanner = new Scanner(source);
 
 //            scanner.next();
-            while (scanner.peek().getType() != Token.Type.EOF) {
-                System.out.println(scanner.get());
-            }
+//            while (scanner.peek().getType() != Token.Type.EOF) {
+//                System.out.println(scanner.get());
+//            }
 //            Parser parser = new Parser(scanner);
 //            OrCondition condition = parser.tryOrCondition();
 
-
 //            Program program = parser.parse();
 
-            System.out.print("TAK\n");
+//            System.out.print("TAK\n");
 //            System.out.print(condition.toString());
 
 //             Board board = new Board();

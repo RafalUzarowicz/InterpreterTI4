@@ -1,6 +1,6 @@
 package Exceptions;
 
-import Scanner.Token;
+import Utilities.Token;
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz

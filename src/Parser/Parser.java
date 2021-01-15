@@ -1,25 +1,26 @@
 package Parser;
 
 import Exceptions.ParserException;
-import Parser.ProgramTree.*;
-import Parser.ProgramTree.BoardChange.*;
-import Parser.ProgramTree.ConditionExpresion.*;
-import Parser.ProgramTree.ConditionExpresion.Operators.*;
-import Parser.ProgramTree.Statements.*;
-import Parser.ProgramTree.Value.BoardStateCheck.ActivationCheck;
-import Parser.ProgramTree.Value.BoardStateCheck.HexStateCheck;
-import Parser.ProgramTree.Value.BoardStateCheck.PlanetStateCheck;
-import Parser.ProgramTree.Value.BoardStateCheck.PlayerStateCheck;
-import Parser.ProgramTree.Value.FunctionCallValue;
-import Parser.ProgramTree.Value.Literals.*;
-import Parser.ProgramTree.Value.Value;
-import Parser.ProgramTree.Value.VariableValue;
-import Parser.ProgramTree.Variables.*;
+import Utilities.ProgramTree.*;
+import Utilities.ProgramTree.BoardChange.*;
+import Utilities.ProgramTree.ConditionExpresion.*;
+import Utilities.ProgramTree.ConditionExpresion.Operators.*;
+import Utilities.ProgramTree.Statements.*;
+import Utilities.ProgramTree.Value.BoardStateCheck.ActivationCheck;
+import Utilities.ProgramTree.Value.BoardStateCheck.HexStateCheck;
+import Utilities.ProgramTree.Value.BoardStateCheck.PlanetStateCheck;
+import Utilities.ProgramTree.Value.BoardStateCheck.PlayerStateCheck;
+import Utilities.ProgramTree.Value.FunctionCallValue;
+import Utilities.ProgramTree.Value.Literals.*;
+import Utilities.ProgramTree.Value.Value;
+import Utilities.ProgramTree.Value.VariableValue;
+import Utilities.ProgramTree.Variables.*;
 import Scanner.*;
-import Utilities.ParserUtils;
+import Utilities.Token;
 
 import java.util.ArrayList;
-import java.util.Stack;
+import java.util.HashMap;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -35,11 +36,11 @@ public class Parser {
     }
 
     public Program parse() throws Exception {
-        ArrayList<Function> functions = new ArrayList<>();
+        HashMap<String, Function> functions = new HashMap<>();
         Function function;
         while( !compareTokenType(Token.Type.EOF) ){
             function = tryFunctionDefinition();
-            functions.add(function);
+            functions.put(function.getIdentifier(), function);
         }
         return new Program(functions);
     }

@@ -3,6 +3,7 @@ package Scanner;
 import Source.Position;
 import Source.StringSource;
 import Utilities.ScannerUtils;
+import Utilities.Token;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
