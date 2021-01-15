@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.Variables;
 
-public class StringVariable extends Variable{
+import Utilities.ProgramTree.INode;
+
+public class StringVariable extends Variable implements INode {
     public StringVariable(String name) {
         super(name);
     }

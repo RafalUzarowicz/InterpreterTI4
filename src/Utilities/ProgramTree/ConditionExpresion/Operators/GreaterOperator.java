@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.ConditionExpresion.Operators;
 
-public class GreaterOperator extends Operator{
+import Utilities.ProgramTree.INode;
+
+public class GreaterOperator extends Operator implements INode {
     public GreaterOperator(){
         this.operator = ">";
     }

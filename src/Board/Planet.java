@@ -25,6 +25,24 @@ public class Planet {
     }
 
     public int getPlayerUnitNumber( Dictionary.PlayerColors color, Dictionary.LandUnits unit){
-        return units.get(color).getUnitNumber(unit);
+        LandUnit landUnit = units.get(color);
+        if(landUnit != null){
+            return landUnit.getUnitNumber(unit);
+        }
+        return 0;
+    }
+
+    public int getUnitState(Dictionary.LandUnits unit ){
+        int sum = 0;
+        for (var key : units.keySet() ) {
+            LandUnit landUnit = units.get(key);
+            if(landUnit != null){
+                int unitCount = landUnit.getUnitNumber(unit);
+                if(unit != null){
+                    sum += unitCount;
+                }
+            }
+        }
+        return sum;
     }
 }

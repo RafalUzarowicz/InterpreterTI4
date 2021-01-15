@@ -1,8 +1,10 @@
 package Utilities.ProgramTree.ConditionExpresion;
 
+import Utilities.ProgramTree.INode;
+
 import java.util.ArrayList;
 
-public class OrCondition extends Expression{
+public class OrCondition extends Expression implements INode {
     ArrayList<AndCondition> andConditions;
     public OrCondition(){
         andConditions = new ArrayList<>();

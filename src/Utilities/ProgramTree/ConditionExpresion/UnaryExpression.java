@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.ConditionExpresion;
 
-public class UnaryExpression {
+import Utilities.ProgramTree.INode;
+
+public class UnaryExpression implements INode {
     private Expression expression;
     public UnaryExpression(Expression expression){
         this.expression = expression;

@@ -1,8 +1,9 @@
 package Utilities.ProgramTree.Value.BoardStateCheck;
 
+import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Value.Value;
 
-public class HexStateCheck extends Value {
+public class HexStateCheck extends Value implements INode {
     private final Value unit;
     private final Value hex;
 

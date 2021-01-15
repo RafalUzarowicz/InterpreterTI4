@@ -46,6 +46,24 @@ public class Hex {
     }
 
     public int getPlayerUnitNumber( Dictionary.PlayerColors color, Dictionary.SpaceUnits unit){
-        return units.get(color).getUnitNumber(unit);
+        SpaceUnit spaceUnit = units.get(color);
+        if(spaceUnit != null){
+            return spaceUnit.getUnitNumber(unit);
+        }
+        return 0;
+    }
+
+    public int getUnitState(Dictionary.SpaceUnits unit ){
+        int sum = 0;
+        for (var key : units.keySet() ) {
+            SpaceUnit spaceUnit = units.get(key);
+            if(spaceUnit != null){
+                int unitCount = spaceUnit.getUnitNumber(unit);
+                if(unit != null){
+                    sum += unitCount;
+                }
+            }
+        }
+        return sum;
     }
 }

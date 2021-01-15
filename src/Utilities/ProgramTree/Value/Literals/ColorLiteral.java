@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.Value.Literals;
 
-public class ColorLiteral extends Literal{
+import Utilities.ProgramTree.INode;
+
+public class ColorLiteral extends Literal implements INode {
     public ColorLiteral(String value) {
         super(value);
     }

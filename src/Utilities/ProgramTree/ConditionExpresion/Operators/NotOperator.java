@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.ConditionExpresion.Operators;
 
-public class NotOperator extends Operator{
+import Utilities.ProgramTree.INode;
+
+public class NotOperator extends Operator implements INode {
     public NotOperator(){
         this.operator = "!";
     }

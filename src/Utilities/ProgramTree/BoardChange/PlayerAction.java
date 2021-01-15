@@ -1,4 +1,6 @@
 package Utilities.ProgramTree.BoardChange;
 
-public class PlayerAction {
+import Utilities.ProgramTree.INode;
+
+public class PlayerAction implements INode {
 }

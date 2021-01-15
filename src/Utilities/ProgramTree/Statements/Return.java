@@ -1,13 +1,15 @@
 package Utilities.ProgramTree.Statements;
 
 import Utilities.ProgramTree.ConditionExpresion.OrCondition;
+import Utilities.ProgramTree.INode;
 
-public class Return extends Statement{
+public class Return extends Statement implements INode {
     private final OrCondition returnValue;
-    public Return(){
-        returnValue = null;
-    }
     public Return(OrCondition conditionExpression){
         returnValue = conditionExpression;
+    }
+
+    public OrCondition getReturnValue() {
+        return returnValue;
     }
 }

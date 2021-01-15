@@ -24,6 +24,6 @@ public class SpaceUnit {
     }
 
     public int getUnitNumber( Dictionary.SpaceUnits unit){
-        return units.get(unit);
+        return units.get(unit) != null?units.get(unit) : 0;
     }
 }

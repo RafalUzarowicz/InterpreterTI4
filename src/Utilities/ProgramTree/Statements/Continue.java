@@ -1,4 +1,6 @@
 package Utilities.ProgramTree.Statements;
 
-public class Continue extends Statement{
+import Utilities.ProgramTree.INode;
+
+public class Continue extends Statement implements INode {
 }

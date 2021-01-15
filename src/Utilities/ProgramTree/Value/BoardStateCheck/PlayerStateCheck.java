@@ -1,8 +1,9 @@
 package Utilities.ProgramTree.Value.BoardStateCheck;
 
+import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Value.Value;
 
-public class PlayerStateCheck extends Value {
+public class PlayerStateCheck extends Value implements INode {
     private final Value player;
     private final Value unit;
     private final Value place;

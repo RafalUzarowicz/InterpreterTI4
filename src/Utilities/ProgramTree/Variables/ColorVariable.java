@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.Variables;
 
-public class ColorVariable extends Variable{
+import Utilities.ProgramTree.INode;
+
+public class ColorVariable extends Variable implements INode {
     public ColorVariable(String name) {
         super(name);
     }

@@ -4,7 +4,7 @@ import Utilities.ProgramTree.ConditionExpresion.OrCondition;
 
 import java.util.ArrayList;
 
-public class Arguments {
+public class Arguments  implements INode{
     private final ArrayList<OrCondition> arguments;
 
     public Arguments(){
@@ -17,6 +17,10 @@ public class Arguments {
 
     public ArrayList<OrCondition> getArguments() {
         return arguments;
+    }
+
+    public int getSize(){
+        return arguments.size();
     }
 
     @Override

@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.ConditionExpresion.Operators;
 
-public class AndOperator extends Operator{
+import Utilities.ProgramTree.INode;
+
+public class AndOperator extends Operator implements INode {
     public AndOperator(){
         this.operator = "&&";
     }

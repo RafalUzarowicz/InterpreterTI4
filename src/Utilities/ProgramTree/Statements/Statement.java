@@ -1,4 +1,6 @@
 package Utilities.ProgramTree.Statements;
 
-public class Statement {
+import Utilities.ProgramTree.INode;
+
+public class Statement implements INode {
 }

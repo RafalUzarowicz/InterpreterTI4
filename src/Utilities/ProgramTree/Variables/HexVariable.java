@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.Variables;
 
-public class HexVariable extends Variable{
+import Utilities.ProgramTree.INode;
+
+public class HexVariable extends Variable implements INode {
     public HexVariable(String name) {
         super(name);
     }

@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.ConditionExpresion.Operators;
 
-public class LessEqualOperator extends Operator{
+import Utilities.ProgramTree.INode;
+
+public class LessEqualOperator extends Operator implements INode {
     public LessEqualOperator(){
         this.operator = "<=";
     }

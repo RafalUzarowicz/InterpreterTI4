@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.ConditionExpresion.Operators;
 
-public class EqualOperator extends Operator{
+import Utilities.ProgramTree.INode;
+
+public class EqualOperator extends Operator implements INode {
     public EqualOperator(){
         this.operator = "==";
     }

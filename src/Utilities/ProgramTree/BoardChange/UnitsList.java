@@ -1,10 +1,11 @@
 package Utilities.ProgramTree.BoardChange;
 
+import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Value.Value;
 
 import java.util.ArrayList;
 
-public class UnitsList {
+public class UnitsList implements INode {
     public class UnitAmount{
         private Value unit;
         private Value amount;

@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.ConditionExpresion.Operators;
 
-public class DivideOperator extends Operator{
+import Utilities.ProgramTree.INode;
+
+public class DivideOperator extends Operator implements INode {
     public DivideOperator(){
         this.operator = "/";
     }

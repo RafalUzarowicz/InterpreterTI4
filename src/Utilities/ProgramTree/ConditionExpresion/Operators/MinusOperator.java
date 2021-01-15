@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.ConditionExpresion.Operators;
 
-public class MinusOperator extends Operator{
+import Utilities.ProgramTree.INode;
+
+public class MinusOperator extends Operator implements INode {
     public MinusOperator(){
         this.operator = "-";
     }

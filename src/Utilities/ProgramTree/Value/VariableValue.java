@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.Value;
 
-public class VariableValue extends Value {
+import Utilities.ProgramTree.INode;
+
+public class VariableValue extends Value implements INode {
     private String name;
     private int index;
     public VariableValue(String name, int index){

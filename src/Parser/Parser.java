@@ -69,22 +69,11 @@ public class Parser {
         Parameters parameters = new Parameters();
         while(compareTokenType(Token.Type.Type)){
             Token type = scanner.get();
-            boolean isArray= false;
-
-            if(compareTokenType(Token.Type.BracketsLeft)){
-                checkNextToken(Token.Type.BracketsRight);
-                scanner.next();
-                isArray = true;
-            }
 
             checkCurrentToken(Token.Type.Identifier);
             Token identifier = scanner.get();
 
-            if(isArray){
-                parameters.add(keywordToVariable(type.getValue(), identifier.getValue()));
-            }else{
-                parameters.add(new ArrayVariable(identifier.getValue()));
-            }
+            parameters.add(keywordToVariable(type.getValue(), identifier.getValue()));
 
             if(!compareTokenType(Token.Type.Comma)){
                 break;
@@ -467,14 +456,13 @@ public class Parser {
         checkCurrentToken(Token.Type.Type);
         Token arrayType = scanner.get();
 
-        ArrayDeclaration arrayDeclaration = new ArrayDeclaration(keywordToVariable(arrayType.getValue(), identifier.getValue()));
-
         checkCurrentToken(Token.Type.BracketsLeft);
-        scanner.next();
 
-        if(compareTokenType(Token.Type.NumberLiteral)){
-            arrayDeclaration.setSize(Integer.parseInt(scanner.get().getValue()));
-        }
+        checkNextToken(Token.Type.NumberLiteral);
+
+        int size = Integer.parseInt(scanner.get().getValue());
+        ArrayDeclaration arrayDeclaration = new ArrayDeclaration(new ArrayVariable(keywordToVariable(arrayType.getValue(), identifier.getValue()), size));
+        arrayDeclaration.setSize(size);
 
         checkCurrentToken(Token.Type.BracketsRight);
         scanner.next();

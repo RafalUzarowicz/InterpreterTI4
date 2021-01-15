@@ -1,5 +1,7 @@
 package Utilities.ProgramTree.ConditionExpresion;
 
-public class Expression{
+import Utilities.ProgramTree.INode;
+
+public class Expression implements INode {
 
 }

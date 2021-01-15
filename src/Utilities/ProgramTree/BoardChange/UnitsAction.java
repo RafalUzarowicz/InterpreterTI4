@@ -1,8 +1,9 @@
 package Utilities.ProgramTree.BoardChange;
 
+import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Value.Value;
 
-public class UnitsAction extends PlayerAction{
+public class UnitsAction extends PlayerAction implements INode {
     private Value fromWhere;
     private Value toWhere;
     private UnitsList unitsList;

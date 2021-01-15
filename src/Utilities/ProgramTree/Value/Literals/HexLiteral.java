@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.Value.Literals;
 
-public class HexLiteral extends Literal{
+import Utilities.ProgramTree.INode;
+
+public class HexLiteral extends Literal implements INode {
     public HexLiteral(String value) {
         super(value);
     }

@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.ConditionExpresion.Operators;
 
-public class Operator{
+import Utilities.ProgramTree.INode;
+
+public class Operator implements INode {
     protected  String operator = "";
 
     @Override

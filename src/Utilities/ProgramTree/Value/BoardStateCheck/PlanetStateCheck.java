@@ -1,8 +1,9 @@
 package Utilities.ProgramTree.Value.BoardStateCheck;
 
+import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Value.Value;
 
-public class PlanetStateCheck extends Value {
+public class PlanetStateCheck extends Value implements INode {
     private Value unit;
     private Value planet;
 

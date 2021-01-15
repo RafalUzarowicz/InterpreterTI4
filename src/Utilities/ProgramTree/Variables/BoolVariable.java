@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.Variables;
 
-public class BoolVariable extends Variable{
+import Utilities.ProgramTree.INode;
+
+public class BoolVariable extends Variable implements INode {
     public BoolVariable(String name) {
         super(name);
     }

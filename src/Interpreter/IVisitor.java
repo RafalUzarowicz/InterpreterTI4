@@ -1,5 +1,6 @@
 package Interpreter;
 
+import Exceptions.InterpreterException;
 import Utilities.ProgramTree.*;
 import Utilities.ProgramTree.BoardChange.*;
 import Utilities.ProgramTree.ConditionExpresion.*;
@@ -23,11 +24,11 @@ public interface IVisitor {
         method.invoke(this, node);
     }
 
-    void visit(Program program);
-    void visit(Function function);
-    void visit(Block block);
-    void visit(Parameters parameters);
-    void visit(Arguments arguments);
+    void visit(Program program) throws Exception;
+    void visit(Function function) throws Exception;
+    void visit(Block block) throws Exception;
+    void visit(Parameters parameters) throws InterpreterException;
+    void visit(Arguments arguments) throws Exception;
 
     // Variables
     void visit(ArrayVariable arrayVariable);
@@ -57,23 +58,22 @@ public interface IVisitor {
     void visit(UnitLiteral unitLiteral);
 
     // BoardStateCheck
-    void visit(ActivationCheck activationCheck);
-    void visit(HexStateCheck hexStateCheck);
-    void visit(PlanetStateCheck planetStateCheck);
-    void visit(PlayerStateCheck playerStateCheck);
+    void visit(ActivationCheck activationCheck) throws Exception;
+    void visit(HexStateCheck hexStateCheck) throws Exception;
+    void visit(PlanetStateCheck planetStateCheck) throws Exception;
+    void visit(PlayerStateCheck playerStateCheck) throws Exception;
 
     // Statements
     void visit(ArrayDeclaration arrayDeclaration);
-    void visit(Assignment assignment);
+    void visit(Assignment assignment) throws Exception;
     void visit(Break breakStm);
     void visit(Conditional conditional);
     void visit(Continue continueStm);
     void visit(FunctionCall functionCallStm);
     void visit(Loop loop);
-    void visit(Print print);
-    void visit(Return returnStm);
-    void visit(Statement statement);
-    void visit(VariableDeclaration variableDeclaration);
+    void visit(Print print) throws Exception;
+    void visit(Return returnStm) throws Exception;
+    void visit(VariableDeclaration variableDeclaration) throws Exception;
 
     // ConditionExpression
     void visit(AddExpression addExpression);

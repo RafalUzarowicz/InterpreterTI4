@@ -24,6 +24,7 @@ public class Board {
     public ArrayList<Planet> planets;
 
     private String boardFile;
+
     public Board(){
         hexes = new ArrayList<>(Constants.Board.HEX_NUMBER);
         for ( int i = 0; i < Constants.Board.HEX_NUMBER; ++i ) {
@@ -227,5 +228,33 @@ public class Board {
 
     public void deactivate(int index, Dictionary.PlayerColors color){
         hexes.get(index).deactivate(color);
+    }
+
+    public boolean isActivated(int index, Dictionary.PlayerColors color){
+        return hexes.get(index).getActivation(color);
+    }
+
+    public int getPlayerHexUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.SpaceUnits unit){
+        Hex h = hexes.get(index);
+        if(h != null){
+            return h.getPlayerUnitNumber(color, unit);
+        }
+        return 0;
+    }
+
+    public int getPlayerPlanetUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.LandUnits unit){
+        Planet p = planets.get(index);
+        if(p != null){
+            return p.getPlayerUnitNumber(color, unit);
+        }
+        return 0;
+    }
+
+    public int getHexState(int index, Dictionary.SpaceUnits unit){
+        return hexes.get(index).getUnitState(unit);
+    }
+
+    public int getPlanetState(int index, Dictionary.LandUnits unit){
+        return planets.get(index).getUnitState(unit);
     }
 }

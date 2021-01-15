@@ -1,9 +1,10 @@
 package Utilities.ProgramTree.Statements;
 
 import Utilities.ProgramTree.Block;
+import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Variables.Variable;
 
-public class Loop extends Statement{
+public class Loop extends Statement implements INode {
     private Variable variable;
     private String arrayIdentifier;
     private Block block;

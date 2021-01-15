@@ -1,4 +1,6 @@
 package Utilities.ProgramTree.Statements;
 
-public class Break extends Statement{
+import Utilities.ProgramTree.INode;
+
+public class Break extends Statement implements INode {
 }

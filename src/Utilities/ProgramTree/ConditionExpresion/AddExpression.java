@@ -1,10 +1,11 @@
 package Utilities.ProgramTree.ConditionExpresion;
 
 import Utilities.ProgramTree.ConditionExpresion.Operators.Operator;
+import Utilities.ProgramTree.INode;
 
 import java.util.ArrayList;
 
-public class AddExpression {
+public class AddExpression  implements INode {
     private final ArrayList<MultiplyExpression> multiplyExpressions;
     private final ArrayList<Operator> operators;
     public AddExpression(){

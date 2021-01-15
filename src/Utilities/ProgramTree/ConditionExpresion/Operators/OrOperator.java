@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.ConditionExpresion.Operators;
 
-public class OrOperator extends Operator{
+import Utilities.ProgramTree.INode;
+
+public class OrOperator extends Operator implements INode {
     public OrOperator(){
         this.operator = "||";
     }

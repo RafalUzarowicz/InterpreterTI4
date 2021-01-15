@@ -1,21 +1,21 @@
 package Utilities.ProgramTree.Statements;
 
+import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Value.Value;
+import Utilities.ProgramTree.Variables.ArrayVariable;
 import Utilities.ProgramTree.Variables.Variable;
 
 import java.util.ArrayList;
 
-public class ArrayDeclaration extends Statement{
+public class ArrayDeclaration extends Statement implements INode {
     private final ArrayList<Value> values;
-    private final Variable type;
+    private final ArrayVariable type;
     private int size;
-    private int count;
 
-    public ArrayDeclaration(Variable type){
+    public ArrayDeclaration(ArrayVariable type){
         this.type = type;
         this.values = new ArrayList<>();
         this.size = 0;
-        this.count = 0;
     }
     public void add(Value value) throws Exception {
         values.add(value);
@@ -34,7 +34,7 @@ public class ArrayDeclaration extends Statement{
         return type.getName();
     }
 
-    public Variable getType() {
+    public ArrayVariable getType() {
         return type;
     }
 }

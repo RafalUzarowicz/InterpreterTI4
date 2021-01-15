@@ -1,8 +1,10 @@
 package Utilities.ProgramTree.ConditionExpresion;
 
+import Utilities.ProgramTree.INode;
+
 import java.util.ArrayList;
 
-public class AndCondition {
+public class AndCondition implements INode {
     ArrayList<RelationalCondition> relationalConditions;
     public AndCondition(){
         relationalConditions = new ArrayList<>();

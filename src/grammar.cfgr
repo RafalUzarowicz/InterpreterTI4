@@ -5,7 +5,7 @@ program : functionDefinition  {functionDefinition};
 
 functionDefinition : type  identifier  "("  parameters  ")" block;
 
-parameters : [type ["[" "]"]  identifier {","  type["[" "]"]  identifier}];
+parameters : [type identifier {","  type  identifier}];
 
 block : "{"  [statement  {statement}]  "}";
 
@@ -59,7 +59,7 @@ conditional : "if"  "("  orCondition  ")"  block  ["else"  block];
 loop : "foreach"  "("  typeOrVar  identifier  ":"  identifier  ")"  block;
 
 varDeclaration : typeOrVar  identifier  "="  orCondition ";";
-arrayDeclaration : typeOrVar  "["  "]"  identifier  "="  type  "["  [nonZeroNumber]  "]" ["{"  [value  {{","  value}}]  "}" ]  ";";
+arrayDeclaration : typeOrVar  "["  "]"  identifier  "="  type  "["  nonZeroNumber  "]" ["{"  [value  {{","  value}}]  "}" ]  ";";
 typeOrVar : type | "var";
 assign : identifier ["[" number "]"]  "="  orCondition  ";";
 functionCallStatement : identifier  "("  arguments  ")" ";";

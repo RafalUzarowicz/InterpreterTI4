@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.ConditionExpresion;
 
-public class NotUnaryExpression extends Expression{
+import Utilities.ProgramTree.INode;
+
+public class NotUnaryExpression extends Expression implements INode {
     UnaryExpression unaryExpression;
     public NotUnaryExpression(UnaryExpression unaryExpression){
         this.unaryExpression = unaryExpression;

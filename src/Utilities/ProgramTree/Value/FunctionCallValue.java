@@ -1,8 +1,9 @@
 package Utilities.ProgramTree.Value;
 
 import Utilities.ProgramTree.Arguments;
+import Utilities.ProgramTree.INode;
 
-public class FunctionCallValue extends Value{
+public class FunctionCallValue extends Value implements INode {
     private final Arguments arguments;
     private final String identifier;
     public FunctionCallValue(String identifier, Arguments arguments){

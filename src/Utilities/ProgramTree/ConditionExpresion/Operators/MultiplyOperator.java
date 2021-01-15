@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.ConditionExpresion.Operators;
 
-public class MultiplyOperator extends Operator{
+import Utilities.ProgramTree.INode;
+
+public class MultiplyOperator extends Operator implements INode {
     public MultiplyOperator(){
         this.operator = "*";
     }

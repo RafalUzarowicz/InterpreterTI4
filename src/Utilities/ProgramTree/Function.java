@@ -2,17 +2,19 @@ package Utilities.ProgramTree;
 
 import Utilities.ProgramTree.Variables.Variable;
 
-public class Function {
+public class Function implements INode{
     private Variable returnValue;
     private Parameters parameters;
     private String identifier;
     private Block block;
+    private Arguments arguments;
 
     public Function(Variable returnValue, String identifier, Parameters parameters, Block block){
         this.returnValue = returnValue;
         this.identifier = identifier;
         this.parameters = parameters;
         this.block = block;
+        this.arguments = null;
     }
 
     public Variable getReturnValue() {
@@ -45,5 +47,13 @@ public class Function {
 
     public void setBlock(Block block) {
         this.block = block;
+    }
+
+    public Arguments getArguments() {
+        return arguments;
+    }
+
+    public void setArguments(Arguments arguments) {
+        this.arguments = arguments;
     }
 }

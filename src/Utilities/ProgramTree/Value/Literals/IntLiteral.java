@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.Value.Literals;
 
-public class IntLiteral extends Literal {
+import Utilities.ProgramTree.INode;
+
+public class IntLiteral extends Literal implements INode {
     public IntLiteral(String value) {
         super(value);
     }

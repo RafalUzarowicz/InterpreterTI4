@@ -1,10 +1,11 @@
 package Utilities.ProgramTree.ConditionExpresion;
 
 import Utilities.ProgramTree.ConditionExpresion.Operators.Operator;
+import Utilities.ProgramTree.INode;
 
 import java.util.ArrayList;
 
-public class RelationalCondition {
+public class RelationalCondition implements INode {
     ArrayList<AddExpression> addExpressions;
     ArrayList<Operator> operators;
     public RelationalCondition(){

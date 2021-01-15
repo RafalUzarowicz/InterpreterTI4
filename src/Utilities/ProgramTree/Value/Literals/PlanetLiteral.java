@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.Value.Literals;
 
-public class PlanetLiteral extends Literal{
+import Utilities.ProgramTree.INode;
+
+public class PlanetLiteral extends Literal implements INode {
     public PlanetLiteral(String value) {
         super(value);
     }

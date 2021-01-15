@@ -1,8 +1,9 @@
 package Utilities.ProgramTree.Statements;
 
 import Utilities.ProgramTree.ConditionExpresion.OrCondition;
+import Utilities.ProgramTree.INode;
 
-public class Assignment extends Statement{
+public class Assignment extends Statement implements INode {
     private String index;
     private String identifier;
     private OrCondition value;

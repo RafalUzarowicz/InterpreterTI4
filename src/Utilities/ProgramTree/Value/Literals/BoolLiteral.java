@@ -1,6 +1,8 @@
 package Utilities.ProgramTree.Value.Literals;
 
-public class BoolLiteral extends Literal{
+import Utilities.ProgramTree.INode;
+
+public class BoolLiteral extends Literal implements INode {
     public BoolLiteral(String value) {
         super(value);
     }
