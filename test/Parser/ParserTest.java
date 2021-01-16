@@ -17,7 +17,6 @@ import Scanner.Scanner;
 import Utilities.Token;
 import Source.Position;
 import Source.StringSource;
-import Utilities.ExpressionString;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -364,38 +363,37 @@ public class ParserTest {
 
     private static Stream<Arguments> provideConditionExpressionGood() {
         return Stream.of(
-                Arguments.of("12"),
-                Arguments.of("h0"),
-                Arguments.of("p1"),
-                Arguments.of("Red"),
-                Arguments.of("Fighter"),
-                Arguments.of("\"Tak\""),
-                Arguments.of("true"),
-                Arguments.of("x"),
-                Arguments.of("arr[2]"),
-                Arguments.of("fun()"),
-                Arguments.of("player(Red)activated(h0)"),
-                Arguments.of("hex(h1)has(Carrier)"),
-                Arguments.of("7*2+3"),
-                Arguments.of("(3+4)*(8-1||2)"),
-                Arguments.of("2&&7----1"),
-                Arguments.of("!(x||!y+2)")
+                Arguments.of("12", "((((((12))))))"),
+                Arguments.of("h0", "((((((h0))))))"),
+                Arguments.of("p1", "((((((p1))))))"),
+                Arguments.of("Red", "((((((Red))))))"),
+                Arguments.of("Fighter", "((((((Fighter))))))"),
+                Arguments.of("\"Tak\"", "((((((\"Tak\"))))))"),
+                Arguments.of("true", "((((((true))))))"),
+                Arguments.of("x", "((((((x))))))"),
+                Arguments.of("arr[2]", "((((((arr[2]))))))"),
+                Arguments.of("fun()", "((((((fun()))))))"),
+                Arguments.of("player(Red)activated(h0)", "((((((player(Red)activated(h0)))))))"),
+                Arguments.of("hex(h1)has(Carrier)", "((((((hex(h1)has(Carrier)))))))"),
+                Arguments.of("7*2+3", "((((((7*2)+(3))))))"),
+                Arguments.of("(3+4)*(8-1||2)", "((((((((((((3)+(4))))))*((((((8)-(1)))))||(((((2))))))))))))"),
+                Arguments.of("2&&7----1", "((((((2)))&&(((7)-(-(-(-(1)))))))))"),
+                Arguments.of("!(x||!y+2)", "((((((!(((((((x)))))||(((((!(y))+(2)))))))))))))")
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideConditionExpressionGood")
-    void goodConditionExpression(String line) throws Exception {
+    void goodConditionExpression(String line, String expected) throws Exception {
         // Arrange
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
-        ExpressionString expressionString = new ExpressionString(line);
         // Act
         OrCondition orCondition = parser.tryOrCondition();
         // Assert
         assertNotEquals(null, orCondition);
-        assertTrue(expressionString.compareExpressions(orCondition.toString()));
+        assertEquals(expected, orCondition.toString());
     }
 
     private static Stream<Arguments> provideConditionExpressionBad() {
@@ -422,9 +420,7 @@ public class ParserTest {
     private static Stream<Arguments> provideArrayDeclarationGood() {
         return Stream.of(
                 Arguments.of("int[] x = int[2];"),
-                Arguments.of("int[] x = int[];"),
-                Arguments.of("int[] x = int[2]{2,5};"),
-                Arguments.of("int[] x = int[]{2,5};")
+                Arguments.of("int[] x = int[2]{2,5};")
         );
     }
 
@@ -440,7 +436,7 @@ public class ParserTest {
         ArrayDeclaration arrayDeclaration = parser.tryArrayDeclaration(scanner.peek());
         // Assert
         assertNotEquals(null, arrayDeclaration);
-        assertEquals(IntVariable.class, arrayDeclaration.getType().getClass());
+        assertEquals(IntVariable.class, arrayDeclaration.getType().getVariable().getClass());
         assertEquals("x", arrayDeclaration.getIdentifier());
     }
 
@@ -1230,7 +1226,7 @@ public class ParserTest {
                 Arguments.of("funcall(2, 3 , 4);"),
                 Arguments.of("x=2;"),
                 Arguments.of("int x = 2;"),
-                Arguments.of("int[] x = int[];")
+                Arguments.of("int[] x = int[2];")
         );
     }
 
@@ -1320,7 +1316,7 @@ public class ParserTest {
 
     private static Stream<Arguments> provideParametersGood() {
         return Stream.of(
-                Arguments.of("int x, color[] colors"),
+                Arguments.of("int x, color c"),
                 Arguments.of("int x"),
                 Arguments.of("")
         );
@@ -1369,7 +1365,7 @@ public class ParserTest {
         return Stream.of(
                 Arguments.of("int x(){}"),
                 Arguments.of("int x(int a){}"),
-                Arguments.of("int x(int a, int[] b){}"),
+                Arguments.of("int x(int a, int b){}"),
                 Arguments.of("int x(){return 2;}")
         );
     }
@@ -1413,7 +1409,7 @@ public class ParserTest {
         return Stream.of(
                 Arguments.of("int x(){}\nint main(){}"),
                 Arguments.of("int x(int a){}"),
-                Arguments.of("int x(int a, int[] b){}"),
+                Arguments.of("int x(int a, int b){}"),
                 Arguments.of("int x(){return 2;}")
         );
     }
@@ -1435,7 +1431,7 @@ public class ParserTest {
         return Stream.of(
                 Arguments.of("x(){}"),
                 Arguments.of("int (int a){}"),
-                Arguments.of("int x int a, int[] b){}"),
+                Arguments.of("int x int a, int b){}"),
                 Arguments.of("int x({return 2;}")
         );
     }

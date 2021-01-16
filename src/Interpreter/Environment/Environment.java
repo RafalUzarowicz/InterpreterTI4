@@ -3,7 +3,10 @@ package Interpreter.Environment;
 import Utilities.ProgramTree.Value.Literals.Literal;
 
 import java.util.Stack;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class Environment {
     private final Stack<CallContext> callContexts;
     private final Stack<Literal> values;

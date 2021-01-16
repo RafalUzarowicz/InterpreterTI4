@@ -1,7 +1,10 @@
 package Utilities.ProgramTree.Variables;
 
 import Utilities.ProgramTree.INode;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class Variable implements INode {
     private String value;
     private String name;

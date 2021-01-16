@@ -45,6 +45,13 @@ public class Hex {
         units.get(color).setUnitNumber(unit, number);
     }
 
+    public void changePlayerUnitNumber( Dictionary.PlayerColors color, Dictionary.SpaceUnits unit, int amount){
+        SpaceUnit spaceUnit = units.get(color);
+        if(spaceUnit != null){
+            spaceUnit.setUnitNumber(unit, spaceUnit.getUnitNumber(unit) + amount);
+        }
+    }
+
     public int getPlayerUnitNumber( Dictionary.PlayerColors color, Dictionary.SpaceUnits unit){
         SpaceUnit spaceUnit = units.get(color);
         if(spaceUnit != null){

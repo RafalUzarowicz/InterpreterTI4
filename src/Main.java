@@ -2,6 +2,7 @@ import Board.Board;
 import Interpreter.Interpreter;
 import Parser.Parser;
 import Scanner.Scanner;
+import Source.FileSource;
 import Utilities.ProgramTree.Program;
 import Utilities.ProgramTree.Value.Literals.BoolLiteral;
 import Utilities.ProgramTree.Value.Literals.ColorLiteral;
@@ -17,12 +18,43 @@ import java.util.Stack;
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
  */
+
+/*
+* TODO:
+*  - testy do toString dla pojedynczego i podwojnego dla kazdego
+*  - testy expression 2+2*2 -> (2+(2*2))
+*  - testy integracyjne do interpretera - duze kawalki kodu
+*  - testy jednostkowe do interpretera - dla malych struktur
+*  - testy ze sprawdzaniem zawartosci kontekstu
+* */
+
 public class Main {
     public static void main(String[] args) {
         try {
-//            FileSource source = new FileSource("code/simple.twlan");
+
+//            StringSource source = new StringSource("" +
+//                    "int main(){" +
+//                        "var x_1d = !(2+3)*6--(7+2*3); " +
+//                        "var y = x_1d + 2; " +
+//                        "var z = 7-3; " +
+//                        "if(3<2){print(x_1d);" +
+//                    "z = 2;}" +
+//                        "else{print(y);" +
+//                    "z = 3;}" +
+//                        "print(z);" +
+//                    "}"
+//            );
+
+            FileSource source = new FileSource("code/simple.twlan");
 //            ResourceFileSource source = new ResourceFileSource("first.twlan");
-            StringSource source = new StringSource("int main(){\nvar x_1d = !(2+3)*6--(7+2*3); var y = player(x)has(Fighter)at(h12);\n\tfuncall(2, 7);int[] x = int[2];}");
+//            StringSource source = new StringSource("" +
+//                    "int main(){\n" +
+//                    "var x_1d = !(2+3)*6--(7+2*3); " +
+//                    "int y = player(Red)has(Fighter)at(h12);\n\t" +
+//                    "int[] x = int[2]; " +
+//                    "" +
+//                    "print(x_1d);}"
+//            );
 //            StringSource source = new StringSource("!(x+(!y+funCall(2,!(x[2]+(!y+funCall(2,4,x))+3),x))+3)");
 //            StringSource source = new StringSource("hex(h1)has(Carrier)+2");
 //            StringSource source = new StringSource("int _main(){\nvar x_1d = !!!!!!x; }");

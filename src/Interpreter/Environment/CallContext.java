@@ -1,11 +1,15 @@
 package Interpreter.Environment;
 
+import Exceptions.InterpreterException;
 import Utilities.ProgramTree.Variables.Variable;
 
 import java.util.LinkedList;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class CallContext {
-    private LinkedList<BlockContext> blockContexts;
+    private final LinkedList<BlockContext> blockContexts;
 
     public CallContext(){
         blockContexts = new LinkedList<>();
@@ -21,6 +25,18 @@ public class CallContext {
 
     public void popBlockContext(){
         blockContexts.pop();
+    }
+
+    public void setVariableValue(String name, String value) throws InterpreterException {
+        Variable variable;
+        for (var context: blockContexts ) {
+            variable = context.getVariable(name);
+            if(variable != null){
+                variable.setValue(value);
+                return;
+            }
+        }
+        throw new InterpreterException("Unknown variable identifier: "+name);
     }
 
     public Variable getVariable(String name){

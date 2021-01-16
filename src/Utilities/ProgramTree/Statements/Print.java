@@ -4,7 +4,10 @@ import Utilities.ProgramTree.ConditionExpresion.OrCondition;
 import Utilities.ProgramTree.INode;
 
 import java.util.ArrayList;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class Print extends Statement implements INode {
     ArrayList<OrCondition> conditionExpressions;
     public Print(){

@@ -2,7 +2,10 @@ package Utilities.ProgramTree.Value;
 
 import Utilities.ProgramTree.Arguments;
 import Utilities.ProgramTree.INode;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class FunctionCallValue extends Value implements INode {
     private final Arguments arguments;
     private final String identifier;

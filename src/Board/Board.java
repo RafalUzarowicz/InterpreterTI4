@@ -20,8 +20,8 @@ import java.util.ArrayList;
  * Class that represents current board state.
  */
 public class Board {
-    public ArrayList<Hex> hexes;
-    public ArrayList<Planet> planets;
+    private final ArrayList<Hex> hexes;
+    private final ArrayList<Planet> planets;
 
     private String boardFile;
 
@@ -232,6 +232,20 @@ public class Board {
 
     public boolean isActivated(int index, Dictionary.PlayerColors color){
         return hexes.get(index).getActivation(color);
+    }
+
+    public void changePlayerHexUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.SpaceUnits unit, int amount){
+        Hex h = hexes.get(index);
+        if(h != null){
+            h.changePlayerUnitNumber(color, unit, amount);
+        }
+    }
+
+    public void changePlayerPlanetUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.LandUnits unit, int amount){
+        Planet p = planets.get(index);
+        if(p != null){
+            p.changePlayerUnitNumber(color, unit, amount);
+        }
     }
 
     public int getPlayerHexUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.SpaceUnits unit){

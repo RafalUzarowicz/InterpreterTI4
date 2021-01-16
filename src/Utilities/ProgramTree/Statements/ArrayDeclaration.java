@@ -3,10 +3,12 @@ package Utilities.ProgramTree.Statements;
 import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Value.Value;
 import Utilities.ProgramTree.Variables.ArrayVariable;
-import Utilities.ProgramTree.Variables.Variable;
 
 import java.util.ArrayList;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class ArrayDeclaration extends Statement implements INode {
     private final ArrayList<Value> values;
     private final ArrayVariable type;

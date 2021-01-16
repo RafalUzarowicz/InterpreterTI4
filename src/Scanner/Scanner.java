@@ -6,7 +6,6 @@ import Source.Position;
 import Utilities.Constants;
 import Utilities.ScannerUtils;
 import Utilities.Token;
-
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz

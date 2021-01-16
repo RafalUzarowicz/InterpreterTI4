@@ -2,10 +2,13 @@ package Utilities.ProgramTree.Statements;
 
 import Utilities.ProgramTree.Arguments;
 import Utilities.ProgramTree.INode;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class FunctionCall extends Statement implements INode {
-    private String identifier;
-    private Arguments arguments;
+    private final String identifier;
+    private final Arguments arguments;
     public FunctionCall(String identifier, Arguments arguments){
         this.identifier = identifier;
         this.arguments = arguments;

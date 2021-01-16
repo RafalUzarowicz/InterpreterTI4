@@ -71,7 +71,8 @@ return : "return"  orCondition  ";";
 
 #(* Operators' order. *)
 orCondition : andCondition  { or  andCondition };
-andCondition : relationCondition  { and  relationCondition };
+andCondition : equalityCondition  { and  equalityCondition };
+equalityCondition : relationCondition { equality relationCondition };
 relationCondition : addExpression  { relation  addExpression };
 
 addExpression : multiplyExpression  { add  multiplyExpression };
@@ -86,7 +87,8 @@ expression : value | "("  orCondition  ")";
 #(* Basic operators. *)
 or : "||";
 and : "&&";
-relation : ">" | "<" | "<=" | ">=" | "==" | "!=";
+relation : ">" | "<" | "<=" | ">=";
+equality : "==" | "!=";
 
 add : "+" | "-";
 multiply : "*" | "/";
@@ -97,7 +99,7 @@ negative : "-";
 #(* Variables and literals. *)
 value : literal | functionCall | variableReference | boardStateCheck;
 functionCall : identifier  "("  arguments  ")";
-variableReference : identifier  ["["  number  "]"];
+variableReference : identifier  ["["  value  "]"];
 type : "int"|"string"|"bool"|"unit"|"color"|"hex"|"planet";
 identifier : ((underscore  (letter | digit | underscore)) |letter)  {letter | digit | underscore};
 

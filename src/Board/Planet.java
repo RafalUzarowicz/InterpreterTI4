@@ -11,7 +11,7 @@ import java.util.HashMap;
  * Class that represents single planet state.
  */
 public class Planet {
-    private HashMap<Dictionary.PlayerColors, LandUnit> units;
+    private final HashMap<Dictionary.PlayerColors, LandUnit> units;
 
     public Planet(){
         units = new HashMap<>();
@@ -22,6 +22,13 @@ public class Planet {
 
     public void setPlayerUnitNumber( Dictionary.PlayerColors color, Dictionary.LandUnits unit, int number ){
         units.get(color).setUnitNumber(unit, number);
+    }
+
+    public void changePlayerUnitNumber( Dictionary.PlayerColors color, Dictionary.LandUnits unit, int amount){
+        LandUnit landUnit = units.get(color);
+        if(landUnit != null){
+            landUnit.setUnitNumber(unit, landUnit.getUnitNumber(unit) + amount);
+        }
     }
 
     public int getPlayerUnitNumber( Dictionary.PlayerColors color, Dictionary.LandUnits unit){

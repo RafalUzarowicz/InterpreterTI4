@@ -2,8 +2,10 @@ package Utilities.ProgramTree;
 
 import Utilities.ProgramTree.Statements.Statement;
 
-import java.util.ArrayList;
-
+import java.util.ArrayList;/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class Block extends Statement  implements INode{
     private ArrayList<Statement> statements;
     public Block(){

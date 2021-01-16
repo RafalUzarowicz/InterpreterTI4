@@ -1,7 +1,10 @@
 package Utilities.ProgramTree;
 
 import java.util.HashMap;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class Program implements INode{
     private final HashMap<String, Function> functions;
     public Program(HashMap<String, Function> functions){

@@ -1,22 +1,33 @@
 package Utilities.ProgramTree.Value;
 
 import Utilities.ProgramTree.INode;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class VariableValue extends Value implements INode {
-    private String name;
-    private int index;
-    public VariableValue(String name, int index){
+    private final String name;
+    private final Value index;
+    public VariableValue(String name, Value index){
         this.name = name;
         this.index = index;
     }
     public VariableValue(String name){
         this.name = name;
-        this.index = -1;
+        this.index = null;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public Value getIndex() {
+        return index;
     }
 
     @Override
     public String toString() {
-        if(index < 0){
+        if(index == null){
             return name;
         }else{
             return name+"["+index+"]";

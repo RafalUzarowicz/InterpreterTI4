@@ -1,14 +1,12 @@
 package Utilities;
 
 import Exceptions.InterpreterException;
-import Exceptions.ParserException;
 import Utilities.ProgramTree.Value.Literals.*;
 import Utilities.ProgramTree.Variables.*;
-
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class InterpreterUtils {
     public static Literal literalCast(Literal source, Variable variable) throws InterpreterException {
         if (BoolVariable.class.equals(variable.getClass())) {
@@ -55,6 +53,8 @@ public class InterpreterUtils {
             }
         } else if (UnitLiteral.class.equals(source.getClass())) {
             throw new InterpreterException("No cast from unit to bool.");
+        } else if (Literal.class.equals(source.getClass())){
+            return new BoolLiteral(source.getValue());
         }
         throw new InterpreterException("Unknown literal type.");
     }
@@ -78,6 +78,8 @@ public class InterpreterUtils {
             }
         } else if (UnitLiteral.class.equals(source.getClass())) {
             throw new InterpreterException("No cast from unit to color.");
+        } else if (Literal.class.equals(source.getClass())){
+            return new ColorLiteral(source.getValue());
         }
         throw new InterpreterException("Unknown literal type.");
     }
@@ -124,6 +126,8 @@ public class InterpreterUtils {
             throw new InterpreterException("Wrong cast from string to hex.");
         } else if (UnitLiteral.class.equals(source.getClass())) {
             throw new InterpreterException("No cast from unit to hex.");
+        } else if (Literal.class.equals(source.getClass())){
+            return new HexLiteral(source.getValue());
         }
         throw new InterpreterException("Unknown literal type.");
     }
@@ -153,6 +157,8 @@ public class InterpreterUtils {
             }
         } else if (UnitLiteral.class.equals(source.getClass())) {
             throw new InterpreterException("No cast from unit to number.");
+        } else if (Literal.class.equals(source.getClass())){
+            return new IntLiteral(source.getValue());
         }
         throw new InterpreterException("Unknown literal type.");
     }
@@ -199,6 +205,8 @@ public class InterpreterUtils {
             throw new InterpreterException("Wrong cast from string to planet.");
         } else if (UnitLiteral.class.equals(source.getClass())) {
             throw new InterpreterException("No cast from unit to planet.");
+        } else if (Literal.class.equals(source.getClass())){
+            return new PlanetLiteral(source.getValue());
         }
         throw new InterpreterException("Unknown literal type.");
     }
@@ -217,6 +225,8 @@ public class InterpreterUtils {
         } else if (StringLiteral.class.equals(source.getClass())) {
             return new StringLiteral(source.getValue());
         } else if (UnitLiteral.class.equals(source.getClass())) {
+            return new StringLiteral(source.getValue());
+        } else if (Literal.class.equals(source.getClass())){
             return new StringLiteral(source.getValue());
         }
         throw new InterpreterException("Unknown literal type.");
@@ -241,31 +251,9 @@ public class InterpreterUtils {
             }
         } else if (UnitLiteral.class.equals(source.getClass())) {
             return new UnitLiteral(source.getValue());
+        } else if (Literal.class.equals(source.getClass())){
+            return new UnitLiteral(source.getValue());
         }
         throw new InterpreterException("Unknown literal type.");
     }
-
-//    public static boolean variableLiteral(Class variable, Class literal){
-//            switch(variable.getClass()){
-//                case BoolVariable.class:
-//                    return new IntVariable(name);
-//                case StringVariable.class:
-//                    return new StringVariable(name);
-//                case "bool":
-//                    return new BoolVariable(name);
-//                case "unit":
-//                    return new UnitVariable(name);
-//                case "color":
-//                    return new ColorVariable(name);
-//                case "hex":
-//                    return new HexVariable(name);
-//                case "planet":
-//                    return new PlanetVariable(name);
-//                case "var":
-//                    return new VarVariable(name);
-//                default:
-//                    return false;
-//                    break;
-//            }
-//    }
 }

@@ -3,7 +3,10 @@ package Utilities.ProgramTree;
 import Utilities.ProgramTree.ConditionExpresion.OrCondition;
 
 import java.util.ArrayList;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class Arguments  implements INode{
     private final ArrayList<OrCondition> arguments;
 

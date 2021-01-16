@@ -18,9 +18,7 @@ import Utilities.ProgramTree.Variables.*;
 import Scanner.*;
 import Utilities.Token;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -539,24 +537,50 @@ public class Parser {
     public AndCondition tryAndCondition() throws Exception {
         AndCondition andCondition = new AndCondition();
 
+        EqualityCondition equalityCondition = tryEqualityCondition();
+
+        if(equalityCondition == null){
+            return null;
+        }
+
+        andCondition.add(equalityCondition);
+        while(scanner.peek().getType() == Token.Type.And){
+            scanner.next();
+            equalityCondition = tryEqualityCondition();
+
+            if(equalityCondition == null){
+                throw new ParserException(scanner.peek(), "Wrong expression.");
+            }
+
+            andCondition.add(equalityCondition);
+        }
+        return andCondition;
+    }
+
+    public EqualityCondition tryEqualityCondition() throws Exception {
+        EqualityCondition equalityCondition = new EqualityCondition();
+
         RelationalCondition relationalCondition = tryRelationalCondition();
 
         if(relationalCondition == null){
             return null;
         }
 
-        andCondition.add(relationalCondition);
+        equalityCondition.add(relationalCondition);
+
+        Token token;
+
         while(scanner.peek().getType() == Token.Type.And){
-            scanner.next();
+            token = scanner.get();
             relationalCondition = tryRelationalCondition();
 
             if(relationalCondition == null){
                 throw new ParserException(scanner.peek(), "Wrong expression.");
             }
 
-            andCondition.add(relationalCondition);
+            equalityCondition.add(tokenTypeToOperator(token.getType()), relationalCondition);
         }
-        return andCondition;
+        return equalityCondition;
     }
 
     public RelationalCondition tryRelationalCondition() throws Exception {
@@ -743,12 +767,14 @@ public class Parser {
                 return tryFunctionCallValue(identifier);
             }
             if(compareTokenType(Token.Type.BracketsLeft)){
-                checkNextToken(Token.Type.NumberLiteral);
-                Token number = scanner.get();
+                scanner.next();
+
+                Value value = tryValue();
+
                 checkCurrentToken(Token.Type.BracketsRight);
                 scanner.next();
 
-                return new VariableValue(identifier.getValue(), Integer.parseInt(number.getValue()));
+                return new VariableValue(identifier.getValue(), value);
             }
             return new VariableValue(identifier.getValue());
         }
@@ -768,7 +794,7 @@ public class Parser {
             case NumberLiteral:
                 return new IntLiteral(value);
             case StringLiteral:
-                return new StringLiteral(value);
+                return new StringLiteral(value.substring(1, value.length()-1));
             case BoolLiteral:
                 return new BoolLiteral(value);
             case UnitLiteral:

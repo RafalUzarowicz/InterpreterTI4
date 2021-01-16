@@ -11,7 +11,7 @@ import java.util.HashMap;
  * Class that represents current board state.
  */
 public class LandUnit {
-    private HashMap<Dictionary.LandUnits, Integer> units;
+    private final HashMap<Dictionary.LandUnits, Integer> units;
     public LandUnit(){
         units = new HashMap<>();
         for ( Dictionary.LandUnits unit : Dictionary.LandUnits.values() ) {

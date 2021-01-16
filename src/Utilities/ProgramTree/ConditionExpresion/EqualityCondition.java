@@ -8,24 +8,25 @@ import java.util.ArrayList;
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
  */
-public class MultiplyExpression implements INode {
-    private final ArrayList<UnaryExpression> expressions;
+public class EqualityCondition implements INode {
+    private final ArrayList<RelationalCondition> relationalConditions;
     private final ArrayList<Operator> operators;
-    public MultiplyExpression(){
-        expressions = new ArrayList<>();
+    public EqualityCondition(){
+        relationalConditions = new ArrayList<>();
         operators = new ArrayList<>();
     }
-    public void add(UnaryExpression expression){
-        expressions.add(expression);
+
+    public void add(RelationalCondition relationalCondition){
+        relationalConditions.add(relationalCondition);
     }
 
-    public void add(Operator operator, UnaryExpression expression){
-        expressions.add(expression);
+    public void add(Operator operator, RelationalCondition relationalCondition){
         operators.add(operator);
+        relationalConditions.add(relationalCondition);
     }
 
-    public ArrayList<UnaryExpression> getExpressions() {
-        return expressions;
+    public ArrayList<RelationalCondition> getRelationalConditions() {
+        return relationalConditions;
     }
 
     public ArrayList<Operator> getOperators() {
@@ -36,11 +37,11 @@ public class MultiplyExpression implements INode {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         stringBuilder.append("(");
-        stringBuilder.append(expressions.get(0).toString());
+        stringBuilder.append(relationalConditions.get(0).toString());
 
-        for(int i = 1; i<expressions.size(); ++i){
+        for(int i = 1; i<relationalConditions.size(); ++i){
             stringBuilder.append(operators.get(i-1).toString());
-            stringBuilder.append(expressions.get(i).toString());
+            stringBuilder.append(relationalConditions.get(i).toString());
         }
         stringBuilder.append(")");
         return stringBuilder.toString();

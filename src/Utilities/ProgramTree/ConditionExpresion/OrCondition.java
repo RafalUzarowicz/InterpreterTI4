@@ -3,9 +3,12 @@ package Utilities.ProgramTree.ConditionExpresion;
 import Utilities.ProgramTree.INode;
 
 import java.util.ArrayList;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class OrCondition extends Expression implements INode {
-    ArrayList<AndCondition> andConditions;
+    private final ArrayList<AndCondition> andConditions;
     public OrCondition(){
         andConditions = new ArrayList<>();
     }
@@ -14,6 +17,9 @@ public class OrCondition extends Expression implements INode {
         andConditions.add(andCondition);
     }
 
+    public ArrayList<AndCondition> getAndConditions() {
+        return andConditions;
+    }
 
     @Override
     public String toString() {

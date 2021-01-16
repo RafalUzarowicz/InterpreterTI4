@@ -2,7 +2,10 @@ package Utilities.ProgramTree.Value.BoardStateCheck;
 
 import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Value.Value;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class ActivationCheck extends Value implements INode {
     private Value player;
     private Value hex;

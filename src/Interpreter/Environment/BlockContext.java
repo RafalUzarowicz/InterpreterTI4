@@ -3,9 +3,12 @@ package Interpreter.Environment;
 import Utilities.ProgramTree.Variables.*;
 
 import java.util.LinkedHashMap;
-
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
 public class BlockContext {
-    private LinkedHashMap<String, Variable> variables;
+    private final LinkedHashMap<String, Variable> variables;
 
     public BlockContext(){
         variables = new LinkedHashMap<>();
@@ -17,10 +20,6 @@ public class BlockContext {
 
     public boolean contains(String name){
         return variables.get(name) != null;
-    }
-
-    public void setVariableValue(String name, String value){
-        variables.get(name).setValue(value);
     }
 
     public Variable getVariable(String name){

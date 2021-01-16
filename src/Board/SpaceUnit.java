@@ -11,7 +11,7 @@ import java.util.HashMap;
  * Class that represents current board state.
  */
 public class SpaceUnit {
-    private HashMap<Dictionary.SpaceUnits, Integer> units;
+    private final HashMap<Dictionary.SpaceUnits, Integer> units;
     public SpaceUnit(){
         units = new HashMap<>();
         for ( Dictionary.SpaceUnits unit : Dictionary.SpaceUnits.values() ) {
