@@ -10,6 +10,7 @@ import Utilities.ProgramTree.Value.Literals.BoolLiteral;
 import Utilities.ProgramTree.Value.Literals.ColorLiteral;
 import Utilities.ProgramTree.Value.Literals.IntLiteral;
 import Utilities.ProgramTree.Value.Literals.Literal;
+import Utilities.StringOutStream;
 import Utilities.Token;
 import Source.StringSource;
 
@@ -23,8 +24,6 @@ import java.util.Stack;
 
 /*
 * TODO:
-*  - testy do toString dla pojedynczego i podwojnego dla kazdego
-*  - testy expression 2+2*2 -> (2+(2*2))
 *  - testy integracyjne do interpretera - duze kawalki kodu
 *  - testy jednostkowe do interpretera - dla malych struktur
 *  - testy ze sprawdzaniem zawartosci kontekstu
@@ -80,9 +79,10 @@ public class Main {
 //            System.out.println(orCondition);
             Program program = parser.parse();
             Board board = new Board();
+            StringOutStream stringOutStream = new StringOutStream();
             board.loadState("board/boardstate.json");
 
-            Interpreter interpreter = new Interpreter(program, board);
+            Interpreter interpreter = new Interpreter(program, board, stringOutStream);
 
             interpreter.execute();
 
@@ -99,17 +99,6 @@ public class Main {
 //
 //             board.resetState();
 //
-
-//            LinkedList<Integer> stack = new LinkedList<>();
-//            stack.push(1);
-//            stack.push(2);
-//            stack.push(3);
-//            stack.push(4);
-//
-//            for (var elem: stack
-//                 ) {
-//                System.out.println(elem);
-//            }
 
         } catch (Exception exception) {
             exception.printStackTrace();

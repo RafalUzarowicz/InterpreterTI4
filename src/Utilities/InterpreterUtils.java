@@ -183,7 +183,7 @@ public class InterpreterUtils {
             }
         } else if (PlanetLiteral.class.equals(source.getClass())) {
             String string = source.getValue();
-            if(string.charAt(0) == 'h'){
+            if(string.charAt(0) == 'p'){
                 try{
                     int value = Integer.parseInt(string.substring(1));
                     if(value < Constants.Board.PLANET_NUMBER && value >= 0){
@@ -259,5 +259,28 @@ public class InterpreterUtils {
             return new UnitLiteral(source.getValue());
         }
         throw new InterpreterException(line, "Unknown literal type.");
+    }
+
+    public static Variable variableCopy(Variable variable){
+        if (ArrayVariable.class.equals(variable.getClass())) {
+            return new ArrayVariable(variableCopy(((ArrayVariable) variable).getVariable()), ((ArrayVariable) variable).size());
+        } else if (BoolVariable.class.equals(variable.getClass())) {
+            return new BoolVariable(variable.getName());
+        } else if (ColorVariable.class.equals(variable.getClass())) {
+            return new ColorVariable(variable.getName());
+        } else if (HexVariable.class.equals(variable.getClass())) {
+            return new HexVariable(variable.getName());
+        } else if (IntVariable.class.equals(variable.getClass())) {
+            return new IntVariable(variable.getName());
+        } else if (PlanetVariable.class.equals(variable.getClass())) {
+            return new PlanetVariable(variable.getName());
+        } else if (StringVariable.class.equals(variable.getClass())) {
+            return new StringVariable(variable.getName());
+        } else if (UnitVariable.class.equals(variable.getClass())) {
+            return new UnitVariable(variable.getName());
+        } else if (VarVariable.class.equals(variable.getClass())) {
+            return new VarVariable(variable.getName());
+        }
+        return new Variable(variable.getName());
     }
 }

@@ -7,6 +7,7 @@ import Interpreter.Environment.CallContext;
 import Interpreter.Environment.Environment;
 import Utilities.Dictionary;
 import Utilities.InterpreterUtils;
+import Utilities.OStream;
 import Utilities.ProgramTree.*;
 import Utilities.ProgramTree.BoardChange.*;
 import Utilities.ProgramTree.ConditionExpresion.*;
@@ -32,11 +33,29 @@ public class Interpreter implements IVisitor{
     private final Board board;
     private final Program program;
     private final Environment environment;
+    private final OStream outStream;
 
-    public Interpreter(Program program, Board board){
+    public Board getBoard() {
+        return board;
+    }
+
+    public Program getProgram() {
+        return program;
+    }
+
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    public OStream getOutStream() {
+        return outStream;
+    }
+
+    public Interpreter(Program program, Board board, OStream outStream){
         this.program = program;
         this.board = board;
         this.environment = new Environment();
+        this.outStream = outStream;
     }
 
     public void execute() throws Exception {
@@ -55,7 +74,7 @@ public class Interpreter implements IVisitor{
         else{
             mainFun.accept(this);
         }
-        System.out.println("\nMain function has returned "+environment.popValue().getValue()+".");
+        outStream.print("\nMain function has returned "+environment.peekValue().getValue()+".");
     }
 
     @Override public void visit(Function function) throws Exception {
@@ -344,6 +363,7 @@ public class Interpreter implements IVisitor{
         function.accept(this);
         if(environment.hasReturned()){
             environment.setHasReturned(false);
+            environment.popValue();
         }else{
             throw new InterpreterException(environment.getCurrentStatementLine(), "Function didn't return a value.");
         }
@@ -395,7 +415,7 @@ public class Interpreter implements IVisitor{
 
             stringBuilder.append(literal.getValue());
         }
-        System.out.println(stringBuilder.toString());
+        outStream.print(stringBuilder.toString());
     }
 
     @Override public void visit(Return returnStm) throws Exception {
