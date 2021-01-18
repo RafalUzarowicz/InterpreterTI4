@@ -4,6 +4,7 @@ import Utilities.ProgramTree.Statements.Statement;
 import Utilities.ProgramTree.Value.Literals.Literal;
 
 import java.util.Stack;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -16,7 +17,7 @@ public class Environment {
     private boolean hasBroken;
     private Statement currentStatement;
 
-    public Environment(){
+    public Environment() {
         callContexts = new Stack<>();
         values = new Stack<>();
         hasReturned = false;
@@ -25,7 +26,7 @@ public class Environment {
         currentStatement = null;
     }
 
-    public void pushCallContext(){
+    public void pushCallContext() {
         callContexts.push(new CallContext());
     }
 
@@ -33,19 +34,19 @@ public class Environment {
         return callContexts.peek();
     }
 
-    public void popCallContext(){
+    public void popCallContext() {
         callContexts.pop();
     }
 
-    public void pushValue(Literal literal){
+    public void pushValue(Literal literal) {
         values.push(literal);
     }
 
-    public Literal peekValue(){
+    public Literal peekValue() {
         return values.peek();
     }
 
-    public Literal popValue(){
+    public Literal popValue() {
         return values.pop();
     }
 

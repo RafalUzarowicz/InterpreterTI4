@@ -2,7 +2,9 @@ package Source;
 
 import Utilities.Position;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
 
 /**
  * Author: Rafal Uzarowicz

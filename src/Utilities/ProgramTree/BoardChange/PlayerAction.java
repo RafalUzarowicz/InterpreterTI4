@@ -1,6 +1,7 @@
 package Utilities.ProgramTree.BoardChange;
 
 import Utilities.ProgramTree.INode;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz

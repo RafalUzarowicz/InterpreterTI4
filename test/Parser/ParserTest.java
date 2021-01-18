@@ -1,9 +1,15 @@
 package Parser;
 
 import Exceptions.ParserException;
-import Utilities.ProgramTree.*;
+import Scanner.Scanner;
+import Source.StringSource;
+import Utilities.Position;
+import Utilities.ProgramTree.Block;
 import Utilities.ProgramTree.BoardChange.*;
 import Utilities.ProgramTree.ConditionExpresion.Expression;
+import Utilities.ProgramTree.Function;
+import Utilities.ProgramTree.Parameters;
+import Utilities.ProgramTree.Program;
 import Utilities.ProgramTree.Statements.*;
 import Utilities.ProgramTree.Value.BoardStateCheck.ActivationCheck;
 import Utilities.ProgramTree.Value.BoardStateCheck.HexStateCheck;
@@ -13,10 +19,7 @@ import Utilities.ProgramTree.Value.FunctionCallValue;
 import Utilities.ProgramTree.Value.Literals.*;
 import Utilities.ProgramTree.Value.Value;
 import Utilities.ProgramTree.Variables.IntVariable;
-import Scanner.Scanner;
 import Utilities.Token;
-import Utilities.Position;
-import Source.StringSource;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -39,7 +42,7 @@ public class ParserTest {
     @MethodSource("providePlayerStateCheckGood")
     void goodPlayerStateCheck(String player, String unit, String place) throws Exception {
         // Arrange
-        String line = "player("+player+")has("+unit+")at("+place+")";
+        String line = "player(" + player + ")has(" + unit + ")at(" + place + ")";
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
@@ -88,7 +91,7 @@ public class ParserTest {
     @MethodSource("provideActivationCheckGood")
     void goodActivationCheck(String player, String place) throws Exception {
         // Arrange
-        String line = "player("+player+")activated("+place+")";
+        String line = "player(" + player + ")activated(" + place + ")";
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
@@ -134,7 +137,7 @@ public class ParserTest {
     @MethodSource("provideHexStateCheckGood")
     void goodHexStateCheck(String hex, String place, String unit) throws Exception {
         // Arrange
-        String line = hex+"("+place+")has("+unit+")";
+        String line = hex + "(" + place + ")has(" + unit + ")";
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
@@ -181,7 +184,7 @@ public class ParserTest {
     @MethodSource("providePlanetStateCheckGood")
     void goodPlanetStateCheck(String planet, String place, String unit) throws Exception {
         // Arrange
-        String line = planet+"("+place+")has("+unit+")";
+        String line = planet + "(" + place + ")has(" + unit + ")";
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
@@ -264,7 +267,7 @@ public class ParserTest {
     @MethodSource("provideFunctionCallValueGood")
     void goodFunctionCallValue(Token token, String argumentsString) throws Exception {
         // Arrange
-        String line = token.getValue()+"("+argumentsString+")";
+        String line = token.getValue() + "(" + argumentsString + ")";
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
@@ -276,9 +279,9 @@ public class ParserTest {
         // Assert
         assertNotEquals(null, arguments);
         assertEquals(token.getValue(), functionCallValue.getIdentifier());
-        if(!argumentsString.equals("")){
+        if (!argumentsString.equals("")) {
             assertEquals(args.length, arguments.getArguments().size());
-        }else{
+        } else {
             assertEquals(0, arguments.getArguments().size());
         }
     }
@@ -295,7 +298,7 @@ public class ParserTest {
     @MethodSource("provideFunctionCallValueBad")
     void badFunctionCallValue(Token token, String string) throws Exception {
         // Arrange
-        String line = token.getValue()+string;
+        String line = token.getValue() + string;
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
@@ -404,7 +407,7 @@ public class ParserTest {
                 Arguments.of("(3+4)*(8-1||2("),
                 Arguments.of("!(x+(!y+2)"),
                 Arguments.of("!(x+(!y+2)")
-                );
+        );
     }
 
     @ParameterizedTest
@@ -573,12 +576,12 @@ public class ParserTest {
         assertNotEquals(null, assignment);
         assertNotEquals(null, assignment.getValue());
 
-        if(strings[0].endsWith("]")){
+        if (strings[0].endsWith("]")) {
             String[] subStrs = strings[0].split("\\[");
             assertEquals(subStrs[0], assignment.getIdentifier());
-            String subStr = subStrs[1].substring(0, subStrs[1].length()-1);
+            String subStr = subStrs[1].substring(0, subStrs[1].length() - 1);
             assertEquals(subStr, assignment.getIndex());
-        }else{
+        } else {
             assertEquals(strings[0], assignment.getIdentifier());
         }
     }
@@ -665,7 +668,7 @@ public class ParserTest {
     @MethodSource("provideFunctionCallStatementGood")
     void goodFunctionCallStatement(Token token, String argumentsString) throws Exception {
         // Arrange
-        String line = token.getValue()+"("+argumentsString+");";
+        String line = token.getValue() + "(" + argumentsString + ");";
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
@@ -677,9 +680,9 @@ public class ParserTest {
         // Assert
         assertNotEquals(null, arguments);
         assertEquals(token.getValue(), functionCall.getIdentifier());
-        if(!argumentsString.equals("")){
+        if (!argumentsString.equals("")) {
             assertEquals(args.length, arguments.getArguments().size());
-        }else{
+        } else {
             assertEquals(0, arguments.getArguments().size());
         }
     }
@@ -696,7 +699,7 @@ public class ParserTest {
     @MethodSource("provideFunctionCallStatementBad")
     void badFunctionCallStatement(Token token, String string) throws Exception {
         // Arrange
-        String line = token.getValue()+string;
+        String line = token.getValue() + string;
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
@@ -1337,9 +1340,9 @@ public class ParserTest {
         Parameters parameters = parser.tryParameters();
         // Assert
         assertNotEquals(null, parameters);
-        if(!line.equals("")){
+        if (!line.equals("")) {
             assertEquals(params.length, parameters.getParameters().size());
-        }else{
+        } else {
             assertEquals(0, parameters.getParameters().size());
         }
     }

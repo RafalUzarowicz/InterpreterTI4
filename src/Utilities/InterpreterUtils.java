@@ -3,15 +3,18 @@ package Utilities;
 import Exceptions.InterpreterException;
 import Utilities.ProgramTree.Value.Literals.*;
 import Utilities.ProgramTree.Variables.*;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
  */
 public class InterpreterUtils {
     private static int line = 0;
-    public static void setLine(int newLine){
+
+    public static void setLine(int newLine) {
         line = newLine;
     }
+
     public static Literal literalCast(Literal source, Variable variable) throws InterpreterException {
         if (BoolVariable.class.equals(variable.getClass())) {
             return boolLiteralCast(source);
@@ -42,22 +45,22 @@ public class InterpreterUtils {
             throw new InterpreterException(line, "No cast from hex to bool.");
         } else if (IntLiteral.class.equals(source.getClass())) {
             int value = Integer.parseInt(source.getValue());
-            if(value == 0){
+            if (value == 0) {
                 return new BoolLiteral("false");
-            }else{
+            } else {
                 return new BoolLiteral("true");
             }
         } else if (PlanetLiteral.class.equals(source.getClass())) {
             throw new InterpreterException(line, "No cast from planet to bool.");
         } else if (StringLiteral.class.equals(source.getClass())) {
-            if(source.getValue().equals("")){
+            if (source.getValue().equals("")) {
                 return new BoolLiteral("false");
-            }else{
+            } else {
                 return new BoolLiteral("true");
             }
         } else if (UnitLiteral.class.equals(source.getClass())) {
             throw new InterpreterException(line, "No cast from unit to bool.");
-        } else if (Literal.class.equals(source.getClass())){
+        } else if (Literal.class.equals(source.getClass())) {
             return new BoolLiteral(source.getValue());
         }
         throw new InterpreterException(line, "Unknown literal type.");
@@ -75,14 +78,14 @@ public class InterpreterUtils {
         } else if (PlanetLiteral.class.equals(source.getClass())) {
             throw new InterpreterException(line, "No cast from planet to color.");
         } else if (StringLiteral.class.equals(source.getClass())) {
-            if(ScannerUtils.literalToType.get(source.getValue()) == Token.Type.ColorLiteral){
+            if (ScannerUtils.literalToType.get(source.getValue()) == Token.Type.ColorLiteral) {
                 return new ColorLiteral(source.getValue());
-            }else{
+            } else {
                 throw new InterpreterException(line, "Wrong cast from string to color.");
             }
         } else if (UnitLiteral.class.equals(source.getClass())) {
             throw new InterpreterException(line, "No cast from unit to color.");
-        } else if (Literal.class.equals(source.getClass())){
+        } else if (Literal.class.equals(source.getClass())) {
             return new ColorLiteral(source.getValue());
         }
         throw new InterpreterException(line, "Unknown literal type.");
@@ -95,42 +98,42 @@ public class InterpreterUtils {
             throw new InterpreterException(line, "No cast from color to hex.");
         } else if (HexLiteral.class.equals(source.getClass())) {
             String string = source.getValue();
-            if(string.charAt(0) == 'h'){
-                try{
+            if (string.charAt(0) == 'h') {
+                try {
                     int value = Integer.parseInt(string.substring(1));
-                    if(value < Constants.Board.HEX_NUMBER && value >= 0){
+                    if (value < Constants.Board.HEX_NUMBER && value >= 0) {
                         return new HexLiteral(string);
                     }
-                }catch (NumberFormatException ignored){
+                } catch (NumberFormatException ignored) {
                     throw new InterpreterException(line, "Wrong hex index.");
                 }
             }
             throw new InterpreterException(line, "Wrong cast from hex to hex.");
         } else if (IntLiteral.class.equals(source.getClass())) {
             int value = Integer.parseInt(source.getValue());
-            if(value < Constants.Board.HEX_NUMBER && value >= 0){
-                return new HexLiteral("h"+value);
-            }else{
+            if (value < Constants.Board.HEX_NUMBER && value >= 0) {
+                return new HexLiteral("h" + value);
+            } else {
                 throw new InterpreterException(line, "Wrong cast from number to hex.");
             }
         } else if (PlanetLiteral.class.equals(source.getClass())) {
             throw new InterpreterException(line, "No cast from planet to hex.");
         } else if (StringLiteral.class.equals(source.getClass())) {
             String string = source.getValue();
-            if(string.charAt(0) == 'h'){
-                try{
+            if (string.charAt(0) == 'h') {
+                try {
                     int value = Integer.parseInt(string.substring(1));
-                    if(value < Constants.Board.HEX_NUMBER && value >= 0){
-                        return new HexLiteral("h"+value);
+                    if (value < Constants.Board.HEX_NUMBER && value >= 0) {
+                        return new HexLiteral("h" + value);
                     }
-                }catch (NumberFormatException ignored){
+                } catch (NumberFormatException ignored) {
 
                 }
             }
             throw new InterpreterException(line, "Wrong cast from string to hex.");
         } else if (UnitLiteral.class.equals(source.getClass())) {
             throw new InterpreterException(line, "No cast from unit to hex.");
-        } else if (Literal.class.equals(source.getClass())){
+        } else if (Literal.class.equals(source.getClass())) {
             return new HexLiteral(source.getValue());
         }
         throw new InterpreterException(line, "Unknown literal type.");
@@ -138,9 +141,9 @@ public class InterpreterUtils {
 
     private static Literal intLiteralCast(Literal source) throws InterpreterException {
         if (BoolLiteral.class.equals(source.getClass())) {
-            if(source.getValue().equals("true")){
+            if (source.getValue().equals("true")) {
                 return new IntLiteral("1");
-            }else if(source.getValue().equals("false")){
+            } else if (source.getValue().equals("false")) {
                 return new IntLiteral("0");
             }
             throw new InterpreterException(line, "Wrong cast from bool to number.");
@@ -153,15 +156,15 @@ public class InterpreterUtils {
         } else if (PlanetLiteral.class.equals(source.getClass())) {
             throw new InterpreterException(line, "No cast from planet to number.");
         } else if (StringLiteral.class.equals(source.getClass())) {
-            try{
+            try {
                 int value = Integer.parseInt(source.getValue());
-                return new IntLiteral(""+value);
-            }catch (NumberFormatException e){
+                return new IntLiteral("" + value);
+            } catch (NumberFormatException e) {
                 throw new InterpreterException(line, "Wrong cast from string to number.");
             }
         } else if (UnitLiteral.class.equals(source.getClass())) {
             throw new InterpreterException(line, "No cast from unit to number.");
-        } else if (Literal.class.equals(source.getClass())){
+        } else if (Literal.class.equals(source.getClass())) {
             return new IntLiteral(source.getValue());
         }
         throw new InterpreterException(line, "Unknown literal type.");
@@ -176,40 +179,40 @@ public class InterpreterUtils {
             throw new InterpreterException(line, "No cast from hex to planet.");
         } else if (IntLiteral.class.equals(source.getClass())) {
             int value = Integer.parseInt(source.getValue());
-            if(value < Constants.Board.PLANET_NUMBER && value >= 0){
-                return new HexLiteral("p"+value);
-            }else{
+            if (value < Constants.Board.PLANET_NUMBER && value >= 0) {
+                return new HexLiteral("p" + value);
+            } else {
                 throw new InterpreterException(line, "Wrong cast from number to planet.");
             }
         } else if (PlanetLiteral.class.equals(source.getClass())) {
             String string = source.getValue();
-            if(string.charAt(0) == 'p'){
-                try{
+            if (string.charAt(0) == 'p') {
+                try {
                     int value = Integer.parseInt(string.substring(1));
-                    if(value < Constants.Board.PLANET_NUMBER && value >= 0){
+                    if (value < Constants.Board.PLANET_NUMBER && value >= 0) {
                         return new PlanetLiteral(string);
                     }
-                }catch (NumberFormatException ignored){
+                } catch (NumberFormatException ignored) {
                     throw new InterpreterException(line, "Wrong planet index.");
                 }
             }
             throw new InterpreterException(line, "Wrong cast from planet to planet.");
         } else if (StringLiteral.class.equals(source.getClass())) {
             String string = source.getValue();
-            if(string.charAt(0) == 'h'){
-                try{
+            if (string.charAt(0) == 'h') {
+                try {
                     int value = Integer.parseInt(string.substring(1));
-                    if(value < Constants.Board.PLANET_NUMBER && value >= 0){
-                        return new HexLiteral("p"+value);
+                    if (value < Constants.Board.PLANET_NUMBER && value >= 0) {
+                        return new HexLiteral("p" + value);
                     }
-                }catch (NumberFormatException ignored){
+                } catch (NumberFormatException ignored) {
 
                 }
             }
             throw new InterpreterException(line, "Wrong cast from string to planet.");
         } else if (UnitLiteral.class.equals(source.getClass())) {
             throw new InterpreterException(line, "No cast from unit to planet.");
-        } else if (Literal.class.equals(source.getClass())){
+        } else if (Literal.class.equals(source.getClass())) {
             return new PlanetLiteral(source.getValue());
         }
         throw new InterpreterException(line, "Unknown literal type.");
@@ -230,7 +233,7 @@ public class InterpreterUtils {
             return new StringLiteral(source.getValue());
         } else if (UnitLiteral.class.equals(source.getClass())) {
             return new StringLiteral(source.getValue());
-        } else if (Literal.class.equals(source.getClass())){
+        } else if (Literal.class.equals(source.getClass())) {
             return new StringLiteral(source.getValue());
         }
         throw new InterpreterException(line, "Unknown literal type.");
@@ -248,20 +251,20 @@ public class InterpreterUtils {
         } else if (PlanetLiteral.class.equals(source.getClass())) {
             throw new InterpreterException(line, "No cast from planet to unit.");
         } else if (StringLiteral.class.equals(source.getClass())) {
-            if(ScannerUtils.literalToType.get(source.getValue()) == Token.Type.UnitLiteral){
+            if (ScannerUtils.literalToType.get(source.getValue()) == Token.Type.UnitLiteral) {
                 return new ColorLiteral(source.getValue());
-            }else{
+            } else {
                 throw new InterpreterException(line, "Wrong cast from string to unit.");
             }
         } else if (UnitLiteral.class.equals(source.getClass())) {
             return new UnitLiteral(source.getValue());
-        } else if (Literal.class.equals(source.getClass())){
+        } else if (Literal.class.equals(source.getClass())) {
             return new UnitLiteral(source.getValue());
         }
         throw new InterpreterException(line, "Unknown literal type.");
     }
 
-    public static Variable variableCopy(Variable variable){
+    public static Variable variableCopy(Variable variable) {
         if (ArrayVariable.class.equals(variable.getClass())) {
             return new ArrayVariable(variableCopy(((ArrayVariable) variable).getVariable()), ((ArrayVariable) variable).size());
         } else if (BoolVariable.class.equals(variable.getClass())) {

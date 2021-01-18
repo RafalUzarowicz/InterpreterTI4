@@ -48,7 +48,7 @@ public class Position implements Cloneable {
         position.setSecond(Constants.Position.FIRST_INDEX);
     }
 
-    public int getLine(){
+    public int getLine() {
         return position.getFirst();
     }
 

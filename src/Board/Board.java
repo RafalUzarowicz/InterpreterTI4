@@ -25,16 +25,20 @@ public class Board {
 
     private String boardFile;
 
-    public Board(){
+    public Board() {
         hexes = new ArrayList<>(Constants.Board.HEX_NUMBER);
-        for ( int i = 0; i < Constants.Board.HEX_NUMBER; ++i ) {
+        for (int i = 0; i < Constants.Board.HEX_NUMBER; ++i) {
             hexes.add(new Hex());
         }
         planets = new ArrayList<>(Constants.Board.PLANET_NUMBER);
-        for ( int i = 0; i < Constants.Board.PLANET_NUMBER; ++i ) {
+        for (int i = 0; i < Constants.Board.PLANET_NUMBER; ++i) {
             planets.add(new Planet());
         }
-        boardFile = "boardFile.json";
+        boardFile = null;
+    }
+
+    public String getBoardFile() {
+        return boardFile;
     }
 
     public void reloadState() throws IOException, ParseException {
@@ -49,72 +53,79 @@ public class Board {
 
         // Hexes
         JSONObject hexesData;
-        try{
+        try {
             hexesData = (JSONObject) boardState.get("hexes");
-            for( int i = 0; i < Constants.Board.HEX_NUMBER; ++i ){
+            for (int i = 0; i < Constants.Board.HEX_NUMBER; ++i) {
                 JSONObject hexData;
                 try {
-                    hexData = (JSONObject) hexesData.get("h"+i);
+                    hexData = (JSONObject) hexesData.get("h" + i);
                     // Tokens
                     JSONObject tokensData;
                     try {
                         tokensData = (JSONObject) hexData.get("tokens");
-                        for (Dictionary.PlayerColors color: Dictionary.PlayerColors.values() ) {
+                        for (Dictionary.PlayerColors color : Dictionary.PlayerColors.values()) {
                             boolean isActivated;
-                            try{
+                            try {
                                 isActivated = (boolean) tokensData.get(color.name());
-                            }catch (NullPointerException e){
+                            } catch (NullPointerException e) {
                                 isActivated = false;
                             }
                             hexes.get(i).setActivation(color, isActivated);
                         }
-                    }catch (NullPointerException ignored){}
+                    } catch (NullPointerException ignored) {
+                    }
                     // Units
                     JSONObject playerUnitsData;
-                    for (Dictionary.PlayerColors color: Dictionary.PlayerColors.values() ) {
-                        try{
+                    for (Dictionary.PlayerColors color : Dictionary.PlayerColors.values()) {
+                        try {
                             playerUnitsData = (JSONObject) hexData.get(color.name());
-                            for (Dictionary.SpaceUnits unit : Dictionary.SpaceUnits.values()){
+                            for (Dictionary.SpaceUnits unit : Dictionary.SpaceUnits.values()) {
                                 int number;
-                                try{
+                                try {
                                     number = Integer.parseInt(playerUnitsData.get(unit.name()).toString());
-                                }catch (NullPointerException e){
+                                } catch (NullPointerException e) {
                                     number = 0;
                                 }
                                 hexes.get(i).setPlayerUnitNumber(color, unit, number);
                             }
-                        }catch (NullPointerException ignored){}
+                        } catch (NullPointerException ignored) {
+                        }
                     }
-                }catch (NullPointerException ignored){}
+                } catch (NullPointerException ignored) {
+                }
             }
-        }catch (NullPointerException ignored){}
+        } catch (NullPointerException ignored) {
+        }
         // Planets
         JSONObject planetsData;
         try {
             planetsData = (JSONObject) boardState.get("planets");
-            for( int i = 0; i < Constants.Board.PLANET_NUMBER; ++i ){
+            for (int i = 0; i < Constants.Board.PLANET_NUMBER; ++i) {
                 JSONObject planetData;
-                try{
-                    planetData = (JSONObject) planetsData.get("p"+i);
+                try {
+                    planetData = (JSONObject) planetsData.get("p" + i);
                     // Units
                     JSONObject playerUnitsData;
-                    for (Dictionary.PlayerColors color: Dictionary.PlayerColors.values() ) {
+                    for (Dictionary.PlayerColors color : Dictionary.PlayerColors.values()) {
                         try {
                             playerUnitsData = (JSONObject) planetData.get(color.name());
-                            for (Dictionary.LandUnits unit : Dictionary.LandUnits.values()){
+                            for (Dictionary.LandUnits unit : Dictionary.LandUnits.values()) {
                                 int number;
-                                try{
+                                try {
                                     number = Integer.parseInt(playerUnitsData.get(unit.name()).toString());
-                                }catch (NullPointerException e){
+                                } catch (NullPointerException e) {
                                     number = 0;
                                 }
                                 planets.get(i).setPlayerUnitNumber(color, unit, number);
                             }
-                        }catch (NullPointerException ignored){}
+                        } catch (NullPointerException ignored) {
+                        }
                     }
-                }catch (NullPointerException ignored){}
+                } catch (NullPointerException ignored) {
+                }
             }
-        }catch (NullPointerException ignored){}
+        } catch (NullPointerException ignored) {
+        }
     }
 
     public void saveState() throws IOException {
@@ -127,62 +138,62 @@ public class Board {
         // Hexes
         JSONObject hexesData = new JSONObject();
 
-        for( int i = 0; i < Constants.Board.HEX_NUMBER; ++i ){
+        for (int i = 0; i < Constants.Board.HEX_NUMBER; ++i) {
             JSONObject hexData = new JSONObject();
             // Tokens
             JSONObject tokensData = new JSONObject();
-            for (Dictionary.PlayerColors color: Dictionary.PlayerColors.values() ) {
-                if(hexes.get(i).getActivation(color)){
+            for (Dictionary.PlayerColors color : Dictionary.PlayerColors.values()) {
+                if (hexes.get(i).getActivation(color)) {
                     tokensData.put(color.name(), hexes.get(i).getActivation(color));
                 }
             }
-            if(!tokensData.isEmpty()){
+            if (!tokensData.isEmpty()) {
                 hexData.put("tokens", tokensData);
             }
             // Units
             JSONObject playerUnitsData;
-            for (Dictionary.PlayerColors color: Dictionary.PlayerColors.values() ) {
+            for (Dictionary.PlayerColors color : Dictionary.PlayerColors.values()) {
                 playerUnitsData = new JSONObject();
-                for (Dictionary.SpaceUnits unit : Dictionary.SpaceUnits.values()){
-                    if(hexes.get(i).getPlayerUnitNumber(color, unit)>0){
+                for (Dictionary.SpaceUnits unit : Dictionary.SpaceUnits.values()) {
+                    if (hexes.get(i).getPlayerUnitNumber(color, unit) > 0) {
                         playerUnitsData.put(unit.name(), hexes.get(i).getPlayerUnitNumber(color, unit));
                     }
                 }
-                if(!playerUnitsData.isEmpty()){
+                if (!playerUnitsData.isEmpty()) {
                     hexData.put(color.name(), playerUnitsData);
                 }
             }
-            if(!hexData.isEmpty()){
-                hexesData.put("h"+i, hexData);
+            if (!hexData.isEmpty()) {
+                hexesData.put("h" + i, hexData);
             }
         }
-        if(!hexesData.isEmpty()){
+        if (!hexesData.isEmpty()) {
             boardState.put("hexes", hexesData);
         }
 
         // Planets
         JSONObject planetsData = new JSONObject();
 
-        for( int i = 0; i < Constants.Board.PLANET_NUMBER; ++i ){
+        for (int i = 0; i < Constants.Board.PLANET_NUMBER; ++i) {
             JSONObject planetData = new JSONObject();
             // Units
             JSONObject playerUnitsData;
-            for (Dictionary.PlayerColors color: Dictionary.PlayerColors.values() ) {
+            for (Dictionary.PlayerColors color : Dictionary.PlayerColors.values()) {
                 playerUnitsData = new JSONObject();
-                for (Dictionary.LandUnits unit : Dictionary.LandUnits.values()){
-                    if(planets.get(i).getPlayerUnitNumber(color, unit)>0){
+                for (Dictionary.LandUnits unit : Dictionary.LandUnits.values()) {
+                    if (planets.get(i).getPlayerUnitNumber(color, unit) > 0) {
                         playerUnitsData.put(unit.name(), planets.get(i).getPlayerUnitNumber(color, unit));
                     }
                 }
-                if(!playerUnitsData.isEmpty()){
+                if (!playerUnitsData.isEmpty()) {
                     planetData.put(color.name(), playerUnitsData);
                 }
             }
-            if(!planetData.isEmpty()){
-                planetsData.put("p"+i, planetData);
+            if (!planetData.isEmpty()) {
+                planetsData.put("p" + i, planetData);
             }
         }
-        if(!planetsData.isEmpty()){
+        if (!planetsData.isEmpty()) {
             boardState.put("planets", planetsData);
         }
 
@@ -190,26 +201,26 @@ public class Board {
         Files.write(Paths.get(file), boardState.toJSONString().getBytes());
     }
 
-    public void resetState(){
+    public void resetState() {
         // Hexes
-        for( int i = 0; i < Constants.Board.HEX_NUMBER; ++i ){
+        for (int i = 0; i < Constants.Board.HEX_NUMBER; ++i) {
             // Tokens
-            for (Dictionary.PlayerColors color: Dictionary.PlayerColors.values() ) {
+            for (Dictionary.PlayerColors color : Dictionary.PlayerColors.values()) {
                 hexes.get(i).setActivation(color, false);
             }
             // Units
-            for (Dictionary.PlayerColors color: Dictionary.PlayerColors.values() ) {
-                for (Dictionary.SpaceUnits unit : Dictionary.SpaceUnits.values()){
+            for (Dictionary.PlayerColors color : Dictionary.PlayerColors.values()) {
+                for (Dictionary.SpaceUnits unit : Dictionary.SpaceUnits.values()) {
                     hexes.get(i).setPlayerUnitNumber(color, unit, 0);
                 }
             }
         }
 
         // Planets
-        for( int i = 0; i < Constants.Board.PLANET_NUMBER; ++i ){
+        for (int i = 0; i < Constants.Board.PLANET_NUMBER; ++i) {
             // Units
-            for (Dictionary.PlayerColors color: Dictionary.PlayerColors.values() ) {
-                for (Dictionary.LandUnits unit : Dictionary.LandUnits.values()){
+            for (Dictionary.PlayerColors color : Dictionary.PlayerColors.values()) {
+                for (Dictionary.LandUnits unit : Dictionary.LandUnits.values()) {
                     planets.get(i).setPlayerUnitNumber(color, unit, 0);
                 }
             }
@@ -222,53 +233,53 @@ public class Board {
         Files.write(Paths.get(boardFile), boardState.toJSONString().getBytes());
     }
 
-    public void activate(int index, Dictionary.PlayerColors color){
+    public void activate(int index, Dictionary.PlayerColors color) {
         hexes.get(index).activate(color);
     }
 
-    public void deactivate(int index, Dictionary.PlayerColors color){
+    public void deactivate(int index, Dictionary.PlayerColors color) {
         hexes.get(index).deactivate(color);
     }
 
-    public boolean isActivated(int index, Dictionary.PlayerColors color){
+    public boolean isActivated(int index, Dictionary.PlayerColors color) {
         return hexes.get(index).getActivation(color);
     }
 
-    public void changePlayerHexUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.SpaceUnits unit, int amount){
+    public void changePlayerHexUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.SpaceUnits unit, int amount) {
         Hex h = hexes.get(index);
-        if(h != null){
+        if (h != null) {
             h.changePlayerUnitNumber(color, unit, amount);
         }
     }
 
-    public void changePlayerPlanetUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.LandUnits unit, int amount){
+    public void changePlayerPlanetUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.LandUnits unit, int amount) {
         Planet p = planets.get(index);
-        if(p != null){
+        if (p != null) {
             p.changePlayerUnitNumber(color, unit, amount);
         }
     }
 
-    public int getPlayerHexUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.SpaceUnits unit){
+    public int getPlayerHexUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.SpaceUnits unit) {
         Hex h = hexes.get(index);
-        if(h != null){
+        if (h != null) {
             return h.getPlayerUnitNumber(color, unit);
         }
         return 0;
     }
 
-    public int getPlayerPlanetUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.LandUnits unit){
+    public int getPlayerPlanetUnitNumber(int index, Dictionary.PlayerColors color, Dictionary.LandUnits unit) {
         Planet p = planets.get(index);
-        if(p != null){
+        if (p != null) {
             return p.getPlayerUnitNumber(color, unit);
         }
         return 0;
     }
 
-    public int getHexState(int index, Dictionary.SpaceUnits unit){
+    public int getHexState(int index, Dictionary.SpaceUnits unit) {
         return hexes.get(index).getUnitState(unit);
     }
 
-    public int getPlanetState(int index, Dictionary.LandUnits unit){
+    public int getPlanetState(int index, Dictionary.LandUnits unit) {
         return planets.get(index).getUnitState(unit);
     }
 }

@@ -1,6 +1,7 @@
 package Utilities.ProgramTree;
 
 import Interpreter.IVisitor;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz

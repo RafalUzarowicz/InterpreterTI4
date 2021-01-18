@@ -1,0 +1,32 @@
+int fibtorial( int n ){
+    if( n <= 0 ){
+        return 0;
+    }
+    if( n == 1 ){
+        return 1;
+    }
+    return factnacci( n - 1 ) + factnacci( n - 2 );
+}
+
+int factnacci( int n ){
+    if( n <= 1 ){
+        return 1;
+    }else{
+        return n * fibtorial(n-1);
+    }
+}
+
+int main(){
+    int[] arr = int[5];
+    int i = 0;
+    foreach( var x : arr ){
+        x = i;
+        i = i + 1;
+    }
+    foreach( var x : arr ){
+        x = factnacci(x);
+        print(x, " ");
+    }
+    print("end");
+    return 0;
+}

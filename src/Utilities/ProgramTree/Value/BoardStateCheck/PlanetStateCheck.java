@@ -2,15 +2,16 @@ package Utilities.ProgramTree.Value.BoardStateCheck;
 
 import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Value.Value;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
  */
 public class PlanetStateCheck extends Value implements INode {
-    private Value unit;
-    private Value planet;
+    private final Value unit;
+    private final Value planet;
 
-    public PlanetStateCheck(Value planet, Value unit){
+    public PlanetStateCheck(Value planet, Value unit) {
         this.planet = planet;
         this.unit = unit;
     }
@@ -25,6 +26,6 @@ public class PlanetStateCheck extends Value implements INode {
 
     @Override
     public String toString() {
-        return "planet("+planet.toString()+")has("+unit.toString()+")";
+        return "planet(" + planet.toString() + ")has(" + unit.toString() + ")";
     }
 }

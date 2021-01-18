@@ -2,9 +2,9 @@ package Utilities.ProgramTree.Statements;
 
 import Utilities.Position;
 import Utilities.ProgramTree.ConditionExpresion.Expression;
-import Utilities.ProgramTree.ConditionExpresion.OrCondition;
 import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Variables.Variable;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -12,7 +12,8 @@ import Utilities.ProgramTree.Variables.Variable;
 public class VariableDeclaration extends Statement implements INode {
     private final Variable variable;
     private final Expression value;
-    public VariableDeclaration(Variable variable, Expression value, Position position){
+
+    public VariableDeclaration(Variable variable, Expression value, Position position) {
         super(position);
         this.variable = variable;
         this.value = value;

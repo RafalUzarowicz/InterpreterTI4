@@ -12,18 +12,19 @@ import java.util.HashMap;
  */
 public class SpaceUnit {
     private final HashMap<Dictionary.SpaceUnits, Integer> units;
-    public SpaceUnit(){
+
+    public SpaceUnit() {
         units = new HashMap<>();
-        for ( Dictionary.SpaceUnits unit : Dictionary.SpaceUnits.values() ) {
+        for (Dictionary.SpaceUnits unit : Dictionary.SpaceUnits.values()) {
             units.put(unit, 0);
         }
     }
 
-    public void setUnitNumber( Dictionary.SpaceUnits unit, int number ){
+    public void setUnitNumber(Dictionary.SpaceUnits unit, int number) {
         units.put(unit, number);
     }
 
-    public int getUnitNumber( Dictionary.SpaceUnits unit){
-        return units.get(unit) != null?units.get(unit) : 0;
+    public int getUnitNumber(Dictionary.SpaceUnits unit) {
+        return units.get(unit) != null ? units.get(unit) : 0;
     }
 }

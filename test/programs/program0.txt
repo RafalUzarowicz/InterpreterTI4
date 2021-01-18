@@ -1,0 +1,22 @@
+int factorial( int n ){
+    if( n <= 1 ){
+        return 1;
+    }else{
+        return n * factorial(n-1);
+    }
+}
+
+int main(){
+    int[] arr = int[10];
+    int i = 0;
+    foreach( var x : arr ){
+        x = i;
+        i = i + 1;
+    }
+    foreach( var x : arr ){
+        x = factorial(x);
+        print(x, " ");
+    }
+    print("end");
+    return 0;
+}

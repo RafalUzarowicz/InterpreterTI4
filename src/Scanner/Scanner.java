@@ -2,10 +2,11 @@ package Scanner;
 
 import Exceptions.ScannerException;
 import Source.ISource;
-import Utilities.Position;
 import Utilities.Constants;
+import Utilities.Position;
 import Utilities.ScannerUtils;
 import Utilities.Token;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -62,7 +63,7 @@ public class Scanner {
         return tempToken;
     }
 
-    public Token peek(){
+    public Token peek() {
         return this.token;
     }
 

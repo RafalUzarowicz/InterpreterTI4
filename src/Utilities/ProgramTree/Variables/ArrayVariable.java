@@ -5,6 +5,7 @@ import Utilities.ProgramTree.Value.Literals.Literal;
 import Utilities.ProgramTree.Value.Value;
 
 import java.util.ArrayList;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -14,11 +15,11 @@ public class ArrayVariable extends Variable implements INode {
     private final Variable variable;
 
 
-    public ArrayVariable(Variable variable, int size){
+    public ArrayVariable(Variable variable, int size) {
         super(variable.getName());
         this.variable = variable;
         values = new ArrayList<>();
-        for(int i = 0; i<size; ++i){
+        for (int i = 0; i < size; ++i) {
             values.add(null);
         }
     }
@@ -27,11 +28,11 @@ public class ArrayVariable extends Variable implements INode {
         values.set(index, value);
     }
 
-    public Value getValue(int index){
+    public Value getValue(int index) {
         return values.get(index);
     }
 
-    public int size(){
+    public int size() {
         return values.size();
     }
 

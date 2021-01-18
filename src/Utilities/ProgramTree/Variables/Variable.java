@@ -1,6 +1,7 @@
 package Utilities.ProgramTree.Variables;
 
 import Utilities.ProgramTree.INode;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -9,7 +10,7 @@ public class Variable implements INode {
     private String value;
     private String name;
 
-    public Variable(String name){
+    public Variable(String name) {
         this.name = name;
     }
 
@@ -31,7 +32,7 @@ public class Variable implements INode {
 
     @Override
     public Object clone() {
-        Variable variable = null;
+        Variable variable;
         try {
             variable = (Variable) super.clone();
         } catch (CloneNotSupportedException e) {

@@ -12,18 +12,19 @@ import java.util.HashMap;
  */
 public class LandUnit {
     private final HashMap<Dictionary.LandUnits, Integer> units;
-    public LandUnit(){
+
+    public LandUnit() {
         units = new HashMap<>();
-        for ( Dictionary.LandUnits unit : Dictionary.LandUnits.values() ) {
+        for (Dictionary.LandUnits unit : Dictionary.LandUnits.values()) {
             units.put(unit, 0);
         }
     }
 
-    public void setUnitNumber( Dictionary.LandUnits unit, int number ){
+    public void setUnitNumber(Dictionary.LandUnits unit, int number) {
         units.put(unit, number);
     }
 
-    public int getUnitNumber( Dictionary.LandUnits unit){
+    public int getUnitNumber(Dictionary.LandUnits unit) {
         return units.get(unit);
     }
 }

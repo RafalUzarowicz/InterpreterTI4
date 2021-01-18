@@ -6,6 +6,7 @@ import Utilities.ProgramTree.Value.Value;
 import Utilities.ProgramTree.Variables.ArrayVariable;
 
 import java.util.ArrayList;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -15,21 +16,25 @@ public class ArrayDeclaration extends Statement implements INode {
     private final ArrayVariable type;
     private int size;
 
-    public ArrayDeclaration(ArrayVariable type, Position position){
+    public ArrayDeclaration(ArrayVariable type, Position position) {
         super(position);
         this.type = type;
         this.values = new ArrayList<>();
         this.size = 0;
     }
+
     public void add(Value value) throws Exception {
         values.add(value);
     }
-    public void setSize(int size){
+
+    public void setSize(int size) {
         this.size = size;
     }
-    public int getSize(){
+
+    public int getSize() {
         return this.size;
     }
+
     public ArrayList<Value> getValues() {
         return values;
     }

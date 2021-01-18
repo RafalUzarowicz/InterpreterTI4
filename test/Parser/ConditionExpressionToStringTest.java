@@ -1,7 +1,5 @@
 package Parser;
 
-import Scanner.Scanner;
-import Source.StringSource;
 import Utilities.ProgramTree.ConditionExpresion.*;
 import Utilities.ProgramTree.ConditionExpresion.Operators.Operator;
 import org.junit.jupiter.api.Test;
@@ -17,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 public class ConditionExpressionToStringTest {
 
     @Test
-    void orConditionSingle(){
+    void orConditionSingle() {
         // Arrange
         OrCondition orCondition = new OrCondition();
         // Act
@@ -28,7 +26,7 @@ public class ConditionExpressionToStringTest {
     }
 
     @Test
-    void orConditionMultiple(){
+    void orConditionMultiple() {
         // Arrange
         OrCondition orCondition = new OrCondition();
         // Act
@@ -40,7 +38,7 @@ public class ConditionExpressionToStringTest {
     }
 
     @Test
-    void andConditionSingle(){
+    void andConditionSingle() {
         // Arrange
         AndCondition andCondition = new AndCondition();
         // Act
@@ -51,7 +49,7 @@ public class ConditionExpressionToStringTest {
     }
 
     @Test
-    void andConditionMultiple(){
+    void andConditionMultiple() {
         // Arrange
         AndCondition andCondition = new AndCondition();
         // Act
@@ -63,7 +61,7 @@ public class ConditionExpressionToStringTest {
     }
 
     @Test
-    void equalityConditionSingle(){
+    void equalityConditionSingle() {
         // Arrange
         EqualityCondition equalityCondition = new EqualityCondition();
         // Act
@@ -82,7 +80,7 @@ public class ConditionExpressionToStringTest {
 
     @ParameterizedTest
     @MethodSource("provideEqualityConditionOperator")
-    void equalityConditionMultiple(String operator){
+    void equalityConditionMultiple(String operator) {
         // Arrange
         EqualityCondition equalityCondition = new EqualityCondition();
         // Act
@@ -90,11 +88,11 @@ public class ConditionExpressionToStringTest {
         equalityCondition.add(new Operator(operator), new Expression());
         // Assert
         assertNotEquals(null, equalityCondition);
-        assertEquals("(x"+operator+"x)", equalityCondition.toString());
+        assertEquals("(x" + operator + "x)", equalityCondition.toString());
     }
 
     @Test
-    void relationalConditionSingle(){
+    void relationalConditionSingle() {
         // Arrange
         RelationalCondition relationalCondition = new RelationalCondition();
         // Act
@@ -115,7 +113,7 @@ public class ConditionExpressionToStringTest {
 
     @ParameterizedTest
     @MethodSource("provideRelationalConditionOperator")
-    void relationalConditionMultiple(String operator){
+    void relationalConditionMultiple(String operator) {
         // Arrange
         RelationalCondition relationalCondition = new RelationalCondition();
         // Act
@@ -123,12 +121,12 @@ public class ConditionExpressionToStringTest {
         relationalCondition.add(new Operator(operator), new Expression());
         // Assert
         assertNotEquals(null, relationalCondition);
-        assertEquals("(x"+operator+"x)", relationalCondition.toString());
+        assertEquals("(x" + operator + "x)", relationalCondition.toString());
     }
 
 
     @Test
-    void addExpressionSingle(){
+    void addExpressionSingle() {
         // Arrange
         AddExpression addExpression = new AddExpression();
         // Act
@@ -147,7 +145,7 @@ public class ConditionExpressionToStringTest {
 
     @ParameterizedTest
     @MethodSource("provideAddExpressionOperator")
-    void addExpressionMultiple(String operator){
+    void addExpressionMultiple(String operator) {
         // Arrange
         AddExpression addExpression = new AddExpression();
         // Act
@@ -155,11 +153,11 @@ public class ConditionExpressionToStringTest {
         addExpression.add(new Operator(operator), new Expression());
         // Assert
         assertNotEquals(null, addExpression);
-        assertEquals("(x"+operator+"x)", addExpression.toString());
+        assertEquals("(x" + operator + "x)", addExpression.toString());
     }
 
     @Test
-    void multiplyExpressionSingle(){
+    void multiplyExpressionSingle() {
         // Arrange
         MultiplyExpression multiplyExpression = new MultiplyExpression();
         // Act
@@ -178,7 +176,7 @@ public class ConditionExpressionToStringTest {
 
     @ParameterizedTest
     @MethodSource("provideMultiplyExpressionOperator")
-    void multiplyExpressionMultiple(String operator){
+    void multiplyExpressionMultiple(String operator) {
         // Arrange
         MultiplyExpression multiplyExpression = new MultiplyExpression();
         // Act
@@ -186,11 +184,11 @@ public class ConditionExpressionToStringTest {
         multiplyExpression.add(new Operator(operator), new Expression());
         // Assert
         assertNotEquals(null, multiplyExpression);
-        assertEquals("(x"+operator+"x)", multiplyExpression.toString());
+        assertEquals("(x" + operator + "x)", multiplyExpression.toString());
     }
 
     @Test
-    void unaryExpression(){
+    void unaryExpression() {
         // Arrange
         // Act
         UnaryExpression unaryExpression = new UnaryExpression(new Expression());
@@ -200,7 +198,7 @@ public class ConditionExpressionToStringTest {
     }
 
     @Test
-    void notUnaryExpression(){
+    void notUnaryExpression() {
         // Arrange
         // Act
         NotUnaryExpression notUnaryExpression = new NotUnaryExpression(new Expression());
@@ -210,7 +208,7 @@ public class ConditionExpressionToStringTest {
     }
 
     @Test
-    void negativeUnaryExpression(){
+    void negativeUnaryExpression() {
         // Arrange
         // Act
         NegativeUnaryExpression negativeUnaryExpression = new NegativeUnaryExpression(new Expression());

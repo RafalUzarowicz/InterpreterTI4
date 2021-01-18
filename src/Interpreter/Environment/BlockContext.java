@@ -1,9 +1,10 @@
 package Interpreter.Environment;
 
 import Utilities.InterpreterUtils;
-import Utilities.ProgramTree.Variables.*;
+import Utilities.ProgramTree.Variables.Variable;
 
 import java.util.LinkedHashMap;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -11,23 +12,23 @@ import java.util.LinkedHashMap;
 public class BlockContext {
     private final LinkedHashMap<String, Variable> variables;
 
-    public BlockContext(){
+    public BlockContext() {
         variables = new LinkedHashMap<>();
     }
 
-    public void setVariable(String name, Variable variable){
+    public void setVariable(String name, Variable variable) {
         variables.put(name, InterpreterUtils.variableCopy(variable));
     }
 
-    public boolean contains(String name){
+    public boolean contains(String name) {
         return variables.get(name) != null;
     }
 
-    public Variable getVariable(String name){
+    public Variable getVariable(String name) {
         return variables.get(name);
     }
 
-    public int getSize(){
+    public int getSize() {
         return variables.size();
     }
 }

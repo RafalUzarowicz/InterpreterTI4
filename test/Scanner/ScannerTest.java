@@ -1,7 +1,7 @@
 package Scanner;
 
-import Utilities.Position;
 import Source.StringSource;
+import Utilities.Position;
 import Utilities.ScannerUtils;
 import Utilities.Token;
 import org.junit.jupiter.api.Test;
@@ -13,7 +13,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.stream.Stream;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 /**
  * Author: Rafal Uzarowicz

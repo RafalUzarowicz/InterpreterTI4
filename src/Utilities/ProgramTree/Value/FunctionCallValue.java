@@ -2,6 +2,7 @@ package Utilities.ProgramTree.Value;
 
 import Utilities.ProgramTree.Arguments;
 import Utilities.ProgramTree.INode;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -9,7 +10,8 @@ import Utilities.ProgramTree.INode;
 public class FunctionCallValue extends Value implements INode {
     private final Arguments arguments;
     private final String identifier;
-    public FunctionCallValue(String identifier, Arguments arguments){
+
+    public FunctionCallValue(String identifier, Arguments arguments) {
         this.identifier = identifier;
         this.arguments = arguments;
     }
@@ -24,6 +26,6 @@ public class FunctionCallValue extends Value implements INode {
 
     @Override
     public String toString() {
-        return identifier+"("+arguments.toString()+")";
+        return identifier + "(" + arguments.toString() + ")";
     }
 }

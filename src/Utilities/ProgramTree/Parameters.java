@@ -4,8 +4,12 @@ import Utilities.ProgramTree.Variables.Variable;
 
 import java.util.ArrayList;
 
-public class Parameters implements INode{
-    private ArrayList<Variable> parameters;
+/**
+ * Author: Rafal Uzarowicz
+ * Github: https://github.com/RafalUzarowicz
+ */
+public class Parameters implements INode {
+    private final ArrayList<Variable> parameters;
 
     public Parameters() {
         parameters = new ArrayList<>();
@@ -19,7 +23,7 @@ public class Parameters implements INode{
         return parameters;
     }
 
-    public int getParametersNumber(){
+    public int getParametersNumber() {
         return parameters.size();
     }
 }

@@ -3,6 +3,7 @@ package Utilities.ProgramTree.Statements;
 import Utilities.Position;
 import Utilities.ProgramTree.Arguments;
 import Utilities.ProgramTree.INode;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -10,7 +11,8 @@ import Utilities.ProgramTree.INode;
 public class FunctionCall extends Statement implements INode {
     private final String identifier;
     private final Arguments arguments;
-    public FunctionCall(String identifier, Arguments arguments, Position position){
+
+    public FunctionCall(String identifier, Arguments arguments, Position position) {
         super(position);
         this.identifier = identifier;
         this.arguments = arguments;

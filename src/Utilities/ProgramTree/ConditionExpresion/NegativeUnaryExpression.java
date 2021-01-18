@@ -1,14 +1,16 @@
 package Utilities.ProgramTree.ConditionExpresion;
 
 import Utilities.ProgramTree.INode;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
  */
 public class NegativeUnaryExpression extends Expression implements INode {
     private final Expression unaryExpression;
-    public NegativeUnaryExpression(Expression unaryExpression){
-        this.unaryExpression =unaryExpression;
+
+    public NegativeUnaryExpression(Expression unaryExpression) {
+        this.unaryExpression = unaryExpression;
     }
 
     public Expression getUnaryExpression() {
@@ -17,6 +19,6 @@ public class NegativeUnaryExpression extends Expression implements INode {
 
     @Override
     public String toString() {
-        return "-(" + unaryExpression.toString() +")";
+        return "-(" + unaryExpression.toString() + ")";
     }
 }

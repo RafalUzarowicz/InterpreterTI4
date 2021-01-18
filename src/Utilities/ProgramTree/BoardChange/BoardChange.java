@@ -4,6 +4,7 @@ import Utilities.Position;
 import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Statements.Statement;
 import Utilities.ProgramTree.Value.Value;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -11,7 +12,8 @@ import Utilities.ProgramTree.Value.Value;
 public class BoardChange extends Statement implements INode {
     private final Value player;
     private final PlayerAction playerAction;
-    public BoardChange(Value player, PlayerAction playerAction, Position position){
+
+    public BoardChange(Value player, PlayerAction playerAction, Position position) {
         super(position);
         this.player = player;
         this.playerAction = playerAction;
