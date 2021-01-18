@@ -1,6 +1,6 @@
 package Scanner;
 
-import Source.Position;
+import Utilities.Position;
 import Source.StringSource;
 import Utilities.ScannerUtils;
 import Utilities.Token;

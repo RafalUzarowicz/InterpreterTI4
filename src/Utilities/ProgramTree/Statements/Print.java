@@ -1,5 +1,7 @@
 package Utilities.ProgramTree.Statements;
 
+import Utilities.Position;
+import Utilities.ProgramTree.ConditionExpresion.Expression;
 import Utilities.ProgramTree.ConditionExpresion.OrCondition;
 import Utilities.ProgramTree.INode;
 
@@ -9,15 +11,16 @@ import java.util.ArrayList;
  * Github: https://github.com/RafalUzarowicz
  */
 public class Print extends Statement implements INode {
-    ArrayList<OrCondition> conditionExpressions;
-    public Print(){
+    ArrayList<Expression> conditionExpressions;
+    public Print(Position position){
+        super(position);
         conditionExpressions = new ArrayList<>();
     }
-    public void add(OrCondition conditionExpression){
+    public void add(Expression conditionExpression){
         conditionExpressions.add(conditionExpression);
     }
 
-    public ArrayList<OrCondition> getConditionExpressions() {
+    public ArrayList<Expression> getConditionExpressions() {
         return conditionExpressions;
     }
 }

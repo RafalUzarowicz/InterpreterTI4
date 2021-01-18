@@ -1,6 +1,4 @@
-package Source;
-
-import Utilities.Constants;
+package Utilities;
 
 /**
  * Author: Rafal Uzarowicz
@@ -48,6 +46,10 @@ public class Position implements Cloneable {
 
     public void resetColumn() {
         position.setSecond(Constants.Position.FIRST_INDEX);
+    }
+
+    public int getLine(){
+        return position.getFirst();
     }
 
     public String toString() {

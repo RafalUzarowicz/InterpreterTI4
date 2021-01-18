@@ -3,7 +3,7 @@ package Parser;
 import Exceptions.ParserException;
 import Utilities.ProgramTree.*;
 import Utilities.ProgramTree.BoardChange.*;
-import Utilities.ProgramTree.ConditionExpresion.OrCondition;
+import Utilities.ProgramTree.ConditionExpresion.Expression;
 import Utilities.ProgramTree.Statements.*;
 import Utilities.ProgramTree.Value.BoardStateCheck.ActivationCheck;
 import Utilities.ProgramTree.Value.BoardStateCheck.HexStateCheck;
@@ -15,7 +15,7 @@ import Utilities.ProgramTree.Value.Value;
 import Utilities.ProgramTree.Variables.IntVariable;
 import Scanner.Scanner;
 import Utilities.Token;
-import Source.Position;
+import Utilities.Position;
 import Source.StringSource;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
@@ -391,7 +391,7 @@ public class ParserTest {
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
         // Act
-        OrCondition orCondition = parser.tryOrCondition();
+        Expression orCondition = parser.tryOrCondition();
         // Assert
         assertNotEquals(null, orCondition);
         assertEquals(expected, orCondition.toString());

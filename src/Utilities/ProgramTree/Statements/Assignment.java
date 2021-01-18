@@ -1,5 +1,7 @@
 package Utilities.ProgramTree.Statements;
 
+import Utilities.Position;
+import Utilities.ProgramTree.ConditionExpresion.Expression;
 import Utilities.ProgramTree.ConditionExpresion.OrCondition;
 import Utilities.ProgramTree.INode;
 /**
@@ -7,10 +9,11 @@ import Utilities.ProgramTree.INode;
  * Github: https://github.com/RafalUzarowicz
  */
 public class Assignment extends Statement implements INode {
-    private String index;
-    private String identifier;
-    private OrCondition value;
-    public Assignment(String index, String identifier, OrCondition value){
+    private final String index;
+    private final String identifier;
+    private final Expression value;
+    public Assignment(String index, String identifier, Expression value, Position position){
+        super(position);
         this.index = index;
         this.identifier = identifier;
         this.value = value;
@@ -24,7 +27,7 @@ public class Assignment extends Statement implements INode {
         return identifier;
     }
 
-    public OrCondition getValue() {
+    public Expression getValue() {
         return value;
     }
 }

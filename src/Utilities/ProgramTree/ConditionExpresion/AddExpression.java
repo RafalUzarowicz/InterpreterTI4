@@ -9,22 +9,22 @@ import java.util.ArrayList;
  * Github: https://github.com/RafalUzarowicz
  */
 public class AddExpression extends Expression  implements INode {
-    private final ArrayList<MultiplyExpression> multiplyExpressions;
+    private final ArrayList<Expression> multiplyExpressions;
     private final ArrayList<Operator> operators;
     public AddExpression(){
         multiplyExpressions = new ArrayList<>();
         operators = new ArrayList<>();
     }
-    public void add(MultiplyExpression multiplyExpression){
+    public void add(Expression multiplyExpression){
         multiplyExpressions.add(multiplyExpression);
     }
 
-    public void add(Operator operator, MultiplyExpression multiplyExpression){
+    public void add(Operator operator, Expression multiplyExpression){
         multiplyExpressions.add(multiplyExpression);
         operators.add(operator);
     }
 
-    public ArrayList<MultiplyExpression> getMultiplyExpressions() {
+    public ArrayList<Expression> getMultiplyExpressions() {
         return multiplyExpressions;
     }
 

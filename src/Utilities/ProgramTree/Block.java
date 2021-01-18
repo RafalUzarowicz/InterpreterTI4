@@ -1,5 +1,6 @@
 package Utilities.ProgramTree;
 
+import Utilities.Position;
 import Utilities.ProgramTree.Statements.Statement;
 
 import java.util.ArrayList;/**
@@ -8,7 +9,8 @@ import java.util.ArrayList;/**
  */
 public class Block extends Statement  implements INode{
     private ArrayList<Statement> statements;
-    public Block(){
+    public Block(Position position){
+        super(position);
         statements = new ArrayList<>();
     }
     public void add(Statement statement){

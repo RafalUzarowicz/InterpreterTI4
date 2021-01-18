@@ -2,7 +2,7 @@ package Scanner;
 
 import Exceptions.ScannerException;
 import Source.ISource;
-import Source.Position;
+import Utilities.Position;
 import Utilities.Constants;
 import Utilities.ScannerUtils;
 import Utilities.Token;

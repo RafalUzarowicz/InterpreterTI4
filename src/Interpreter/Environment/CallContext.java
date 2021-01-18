@@ -27,7 +27,7 @@ public class CallContext {
         blockContexts.pop();
     }
 
-    public void setVariableValue(String name, String value) throws InterpreterException {
+    public void setVariableValue(int line, String name, String value) throws InterpreterException {
         Variable variable;
         for (var context: blockContexts ) {
             variable = context.getVariable(name);
@@ -36,7 +36,7 @@ public class CallContext {
                 return;
             }
         }
-        throw new InterpreterException("Unknown variable identifier: "+name);
+        throw new InterpreterException(line, "Unknown variable identifier: "+name);
     }
 
     public Variable getVariable(String name){

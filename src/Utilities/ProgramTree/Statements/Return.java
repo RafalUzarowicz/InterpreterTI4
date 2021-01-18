@@ -1,5 +1,7 @@
 package Utilities.ProgramTree.Statements;
 
+import Utilities.Position;
+import Utilities.ProgramTree.ConditionExpresion.Expression;
 import Utilities.ProgramTree.ConditionExpresion.OrCondition;
 import Utilities.ProgramTree.INode;
 /**
@@ -7,12 +9,13 @@ import Utilities.ProgramTree.INode;
  * Github: https://github.com/RafalUzarowicz
  */
 public class Return extends Statement implements INode {
-    private final OrCondition returnValue;
-    public Return(OrCondition conditionExpression){
+    private final Expression returnValue;
+    public Return(Expression conditionExpression, Position position){
+        super(position);
         returnValue = conditionExpression;
     }
 
-    public OrCondition getReturnValue() {
+    public Expression getReturnValue() {
         return returnValue;
     }
 }

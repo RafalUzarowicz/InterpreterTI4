@@ -1,4 +1,4 @@
-package Source;
+package Utilities;
 
 /**
  * Author: Rafal Uzarowicz
@@ -17,7 +17,7 @@ public class Pair implements Cloneable {
     }
 
     @Override
-    protected Object clone() throws CloneNotSupportedException {
+    public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
 

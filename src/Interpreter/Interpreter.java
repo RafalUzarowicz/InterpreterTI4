@@ -64,11 +64,11 @@ public class Interpreter implements IVisitor{
         callContext.pushBlockContext();
         function.getParameters().accept(this);
         for (int i = 0; i < function.getParameters().getParameters().size(); ++i) {
-            environment.peekCallContext().setVariableValue(function.getParameters().getParameters().get(i).getName(), environment.popValue().getValue());
+            environment.peekCallContext().setVariableValue(environment.getCurrentStatementLine(), function.getParameters().getParameters().get(i).getName(), environment.popValue().getValue());
         }
         function.getBlock().accept(this);
         if(!environment.hasReturned()){
-            throw new InterpreterException("Function "+function.getIdentifier()+" has not returned any value.");
+            throw new InterpreterException(function.getPosition().getLine(), "Function "+function.getIdentifier()+" has not returned any value.");
         }
         callContext.popBlockContext();
         environment.popCallContext();
@@ -80,6 +80,8 @@ public class Interpreter implements IVisitor{
             if(environment.hasReturned() || environment.hasBroken() || environment.hasContinued()){
                 break;
             }
+            environment.setCurrentStatement(stm);
+            InterpreterUtils.setLine(environment.getCurrentStatementLine());
             stm.accept(this);
         }
         environment.peekCallContext().popBlockContext();
@@ -91,7 +93,7 @@ public class Interpreter implements IVisitor{
             if(!blockContext.contains(param.getName())){
                 blockContext.setVariable(param.getName(), param);
             }else{
-                throw new InterpreterException("Parameter "+param.getName()+" already defined.");
+                throw new InterpreterException(environment.getCurrentStatementLine(), "Parameter "+param.getName()+" already defined.");
             }
         }
     }
@@ -144,13 +146,13 @@ public class Interpreter implements IVisitor{
                     IntLiteral index = (IntLiteral) InterpreterUtils.literalCast(environment.popValue(), new IntVariable(""));
                     ((ArrayVariable) variable).getValue(Integer.parseInt(index.getValue())).accept(this);
                 }else{
-                    throw new InterpreterException("Variable is not array: "+variableValue.getName());
+                    throw new InterpreterException(environment.getCurrentStatementLine(), "Variable is not array: "+variableValue.getName());
                 }
             }else{
                 environment.pushValue(InterpreterUtils.literalCast(new Literal(variable.getValue()), variable));
             }
         }else{
-            throw new InterpreterException("Unknown variable: "+variableValue.getName());
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Unknown variable: "+variableValue.getName());
         }
     }
 
@@ -161,17 +163,17 @@ public class Interpreter implements IVisitor{
     @Override public void visit(FunctionCallValue functionCallValue) throws Exception {
         Function function = program.getFunction(functionCallValue.getIdentifier());
         if(function == null){
-            throw new InterpreterException("Unknown function call.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Unknown function call.");
         }
         if(function.getParameters().getParameters().size() != functionCallValue.getArguments().getSize()){
-            throw new InterpreterException("Wrong number of arguments.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Wrong number of arguments.");
         }
         functionCallValue.getArguments().accept(this);
         function.accept(this);
         if(environment.hasReturned()){
             environment.setHasReturned(false);
         }else{
-            throw new InterpreterException("Function didn't return a value.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Function didn't return a value.");
         }
     }
 
@@ -252,7 +254,7 @@ public class Interpreter implements IVisitor{
         }else if(environment.peekValue().getClass().equals(PlanetLiteral.class)){
             place = InterpreterUtils.literalCast(environment.popValue(), new PlanetVariable(""));
         }else{
-            throw new InterpreterException("Hex or planet value expected.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Hex or planet value expected.");
         }
         playerStateCheck.getUnit().accept(this);
         UnitLiteral unit = (UnitLiteral) InterpreterUtils.literalCast(environment.popValue(), new UnitVariable(""));
@@ -263,7 +265,7 @@ public class Interpreter implements IVisitor{
         }else if(place.getClass().equals(PlanetLiteral.class)){
             count = board.getPlayerPlanetUnitNumber(Integer.parseInt(place.getValue().substring(1)),Dictionary.PlayerColors.valueOf(player.getValue()), Dictionary.LandUnits.valueOf(unit.getValue()));
         }else{
-            throw new InterpreterException("Hex or planet value expected.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Hex or planet value expected.");
         }
 
         environment.pushValue(new IntLiteral(Integer.toString(count)));
@@ -278,7 +280,7 @@ public class Interpreter implements IVisitor{
         arrayVariable = (ArrayVariable) environment.peekCallContext().getVariable(arrayVariable.getName());
 
         if(arrayDeclaration.getValues().size() != arrayVariable.size()){
-            throw new InterpreterException("Array elements number mismatch.");
+            throw new InterpreterException(arrayDeclaration.getPosition().getLine(), "Array elements number mismatch.");
         }
 
         int i = 0;
@@ -295,7 +297,7 @@ public class Interpreter implements IVisitor{
 
         Variable variable = callContext.getVariable(assignment.getIdentifier());
 
-        OrCondition orCondition = assignment.getValue();
+        Expression orCondition = assignment.getValue();
 
         orCondition.accept(this);
 
@@ -333,17 +335,17 @@ public class Interpreter implements IVisitor{
     @Override public void visit(FunctionCall functionCallStm) throws Exception {
         Function function = program.getFunction(functionCallStm.getIdentifier());
         if(function == null){
-            throw new InterpreterException("Unknown function call.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Unknown function call.");
         }
         if(function.getParameters().getParameters().size() != functionCallStm.getArguments().getSize()){
-            throw new InterpreterException("Wrong number of arguments.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Wrong number of arguments.");
         }
         functionCallStm.getArguments().accept(this);
         function.accept(this);
         if(environment.hasReturned()){
             environment.setHasReturned(false);
         }else{
-            throw new InterpreterException("Function didn't return a value.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Function didn't return a value.");
         }
     }
 
@@ -353,7 +355,7 @@ public class Interpreter implements IVisitor{
         ArrayVariable arrayVariable = (ArrayVariable) environment.peekCallContext().getVariable(loop.getArrayIdentifier());
 
         if(!loop.getVariable().getClass().equals(VarVariable.class) && !loop.getVariable().getClass().equals(arrayVariable.getVariable().getClass())){
-            throw new InterpreterException("Types doesn't match inside loop");
+            throw new InterpreterException(loop.getPosition().getLine(), "Types doesn't match inside loop");
         }
         environment.peekCallContext().pushBlockContext();
         if(loop.getVariable().getClass().equals(VarVariable.class)){
@@ -364,7 +366,7 @@ public class Interpreter implements IVisitor{
         ArrayVariable array = (ArrayVariable) environment.peekCallContext().getVariable(loop.getArrayIdentifier());
         for(int i = 0; i<arrayVariable.size(); ++i){
             array.getValue(i).accept(this);
-            environment.peekCallContext().setVariableValue(loop.getVariable().getName(), environment.popValue().getValue());
+            environment.peekCallContext().setVariableValue(environment.getCurrentStatementLine(), loop.getVariable().getName(), environment.popValue().getValue());
             if(!environment.hasContinued()){
                 loop.getBlock().accept(this);
             }
@@ -416,7 +418,7 @@ public class Interpreter implements IVisitor{
 
     // ConditionExpression
     @Override public void visit(OrCondition orCondition) throws Exception {
-        ArrayList<AndCondition> andConditions = orCondition.getAndConditions();
+        ArrayList<Expression> andConditions = orCondition.getAndConditions();
         andConditions.get(0).accept(this);
         OrOperator orOperator = new OrOperator();
         for(int i = 1; i<andConditions.size(); ++i){
@@ -426,7 +428,7 @@ public class Interpreter implements IVisitor{
     }
 
     @Override public void visit(AndCondition andCondition) throws Exception {
-        ArrayList<EqualityCondition> equalityConditions = andCondition.getEqualityCondition();
+        ArrayList<Expression> equalityConditions = andCondition.getEqualityCondition();
         equalityConditions.get(0).accept(this);
         AndOperator andOperator = new AndOperator();
         for(int i = 1; i<equalityConditions.size(); ++i){
@@ -436,7 +438,7 @@ public class Interpreter implements IVisitor{
     }
 
     @Override public void visit(EqualityCondition equalityCondition) throws Exception {
-        ArrayList<RelationalCondition> relationalConditions = equalityCondition.getRelationalConditions();
+        ArrayList<Expression> relationalConditions = equalityCondition.getRelationalConditions();
         ArrayList<Operator> operators = equalityCondition.getOperators();
         relationalConditions.get(0).accept(this);
         for(int i = 1; i<relationalConditions.size(); ++i){
@@ -446,7 +448,7 @@ public class Interpreter implements IVisitor{
     }
 
     @Override public void visit(RelationalCondition relationalCondition) throws Exception {
-        ArrayList<AddExpression> addExpressions = relationalCondition.getAddExpressions();
+        ArrayList<Expression> addExpressions = relationalCondition.getAddExpressions();
         ArrayList<Operator> operators = relationalCondition.getOperators();
         addExpressions.get(0).accept(this);
         for(int i = 1; i<addExpressions.size(); ++i){
@@ -456,7 +458,7 @@ public class Interpreter implements IVisitor{
     }
 
     @Override public void visit(AddExpression addExpression) throws Exception {
-        ArrayList<MultiplyExpression> multiplyExpressions = addExpression.getMultiplyExpressions();
+        ArrayList<Expression> multiplyExpressions = addExpression.getMultiplyExpressions();
         ArrayList<Operator> operators = addExpression.getOperators();
         multiplyExpressions.get(0).accept(this);
         for(int i = 1; i<multiplyExpressions.size(); ++i){
@@ -466,7 +468,7 @@ public class Interpreter implements IVisitor{
     }
 
     @Override public void visit(MultiplyExpression multiplyExpression) throws Exception {
-        ArrayList<UnaryExpression> unaryExpressions = multiplyExpression.getExpressions();
+        ArrayList<Expression> unaryExpressions = multiplyExpression.getExpressions();
         ArrayList<Operator> operators = multiplyExpression.getOperators();
         unaryExpressions.get(0).accept(this);
         for(int i = 1; i<unaryExpressions.size(); ++i){
@@ -524,7 +526,7 @@ public class Interpreter implements IVisitor{
             int rVal = Integer.parseInt(right.getValue());
             environment.pushValue(new BoolLiteral(lVal >= rVal ? "true" : "false"));
         }else{
-            throw new InterpreterException("Can't compare types.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Can't compare types.");
         }
     }
 
@@ -536,7 +538,7 @@ public class Interpreter implements IVisitor{
             int rVal = Integer.parseInt(right.getValue());
             environment.pushValue(new BoolLiteral(lVal > rVal ? "true" : "false"));
         }else{
-            throw new InterpreterException("Can't compare types.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Can't compare types.");
         }
     }
 
@@ -548,7 +550,7 @@ public class Interpreter implements IVisitor{
             int rVal = Integer.parseInt(right.getValue());
             environment.pushValue(new BoolLiteral(lVal <= rVal ? "true" : "false"));
         }else{
-            throw new InterpreterException("Can't compare types.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Can't compare types.");
         }
     }
 
@@ -560,7 +562,7 @@ public class Interpreter implements IVisitor{
             int rVal = Integer.parseInt(right.getValue());
             environment.pushValue(new BoolLiteral(lVal < rVal ? "true" : "false"));
         }else{
-            throw new InterpreterException("Can't compare types.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Can't compare types.");
         }
     }
 
@@ -634,7 +636,7 @@ public class Interpreter implements IVisitor{
         }else if(activation.getAction().equals("deactivate")){
             board.deactivate(Integer.parseInt(hex.getValue().substring(1)), Dictionary.PlayerColors.valueOf(player.getValue()));
         }else{
-            throw new InterpreterException("Wrong activation action.");
+            throw new InterpreterException(environment.getCurrentStatementLine(), "Wrong activation action.");
         }
     }
 
@@ -654,7 +656,7 @@ public class Interpreter implements IVisitor{
             }else if(environment.peekValue().getClass().equals(PlanetLiteral.class)){
                 from = InterpreterUtils.literalCast(environment.popValue(), new PlanetVariable(""));
             }else{
-                throw new InterpreterException("Wrong source in units action.");
+                throw new InterpreterException(environment.getCurrentStatementLine(), "Wrong source in units action.");
             }
         }
 
@@ -665,7 +667,7 @@ public class Interpreter implements IVisitor{
             }else if(environment.peekValue().getClass().equals(PlanetLiteral.class)){
                 to = InterpreterUtils.literalCast(environment.popValue(), new PlanetVariable(""));
             }else{
-                throw new InterpreterException("Wrong destination in units action.");
+                throw new InterpreterException(environment.getCurrentStatementLine(), "Wrong destination in units action.");
             }
         }
 

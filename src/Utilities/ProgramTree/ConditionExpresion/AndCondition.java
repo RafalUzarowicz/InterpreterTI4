@@ -8,16 +8,16 @@ import java.util.ArrayList;
  * Github: https://github.com/RafalUzarowicz
  */
 public class AndCondition extends Expression implements INode {
-    private final ArrayList<EqualityCondition> equalityConditions;
+    private final ArrayList<Expression> equalityConditions;
     public AndCondition(){
         equalityConditions = new ArrayList<>();
     }
 
-    public void add(EqualityCondition equalityCondition){
+    public void add(Expression equalityCondition){
         equalityConditions.add(equalityCondition);
     }
 
-    public ArrayList<EqualityCondition> getEqualityCondition() {
+    public ArrayList<Expression> getEqualityCondition() {
         return equalityConditions;
     }
 

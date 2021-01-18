@@ -1,5 +1,6 @@
 package Utilities.ProgramTree;
 
+import Utilities.ProgramTree.ConditionExpresion.Expression;
 import Utilities.ProgramTree.ConditionExpresion.OrCondition;
 
 import java.util.ArrayList;
@@ -8,17 +9,17 @@ import java.util.ArrayList;
  * Github: https://github.com/RafalUzarowicz
  */
 public class Arguments  implements INode{
-    private final ArrayList<OrCondition> arguments;
+    private final ArrayList<Expression> arguments;
 
     public Arguments(){
         arguments = new ArrayList<>();
     }
 
-    public void add(OrCondition conditionExpression){
+    public void add(Expression conditionExpression){
         arguments.add(conditionExpression);
     }
 
-    public ArrayList<OrCondition> getArguments() {
+    public ArrayList<Expression> getArguments() {
         return arguments;
     }
 

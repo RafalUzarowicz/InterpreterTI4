@@ -9,22 +9,22 @@ import java.util.ArrayList;
  * Github: https://github.com/RafalUzarowicz
  */
 public class RelationalCondition extends Expression implements INode {
-    private final ArrayList<AddExpression> addExpressions;
+    private final ArrayList<Expression> addExpressions;
     private final ArrayList<Operator> operators;
     public RelationalCondition(){
         addExpressions = new ArrayList<>();
         operators = new ArrayList<>();
     }
-    public void add(AddExpression addExpression){
+    public void add(Expression addExpression){
         addExpressions.add(addExpression);
     }
 
-    public void add(Operator operator, AddExpression addExpression){
+    public void add(Operator operator, Expression addExpression){
         operators.add(operator);
         addExpressions.add(addExpression);
     }
 
-    public ArrayList<AddExpression> getAddExpressions() {
+    public ArrayList<Expression> getAddExpressions() {
         return addExpressions;
     }
 

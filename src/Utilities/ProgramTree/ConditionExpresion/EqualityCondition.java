@@ -9,23 +9,23 @@ import java.util.ArrayList;
  * Github: https://github.com/RafalUzarowicz
  */
 public class EqualityCondition extends Expression implements INode {
-    private final ArrayList<RelationalCondition> relationalConditions;
+    private final ArrayList<Expression> relationalConditions;
     private final ArrayList<Operator> operators;
     public EqualityCondition(){
         relationalConditions = new ArrayList<>();
         operators = new ArrayList<>();
     }
 
-    public void add(RelationalCondition relationalCondition){
+    public void add(Expression relationalCondition){
         relationalConditions.add(relationalCondition);
     }
 
-    public void add(Operator operator, RelationalCondition relationalCondition){
+    public void add(Operator operator, Expression relationalCondition){
         operators.add(operator);
         relationalConditions.add(relationalCondition);
     }
 
-    public ArrayList<RelationalCondition> getRelationalConditions() {
+    public ArrayList<Expression> getRelationalConditions() {
         return relationalConditions;
     }
 

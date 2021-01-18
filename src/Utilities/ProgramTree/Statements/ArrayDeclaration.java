@@ -1,5 +1,6 @@
 package Utilities.ProgramTree.Statements;
 
+import Utilities.Position;
 import Utilities.ProgramTree.INode;
 import Utilities.ProgramTree.Value.Value;
 import Utilities.ProgramTree.Variables.ArrayVariable;
@@ -14,7 +15,8 @@ public class ArrayDeclaration extends Statement implements INode {
     private final ArrayVariable type;
     private int size;
 
-    public ArrayDeclaration(ArrayVariable type){
+    public ArrayDeclaration(ArrayVariable type, Position position){
+        super(position);
         this.type = type;
         this.values = new ArrayList<>();
         this.size = 0;

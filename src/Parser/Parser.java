@@ -18,6 +18,7 @@ import Utilities.ProgramTree.Variables.*;
 import Scanner.*;
 import Utilities.Token;
 
+import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.util.HashMap;
 /**
  * Author: Rafal Uzarowicz
@@ -60,7 +61,7 @@ public class Parser {
 
         Block block = tryBlock();
 
-        return new Function(keywordToVariable(type.getValue(), "return"), identifier.getValue(), parameters, block);
+        return new Function(keywordToVariable(type.getValue(), "return"), identifier.getValue(), parameters, block, identifier.getPosition());
     }
 
     public Parameters tryParameters() throws Exception {
@@ -83,9 +84,9 @@ public class Parser {
 
     public Block tryBlock() throws Exception {
         compareTokenType(Token.Type.BracesLeft);
-        scanner.next();
+        Token token = scanner.get();
 
-        Block block = new Block();
+        Block block = new Block(token.getPosition());
 
         Statement statement;
         while((statement = tryStatement()) != null){
@@ -134,30 +135,33 @@ public class Parser {
 
     public Break tryBreak() throws Exception {
         if(compareTokenType(Token.Type.Break)){
+            Token token = scanner.peek();
             checkNextToken(Token.Type.Semicolon);
             scanner.next();
-            return new Break();
+            return new Break(token.getPosition());
         }
         return null;
     }
 
     public Continue tryContinue() throws Exception {
         if(compareTokenType(Token.Type.Continue)){
+            Token token = scanner.peek();
             checkNextToken(Token.Type.Semicolon);
             scanner.next();
-            return new Continue();
+            return new Continue(token.getPosition());
         }
         return null;
     }
 
     public Print tryPrint() throws Exception {
         if(compareTokenType(Token.Type.Print)){
+            Token token = scanner.peek();
             checkNextToken(Token.Type.ParenthesisLeft);
             scanner.next();
 
-            Print print = new Print();
+            Print print = new Print(token.getPosition());
 
-            OrCondition orCondition;
+            Expression orCondition;
             while((orCondition = tryOrCondition()) != null){
                 print.add(orCondition);
 
@@ -178,24 +182,25 @@ public class Parser {
 
     public Return tryReturn() throws Exception {
         if(compareTokenType(Token.Type.Return)){
-            scanner.next();
-            OrCondition orCondition = tryOrCondition();
+            Token token = scanner.get();
+            Expression orCondition = tryOrCondition();
             if(orCondition == null){
                 throw new ParserException(scanner.peek(), "Missing value to return.");
             }
             checkCurrentToken(Token.Type.Semicolon);
             scanner.next();
-            return new Return(orCondition);
+            return new Return(orCondition, token.getPosition());
         }
         return null;
     }
 
     public Conditional tryConditional() throws Exception {
         if(compareTokenType(Token.Type.If)){
+            Token token = scanner.peek();
             checkNextToken(Token.Type.ParenthesisLeft);
             scanner.next();
 
-            OrCondition orCondition = tryOrCondition();
+            Expression orCondition = tryOrCondition();
 
             checkCurrentToken(Token.Type.ParenthesisRight);
             scanner.next();
@@ -206,15 +211,16 @@ public class Parser {
                 scanner.next();
                 Block elseBlock = tryBlock();
 
-                return new Conditional(orCondition, ifBlock, elseBlock);
+                return new Conditional(orCondition, ifBlock, elseBlock, token.getPosition());
             }
-            return new Conditional(orCondition, ifBlock);
+            return new Conditional(orCondition, ifBlock, token.getPosition());
         }
         return null;
     }
 
     public Loop tryLoop() throws Exception {
         if(compareTokenType(Token.Type.Foreach)){
+            Token token = scanner.peek();
             checkNextToken(Token.Type.ParenthesisLeft);
             scanner.next();
 
@@ -233,7 +239,7 @@ public class Parser {
                 scanner.next();
 
                 Block block = tryBlock();
-                return new Loop(keywordToVariable(typeOrVar.getValue(), variableIdentifier.getValue()), arrayIdentifier.getValue(), block);
+                return new Loop(keywordToVariable(typeOrVar.getValue(), variableIdentifier.getValue()), arrayIdentifier.getValue(), block, token.getPosition());
             }
             throw new ParserException(scanner.peek(), Token.Type.Type);
         }
@@ -242,6 +248,7 @@ public class Parser {
 
     public BoardChange tryBoardChange() throws Exception {
         if(compareTokenType(Token.Type.Player)){
+            Token token = scanner.peek();
             checkNextToken(Token.Type.ParenthesisLeft);
             scanner.next();
 
@@ -252,7 +259,7 @@ public class Parser {
 
             PlayerAction playerAction = tryPlayerAction();
 
-            BoardChange boardChange = new BoardChange(player, playerAction);
+            BoardChange boardChange = new BoardChange(player, playerAction, token.getPosition());
 
             checkCurrentToken(Token.Type.Semicolon);
             scanner.next();
@@ -373,12 +380,12 @@ public class Parser {
         checkCurrentToken(Token.Type.Semicolon);
         scanner.next();
 
-        return new FunctionCall(identifier.getValue(), arguments);
+        return new FunctionCall(identifier.getValue(), arguments, identifier.getPosition());
     }
 
     public Arguments tryArguments() throws Exception {
         Arguments arguments = new Arguments();
-        OrCondition orCondition;
+        Expression orCondition;
         while((orCondition = tryOrCondition()) != null){
             arguments.add(orCondition);
 
@@ -401,7 +408,7 @@ public class Parser {
         checkCurrentToken(Token.Type.Equals);
         scanner.next();
 
-        OrCondition orCondition = tryOrCondition();
+        Expression orCondition = tryOrCondition();
         if(orCondition == null){
             throw new ParserException(scanner.peek(), "Wrong value for assignment.");
         }
@@ -409,7 +416,7 @@ public class Parser {
         checkCurrentToken(Token.Type.Semicolon);
         scanner.next();
 
-        return new Assignment(index, identifier.getValue(), orCondition);
+        return new Assignment(index, identifier.getValue(), orCondition, identifier.getPosition());
     }
 
     public Statement tryVarOrArrayDeclaration() throws Exception {
@@ -430,7 +437,7 @@ public class Parser {
         checkCurrentToken(Token.Type.Equals);
         scanner.next();
 
-        OrCondition orCondition = tryOrCondition();
+        Expression orCondition = tryOrCondition();
         if(orCondition == null){
             throw new ParserException(scanner.peek(), "Missing value for variable declaration");
         }
@@ -438,7 +445,7 @@ public class Parser {
         checkCurrentToken(Token.Type.Semicolon);
         scanner.next();
 
-        return new VariableDeclaration(keywordToVariable(type.getValue(), identifier.getValue()), orCondition);
+        return new VariableDeclaration(keywordToVariable(type.getValue(), identifier.getValue()), orCondition, identifier.getPosition());
     }
 
     public ArrayDeclaration tryArrayDeclaration(Token type) throws Exception {
@@ -459,7 +466,7 @@ public class Parser {
         checkNextToken(Token.Type.NumberLiteral);
 
         int size = Integer.parseInt(scanner.get().getValue());
-        ArrayDeclaration arrayDeclaration = new ArrayDeclaration(new ArrayVariable(keywordToVariable(arrayType.getValue(), identifier.getValue()), size));
+        ArrayDeclaration arrayDeclaration = new ArrayDeclaration(new ArrayVariable(keywordToVariable(arrayType.getValue(), identifier.getValue()), size), identifier.getPosition());
         arrayDeclaration.setSize(size);
 
         checkCurrentToken(Token.Type.BracketsRight);
@@ -509,10 +516,10 @@ public class Parser {
         throw new ParserException(scanner.peek(), "Unknown variable type.");
     }
 
-    public OrCondition tryOrCondition() throws Exception {
+    public Expression tryOrCondition() throws Exception {
         OrCondition orCondition = new OrCondition();
 
-        AndCondition andCondition = tryAndCondition();
+        Expression andCondition = tryAndCondition();
 
         if(andCondition == null){
             return null;
@@ -529,13 +536,17 @@ public class Parser {
 
             orCondition.add(andCondition);
         }
-        return orCondition;
+        if(orCondition.getAndConditions().size() > 1){
+            return orCondition;
+        }else{
+            return andCondition;
+        }
     }
 
-    public AndCondition tryAndCondition() throws Exception {
+    public Expression tryAndCondition() throws Exception {
         AndCondition andCondition = new AndCondition();
 
-        EqualityCondition equalityCondition = tryEqualityCondition();
+        Expression equalityCondition =  tryEqualityCondition();
 
         if(equalityCondition == null){
             return null;
@@ -552,13 +563,17 @@ public class Parser {
 
             andCondition.add(equalityCondition);
         }
-        return andCondition;
+        if(andCondition.getEqualityCondition().size() > 1){
+            return andCondition;
+        }else{
+            return equalityCondition;
+        }
     }
 
-    public EqualityCondition tryEqualityCondition() throws Exception {
+    public Expression tryEqualityCondition() throws Exception {
         EqualityCondition equalityCondition = new EqualityCondition();
 
-        RelationalCondition relationalCondition = tryRelationalCondition();
+        Expression relationalCondition = tryRelationalCondition();
 
         if(relationalCondition == null){
             return null;
@@ -578,13 +593,17 @@ public class Parser {
 
             equalityCondition.add(tokenTypeToOperator(token.getType()), relationalCondition);
         }
-        return equalityCondition;
+        if(equalityCondition.getRelationalConditions().size() > 1){
+            return equalityCondition;
+        }else{
+            return relationalCondition;
+        }
     }
 
-    public RelationalCondition tryRelationalCondition() throws Exception {
+    public Expression tryRelationalCondition() throws Exception {
         RelationalCondition relationalCondition = new RelationalCondition();
 
-        AddExpression addExpression = tryAddExpression();
+        Expression addExpression = tryAddExpression();
 
         if(addExpression == null){
             return null;
@@ -604,17 +623,21 @@ public class Parser {
 
             relationalCondition.add(tokenTypeToOperator(token.getType()), addExpression);
         }
-        return relationalCondition;
+        if(relationalCondition.getAddExpressions().size() > 1){
+            return relationalCondition;
+        }else{
+            return addExpression;
+        }
     }
 
     public boolean isRelation(Token.Type type){
         return type == Token.Type.Greater || type == Token.Type.Less || type == Token.Type.LessEqual || type == Token.Type.GreaterEqual || type == Token.Type.Equal || type == Token.Type.NotEqual;
     }
 
-    public AddExpression tryAddExpression() throws Exception {
+    public Expression tryAddExpression() throws Exception {
         AddExpression addExpression = new AddExpression();
 
-        MultiplyExpression multiplyExpression = tryMultiplyExpression();
+        Expression multiplyExpression = tryMultiplyExpression();
 
         if(multiplyExpression == null){
             return null;
@@ -635,17 +658,21 @@ public class Parser {
 
             addExpression.add(tokenTypeToOperator(token.getType()), multiplyExpression);
         }
-        return addExpression;
+        if(addExpression.getMultiplyExpressions().size() > 1){
+            return addExpression;
+        }else{
+            return multiplyExpression;
+        }
     }
 
     public boolean isAdd(Token.Type type){
         return type == Token.Type.Plus || type == Token.Type.Minus;
     }
 
-    public MultiplyExpression tryMultiplyExpression() throws Exception {
+    public Expression tryMultiplyExpression() throws Exception {
         MultiplyExpression multiplyExpression = new MultiplyExpression();
 
-        UnaryExpression expression = tryUnaryExpression();
+        Expression expression = tryUnaryExpression();
 
         if(expression == null){
             return null;
@@ -665,14 +692,18 @@ public class Parser {
 
             multiplyExpression.add(tokenTypeToOperator(token.getType()), expression);
         }
-        return multiplyExpression;
+        if(multiplyExpression.getExpressions().size() > 1){
+            return multiplyExpression;
+        }else{
+            return expression;
+        }
     }
 
     public boolean isMultiply(Token.Type type){
         return type == Token.Type.Multiply || type == Token.Type.Divide;
     }
 
-    public UnaryExpression tryUnaryExpression() throws Exception {
+    public Expression tryUnaryExpression() throws Exception {
         Expression expression;
         if ((expression = tryNegativeUnaryExpression()) != null || (expression = tryNotUnaryExpression()) != null) {
             return new UnaryExpression(expression);
@@ -684,19 +715,19 @@ public class Parser {
         return new UnaryExpression(expression);
     }
 
-    public NegativeUnaryExpression tryNegativeUnaryExpression() throws Exception {
+    public Expression tryNegativeUnaryExpression() throws Exception {
         if(compareTokenType(Token.Type.Minus)){
             scanner.next();
-            UnaryExpression unaryExpression = tryUnaryExpression();
+            Expression unaryExpression = tryUnaryExpression();
             return new NegativeUnaryExpression(unaryExpression);
         }
         return null;
     }
 
-    public NotUnaryExpression tryNotUnaryExpression() throws Exception {
+    public Expression tryNotUnaryExpression() throws Exception {
         if(compareTokenType(Token.Type.Not)){
             scanner.next();
-            UnaryExpression unaryExpression = tryUnaryExpression();
+            Expression unaryExpression = tryUnaryExpression();
             return new NotUnaryExpression(unaryExpression);
         }
         return null;
@@ -706,7 +737,7 @@ public class Parser {
         if(compareTokenType(Token.Type.ParenthesisLeft)){
             scanner.next();
 
-            OrCondition orCondition = tryOrCondition();
+            Expression orCondition = tryOrCondition();
 
             checkCurrentToken(Token.Type.ParenthesisRight);
             scanner.next();
