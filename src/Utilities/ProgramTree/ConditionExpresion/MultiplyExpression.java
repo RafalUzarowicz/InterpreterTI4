@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
  */
-public class MultiplyExpression implements INode {
+public class MultiplyExpression extends Expression implements INode {
     private final ArrayList<UnaryExpression> expressions;
     private final ArrayList<Operator> operators;
     public MultiplyExpression(){
@@ -35,14 +35,16 @@ public class MultiplyExpression implements INode {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("(");
+        if(expressions.size() > 1)
+            stringBuilder.append("(");
         stringBuilder.append(expressions.get(0).toString());
 
         for(int i = 1; i<expressions.size(); ++i){
             stringBuilder.append(operators.get(i-1).toString());
             stringBuilder.append(expressions.get(i).toString());
         }
-        stringBuilder.append(")");
+        if(expressions.size() > 1)
+            stringBuilder.append(")");
         return stringBuilder.toString();
     }
 }

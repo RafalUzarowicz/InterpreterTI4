@@ -24,14 +24,16 @@ public class OrCondition extends Expression implements INode {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("(");
+        if(andConditions.size() > 1)
+            stringBuilder.append("(");
         stringBuilder.append(andConditions.get(0).toString());
 
         for(int i = 1; i<andConditions.size(); ++i){
             stringBuilder.append("||");
             stringBuilder.append(andConditions.get(i).toString());
         }
-        stringBuilder.append(")");
+        if(andConditions.size() > 1)
+            stringBuilder.append(")");
 
         return stringBuilder.toString();
     }

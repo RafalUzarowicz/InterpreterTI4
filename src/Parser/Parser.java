@@ -504,10 +504,8 @@ public class Parser {
             case "var":
                 return new VarVariable(name);
             default:
-                // TODO: co tutaj jak nie wiemy co to?
                 break;
         }
-        // TODO: co z tym wyjatkiem?
         throw new ParserException(scanner.peek(), "Unknown variable type.");
     }
 

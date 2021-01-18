@@ -6,12 +6,12 @@ import Utilities.ProgramTree.INode;
  * Github: https://github.com/RafalUzarowicz
  */
 public class NegativeUnaryExpression extends Expression implements INode {
-    private final UnaryExpression unaryExpression;
-    public NegativeUnaryExpression(UnaryExpression unaryExpression){
+    private final Expression unaryExpression;
+    public NegativeUnaryExpression(Expression unaryExpression){
         this.unaryExpression =unaryExpression;
     }
 
-    public UnaryExpression getUnaryExpression() {
+    public Expression getUnaryExpression() {
         return unaryExpression;
     }
 

@@ -7,7 +7,7 @@ import java.util.ArrayList;
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
  */
-public class AndCondition implements INode {
+public class AndCondition extends Expression implements INode {
     private final ArrayList<EqualityCondition> equalityConditions;
     public AndCondition(){
         equalityConditions = new ArrayList<>();
@@ -24,14 +24,16 @@ public class AndCondition implements INode {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("(");
+        if(equalityConditions.size() > 1)
+            stringBuilder.append("(");
         stringBuilder.append(equalityConditions.get(0).toString());
 
         for(int i = 1; i<equalityConditions.size(); ++i){
             stringBuilder.append("&&");
             stringBuilder.append(equalityConditions.get(i).toString());
         }
-        stringBuilder.append(")");
+        if(equalityConditions.size() > 1)
+            stringBuilder.append(")");
         return stringBuilder.toString();
     }
 

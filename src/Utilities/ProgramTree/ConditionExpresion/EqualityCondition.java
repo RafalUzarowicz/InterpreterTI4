@@ -8,7 +8,7 @@ import java.util.ArrayList;
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
  */
-public class EqualityCondition implements INode {
+public class EqualityCondition extends Expression implements INode {
     private final ArrayList<RelationalCondition> relationalConditions;
     private final ArrayList<Operator> operators;
     public EqualityCondition(){
@@ -36,14 +36,16 @@ public class EqualityCondition implements INode {
     @Override
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("(");
+        if(relationalConditions.size() > 1)
+            stringBuilder.append("(");
         stringBuilder.append(relationalConditions.get(0).toString());
 
         for(int i = 1; i<relationalConditions.size(); ++i){
             stringBuilder.append(operators.get(i-1).toString());
             stringBuilder.append(relationalConditions.get(i).toString());
         }
-        stringBuilder.append(")");
+        if(relationalConditions.size() > 1)
+            stringBuilder.append(")");
         return stringBuilder.toString();
     }
 }

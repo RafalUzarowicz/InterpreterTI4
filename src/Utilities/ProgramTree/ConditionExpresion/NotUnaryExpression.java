@@ -6,12 +6,12 @@ import Utilities.ProgramTree.INode;
  * Github: https://github.com/RafalUzarowicz
  */
 public class NotUnaryExpression extends Expression implements INode {
-    private final UnaryExpression unaryExpression;
-    public NotUnaryExpression(UnaryExpression unaryExpression){
+    private final Expression unaryExpression;
+    public NotUnaryExpression(Expression unaryExpression){
         this.unaryExpression = unaryExpression;
     }
 
-    public UnaryExpression getUnaryExpression() {
+    public Expression getUnaryExpression() {
         return unaryExpression;
     }
 

@@ -3,6 +3,7 @@ import Interpreter.Interpreter;
 import Parser.Parser;
 import Scanner.Scanner;
 import Source.FileSource;
+import Utilities.ProgramTree.ConditionExpresion.OrCondition;
 import Utilities.ProgramTree.Program;
 import Utilities.ProgramTree.Value.Literals.BoolLiteral;
 import Utilities.ProgramTree.Value.Literals.ColorLiteral;
@@ -45,7 +46,7 @@ public class Main {
 //                    "}"
 //            );
 
-            FileSource source = new FileSource("code/simple.twlan");
+//            FileSource source = new FileSource("code/simple.twlan");
 //            ResourceFileSource source = new ResourceFileSource("first.twlan");
 //            StringSource source = new StringSource("" +
 //                    "int main(){\n" +
@@ -57,6 +58,7 @@ public class Main {
 //            );
 //            StringSource source = new StringSource("!(x+(!y+funCall(2,!(x[2]+(!y+funCall(2,4,x))+3),x))+3)");
 //            StringSource source = new StringSource("hex(h1)has(Carrier)+2");
+            StringSource source = new StringSource("2");
 //            StringSource source = new StringSource("int _main(){\nvar x_1d = !!!!!!x; }");
             Scanner scanner = new Scanner(source);
 
@@ -66,13 +68,16 @@ public class Main {
 //            }
             Parser parser = new Parser(scanner);
 
-            Program program = parser.parse();
-            Board board = new Board();
-            board.loadState("board/boardstate.json");
 
-            Interpreter interpreter = new Interpreter(program, board);
-
-            interpreter.execute();
+            OrCondition orCondition = parser.tryOrCondition();
+            System.out.println(orCondition);
+//            Program program = parser.parse();
+//            Board board = new Board();
+//            board.loadState("board/boardstate.json");
+//
+//            Interpreter interpreter = new Interpreter(program, board);
+//
+//            interpreter.execute();
 
 //             board.saveState();
 //            System.out.print("TAK\n");

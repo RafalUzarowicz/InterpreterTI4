@@ -363,22 +363,23 @@ public class ParserTest {
 
     private static Stream<Arguments> provideConditionExpressionGood() {
         return Stream.of(
-                Arguments.of("12", "((((((12))))))"),
-                Arguments.of("h0", "((((((h0))))))"),
-                Arguments.of("p1", "((((((p1))))))"),
-                Arguments.of("Red", "((((((Red))))))"),
-                Arguments.of("Fighter", "((((((Fighter))))))"),
-                Arguments.of("\"Tak\"", "((((((\"Tak\"))))))"),
-                Arguments.of("true", "((((((true))))))"),
-                Arguments.of("x", "((((((x))))))"),
-                Arguments.of("arr[2]", "((((((arr[2]))))))"),
-                Arguments.of("fun()", "((((((fun()))))))"),
-                Arguments.of("player(Red)activated(h0)", "((((((player(Red)activated(h0)))))))"),
-                Arguments.of("hex(h1)has(Carrier)", "((((((hex(h1)has(Carrier)))))))"),
-                Arguments.of("7*2+3", "((((((7*2)+(3))))))"),
-                Arguments.of("(3+4)*(8-1||2)", "((((((((((((3)+(4))))))*((((((8)-(1)))))||(((((2))))))))))))"),
-                Arguments.of("2&&7----1", "((((((2)))&&(((7)-(-(-(-(1)))))))))"),
-                Arguments.of("!(x||!y+2)", "((((((!(((((((x)))))||(((((!(y))+(2)))))))))))))")
+                Arguments.of("12", "12"),
+                Arguments.of("h0", "h0"),
+                Arguments.of("p1", "p1"),
+                Arguments.of("Red", "Red"),
+                Arguments.of("Fighter", "Fighter"),
+                Arguments.of("\"Tak\"", "\"Tak\""),
+                Arguments.of("true", "true"),
+                Arguments.of("x", "x"),
+                Arguments.of("arr[2]", "arr[2]"),
+                Arguments.of("fun()", "fun()"),
+                Arguments.of("player(Red)activated(h0)", "player(Red)activated(h0)"),
+                Arguments.of("hex(h1)has(Carrier)", "hex(h1)has(Carrier)"),
+                Arguments.of("7*2+3", "((7*2)+3)"),
+                Arguments.of("(3+4)*(8-1||2)", "((3+4)*((8-1)||2))"),
+                Arguments.of("2&&7----1", "(2&&(7--(-(-(1)))))"),
+                Arguments.of("!(x||!y+2)", "!((x||(!(y)+2)))"),
+                Arguments.of("2+2*2", "(2+(2*2))")
         );
     }
 
@@ -396,10 +397,12 @@ public class ParserTest {
         assertEquals(expected, orCondition.toString());
     }
 
+
     private static Stream<Arguments> provideConditionExpressionBad() {
         return Stream.of(
                 Arguments.of("7*2++3"),
                 Arguments.of("(3+4)*(8-1||2("),
+                Arguments.of("!(x+(!y+2)"),
                 Arguments.of("!(x+(!y+2)")
                 );
     }
