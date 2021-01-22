@@ -11,19 +11,20 @@ import java.util.HashMap;
  * Class that represents current board state.
  */
 public class LandUnit {
-    private HashMap<Dictionary.LandUnits, Integer> units;
-    public LandUnit(){
+    private final HashMap<Dictionary.LandUnits, Integer> units;
+
+    public LandUnit() {
         units = new HashMap<>();
-        for ( Dictionary.LandUnits unit : Dictionary.LandUnits.values() ) {
+        for (Dictionary.LandUnits unit : Dictionary.LandUnits.values()) {
             units.put(unit, 0);
         }
     }
 
-    public void setUnitNumber( Dictionary.LandUnits unit, int number ){
+    public void setUnitNumber(Dictionary.LandUnits unit, int number) {
         units.put(unit, number);
     }
 
-    public int getUnitNumber( Dictionary.LandUnits unit){
+    public int getUnitNumber(Dictionary.LandUnits unit) {
         return units.get(unit);
     }
 }

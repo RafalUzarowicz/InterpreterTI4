@@ -1,0 +1,1 @@
+Before incrementation: 0 Black Red Blue

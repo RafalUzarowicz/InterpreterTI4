@@ -1,0 +1,35 @@
+int factorial( int n ){
+    if( n <= 1 ){
+        return 1;
+    }else{
+        return n * factorial(n-1);
+    }
+}
+
+int main(){
+    int[] arr = int[4];
+    int i = 0;
+    foreach( var x : arr ){
+        x = i;
+        i = i + 1;
+    }
+    hex h = h7;
+    color p = Red;
+    player(p)activate(h);
+    foreach( var x : arr ){
+        x = factorial(x);
+        if(x>1){
+            if(x>=6){
+                print(x, "if2 ");
+            }else{
+                print(x, "else2 ");
+            }
+        }else{
+            print(x, "else1 ");
+        }
+    }
+    print(player(Red)activated(h7), " ");
+    print(player(Black)activated(h7), " ");
+    print("end");
+    return 0;
+}

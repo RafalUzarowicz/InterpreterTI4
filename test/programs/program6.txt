@@ -1,0 +1,21 @@
+int pow( int x, int n ){
+    if( n == 0 ){
+        return 1;
+    }
+    return x * pow( x, n-1 );
+}
+
+int main(){
+    int[] arr = int[5];
+    int i = 0;
+    foreach( var x : arr ){
+        x = i;
+        i = i + 1;
+    }
+    foreach( var x : arr ){
+        x = pow(x, 3);
+        print(x, " ");
+    }
+    print("end");
+    return 0;
+}

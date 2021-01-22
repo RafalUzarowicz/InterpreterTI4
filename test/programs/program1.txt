@@ -1,0 +1,48 @@
+int increment(int x){
+	print("Before incrementation: ", x);
+	return x+1;
+}
+
+color whoOccupy(hex h, color p){
+	if( player(p) activated (h) ){
+		return p;
+	}
+	return NoColor;
+}
+
+int main(){
+
+	color currentPlayer = Black;
+	unit u = Carrier;
+	bool isActivated = player(Red) activated(h2);
+	int fightersCount = player(Green) has (u) at (h17);
+
+	if( isActivated && fightersCount > 2 || planet(p4) has(Fighter) ){
+		player(currentPlayer) activate (h12);
+		player(currentPlayer) add(Fighter:3, Carrier:1, Flagship:1) to (h12);
+		player(currentPlayer) move(Destroyer:2, WarSun:1) from (h9) to (h12);
+	}else{
+		int destroyedFighters =  player(Red) has(u) at (h17);
+		if(increment(destroyedFighters) <= 1){
+			player(Black) remove(Fighter:destroyedFighters) from (h17);
+		}
+	}
+
+	var[] players = color[3]{Black, Red, Blue};
+	var[] units = unit[2];
+	units[0] = Fighter;
+	units[1] = Infantry;
+
+	var sourceHex = h3;
+
+	var enemy = whoOccupy(h0, Red);
+	foreach(var p: players ){
+    		enemy = whoOccupy(h0, p);
+    		print(" ", p);
+    }
+	if(enemy == Red){
+		player(Green) move(units:1) from(sourceHex) to(h29);
+	}
+
+	return 0;
+}

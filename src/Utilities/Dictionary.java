@@ -9,7 +9,7 @@ import java.util.HashMap;
  * Dictionary class used to represent board state.
  */
 public class Dictionary {
-    public enum PlayerColors{
+    public enum PlayerColors {
         Red,
         Yellow,
         Green,
@@ -17,6 +17,7 @@ public class Dictionary {
         Purple,
         Black
     }
+
     public enum SpaceUnits {
         Fighter,
         Destroyer,

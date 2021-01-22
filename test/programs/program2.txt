@@ -1,0 +1,22 @@
+int increment(int x){
+	print("Before incrementation: ", x);
+	return x+1;
+}
+
+int main(){
+    color[] players = color[2]{Red, Blue};
+	if( planet(p4) has(Fighter) ){
+		foreach(var p:players){
+        		print(p);
+        }
+	}else{
+        print("Tak");
+	}
+	var[] units = unit[2];
+	units[0] = Fighter;
+	units[1] = Infantry;
+
+	print(" ", units[0], " ", units[1]);
+
+	return 0;
+}

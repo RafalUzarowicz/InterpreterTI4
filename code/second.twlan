@@ -1,0 +1,16 @@
+int main(){
+    var x_1d = !(2+3)*6--(7+2*3);
+    player(Red)add(Fighter:2)to(h12);
+    var y = player(Red)has(Fighter)at(h12) + 2;
+    var z = 7-3;
+    if(3<2){
+        print(x_1d);
+        z = 2;
+    }
+    else{
+        print(y);
+        z = 3;
+    }
+    print(z);
+    return 0;
+}

@@ -10,7 +10,8 @@ import java.util.Arrays;
  * Class for all constants.
  */
 public class Constants {
-    private Constants(){}
+    private Constants() {
+    }
 
     public final static class Board {
         public final static int HEX_NUMBER = 50;

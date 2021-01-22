@@ -1,24 +1,25 @@
 package Parser;
 
 import Exceptions.ParserException;
-import Parser.ProgramTree.*;
-import Parser.ProgramTree.BoardChange.*;
-import Parser.ProgramTree.ConditionExpresion.ConditionExpression;
-import Parser.ProgramTree.ConditionExpresion.Node;
-import Parser.ProgramTree.Statements.*;
-import Parser.ProgramTree.Value.BoardStateCheck.ActivationCheck;
-import Parser.ProgramTree.Value.BoardStateCheck.HexStateCheck;
-import Parser.ProgramTree.Value.BoardStateCheck.PlanetStateCheck;
-import Parser.ProgramTree.Value.BoardStateCheck.PlayerStateCheck;
-import Parser.ProgramTree.Value.FunctionCallValue;
-import Parser.ProgramTree.Value.Literal;
-import Parser.ProgramTree.Value.Value;
-import Parser.ProgramTree.Value.VariableValue;
-import Scanner.*;
-import Utilities.ParserUtils;
+import Scanner.Scanner;
+import Utilities.ProgramTree.*;
+import Utilities.ProgramTree.BoardChange.*;
+import Utilities.ProgramTree.ConditionExpresion.*;
+import Utilities.ProgramTree.ConditionExpresion.Operators.*;
+import Utilities.ProgramTree.Statements.*;
+import Utilities.ProgramTree.Value.BoardStateCheck.ActivationCheck;
+import Utilities.ProgramTree.Value.BoardStateCheck.HexStateCheck;
+import Utilities.ProgramTree.Value.BoardStateCheck.PlanetStateCheck;
+import Utilities.ProgramTree.Value.BoardStateCheck.PlayerStateCheck;
+import Utilities.ProgramTree.Value.FunctionCallValue;
+import Utilities.ProgramTree.Value.Literals.*;
+import Utilities.ProgramTree.Value.Value;
+import Utilities.ProgramTree.Value.VariableValue;
+import Utilities.ProgramTree.Variables.*;
+import Utilities.Token;
 
-import java.util.ArrayList;
-import java.util.Stack;
+import java.util.HashMap;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz
@@ -34,11 +35,11 @@ public class Parser {
     }
 
     public Program parse() throws Exception {
-        ArrayList<Function> functions = new ArrayList<>();
+        HashMap<String, Function> functions = new HashMap<>();
         Function function;
-        while( !compareTokenType(Token.Type.EOF) ){
+        while (!compareTokenType(Token.Type.EOF)) {
             function = tryFunctionDefinition();
-            functions.add(function);
+            functions.put(function.getIdentifier(), function);
         }
         return new Program(functions);
     }
@@ -60,31 +61,20 @@ public class Parser {
 
         Block block = tryBlock();
 
-        return new Function(new Variable(ParserUtils.keywordToVariableType.get(type.getValue())), identifier.getValue(), parameters, block);
+        return new Function(keywordToVariable(type.getValue(), "return"), identifier.getValue(), parameters, block, identifier.getPosition());
     }
 
     public Parameters tryParameters() throws Exception {
         Parameters parameters = new Parameters();
-        while(compareTokenType(Token.Type.Type)){
+        while (compareTokenType(Token.Type.Type)) {
             Token type = scanner.get();
-            boolean isArray= false;
-
-            if(compareTokenType(Token.Type.BracketsLeft)){
-                checkNextToken(Token.Type.BracketsRight);
-                scanner.next();
-                isArray = true;
-            }
 
             checkCurrentToken(Token.Type.Identifier);
             Token identifier = scanner.get();
 
-            if(isArray){
-                parameters.add(new Variable(ParserUtils.keywordToVariableType.get(type.getValue()), identifier.getValue()));
-            }else{
-                parameters.add(new Array(ParserUtils.keywordToVariableType.get(type.getValue()), identifier.getValue()));
-            }
+            parameters.add(keywordToVariable(type.getValue(), identifier.getValue()));
 
-            if(!compareTokenType(Token.Type.Comma)){
+            if (!compareTokenType(Token.Type.Comma)) {
                 break;
             }
             scanner.next();
@@ -94,12 +84,12 @@ public class Parser {
 
     public Block tryBlock() throws Exception {
         compareTokenType(Token.Type.BracesLeft);
-        scanner.next();
+        Token token = scanner.get();
 
-        Block block = new Block();
+        Block block = new Block(token.getPosition());
 
         Statement statement;
-        while((statement = tryStatement()) != null){
+        while ((statement = tryStatement()) != null) {
             block.add(statement);
         }
 
@@ -110,69 +100,72 @@ public class Parser {
 
     public Statement tryStatement() throws Exception {
         Statement statement;
-        if(compareTokenType(Token.Type.BracesLeft)){
+        if (compareTokenType(Token.Type.BracesLeft)) {
             return tryBlock();
         }
-        if((statement = tryReturn()) != null){
+        if ((statement = tryReturn()) != null) {
             return statement;
         }
-        if((statement = tryBreak()) != null){
+        if ((statement = tryBreak()) != null) {
             return statement;
         }
-        if((statement = tryContinue()) != null){
+        if ((statement = tryContinue()) != null) {
             return statement;
         }
-        if((statement = tryPrint()) != null){
+        if ((statement = tryPrint()) != null) {
             return statement;
         }
-        if((statement = tryBoardChange()) != null){
+        if ((statement = tryBoardChange()) != null) {
             return statement;
         }
-        if((statement = tryLoop()) != null){
+        if ((statement = tryLoop()) != null) {
             return statement;
         }
-        if((statement = tryConditional()) != null){
+        if ((statement = tryConditional()) != null) {
             return statement;
         }
-        if((statement = tryFunctionCallOrAssign()) != null){
+        if ((statement = tryFunctionCallOrAssign()) != null) {
             return statement;
         }
-        if((statement = tryVarOrArrayDeclaration()) != null){
+        if ((statement = tryVarOrArrayDeclaration()) != null) {
             return statement;
         }
         return null;
     }
 
     public Break tryBreak() throws Exception {
-        if(compareTokenType(Token.Type.Break)){
+        if (compareTokenType(Token.Type.Break)) {
+            Token token = scanner.peek();
             checkNextToken(Token.Type.Semicolon);
             scanner.next();
-            return new Break();
+            return new Break(token.getPosition());
         }
         return null;
     }
 
     public Continue tryContinue() throws Exception {
-        if(compareTokenType(Token.Type.Continue)){
+        if (compareTokenType(Token.Type.Continue)) {
+            Token token = scanner.peek();
             checkNextToken(Token.Type.Semicolon);
             scanner.next();
-            return new Continue();
+            return new Continue(token.getPosition());
         }
         return null;
     }
 
     public Print tryPrint() throws Exception {
-        if(compareTokenType(Token.Type.Print)){
+        if (compareTokenType(Token.Type.Print)) {
+            Token token = scanner.peek();
             checkNextToken(Token.Type.ParenthesisLeft);
             scanner.next();
 
-            Print print = new Print();
+            Print print = new Print(token.getPosition());
 
-            ConditionExpression conditionExpression;
-            while((conditionExpression = tryConditionExpression()) != null){
-                print.add(conditionExpression);
+            Expression orCondition;
+            while ((orCondition = tryOrCondition()) != null) {
+                print.add(orCondition);
 
-                if(!compareTokenType(Token.Type.Comma)){
+                if (!compareTokenType(Token.Type.Comma)) {
                     break;
                 }
                 scanner.next();
@@ -188,45 +181,50 @@ public class Parser {
     }
 
     public Return tryReturn() throws Exception {
-        if(compareTokenType(Token.Type.Return)){
-            scanner.next();
-            ConditionExpression conditionExpression = tryConditionExpression();
+        if (compareTokenType(Token.Type.Return)) {
+            Token token = scanner.get();
+            Expression orCondition = tryOrCondition();
+            if (orCondition == null) {
+                throw new ParserException(scanner.peek(), "Missing value to return.");
+            }
             checkCurrentToken(Token.Type.Semicolon);
             scanner.next();
-            return new Return(conditionExpression);
+            return new Return(orCondition, token.getPosition());
         }
         return null;
     }
 
     public Conditional tryConditional() throws Exception {
-        if(compareTokenType(Token.Type.If)){
+        if (compareTokenType(Token.Type.If)) {
+            Token token = scanner.peek();
             checkNextToken(Token.Type.ParenthesisLeft);
             scanner.next();
 
-            ConditionExpression conditionExpression = tryConditionExpression();
+            Expression orCondition = tryOrCondition();
 
             checkCurrentToken(Token.Type.ParenthesisRight);
             scanner.next();
 
             Block ifBlock = tryBlock();
 
-            if(compareTokenType(Token.Type.Else)){
+            if (compareTokenType(Token.Type.Else)) {
                 scanner.next();
                 Block elseBlock = tryBlock();
 
-                return new Conditional(conditionExpression, ifBlock, elseBlock);
+                return new Conditional(orCondition, ifBlock, elseBlock, token.getPosition());
             }
-            return new Conditional(conditionExpression, ifBlock);
+            return new Conditional(orCondition, ifBlock, token.getPosition());
         }
         return null;
     }
 
     public Loop tryLoop() throws Exception {
-        if(compareTokenType(Token.Type.Foreach)){
+        if (compareTokenType(Token.Type.Foreach)) {
+            Token token = scanner.peek();
             checkNextToken(Token.Type.ParenthesisLeft);
             scanner.next();
 
-            if(compareTokenType(Token.Type.VarType) || compareTokenType(Token.Type.Type)){
+            if (compareTokenType(Token.Type.VarType) || compareTokenType(Token.Type.Type)) {
                 Token typeOrVar = scanner.get();
 
                 checkCurrentToken(Token.Type.Identifier);
@@ -241,7 +239,7 @@ public class Parser {
                 scanner.next();
 
                 Block block = tryBlock();
-                return new Loop(new Variable(ParserUtils.keywordToVariableType.get(typeOrVar.getValue()), variableIdentifier.getValue()), arrayIdentifier.getValue(), block);
+                return new Loop(keywordToVariable(typeOrVar.getValue(), variableIdentifier.getValue()), arrayIdentifier.getValue(), block, token.getPosition());
             }
             throw new ParserException(scanner.peek(), Token.Type.Type);
         }
@@ -249,7 +247,8 @@ public class Parser {
     }
 
     public BoardChange tryBoardChange() throws Exception {
-        if(compareTokenType(Token.Type.Player)){
+        if (compareTokenType(Token.Type.Player)) {
+            Token token = scanner.peek();
             checkNextToken(Token.Type.ParenthesisLeft);
             scanner.next();
 
@@ -260,7 +259,7 @@ public class Parser {
 
             PlayerAction playerAction = tryPlayerAction();
 
-            BoardChange boardChange = new BoardChange(player, playerAction);
+            BoardChange boardChange = new BoardChange(player, playerAction, token.getPosition());
 
             checkCurrentToken(Token.Type.Semicolon);
             scanner.next();
@@ -272,21 +271,21 @@ public class Parser {
 
     public PlayerAction tryPlayerAction() throws Exception {
         PlayerAction playerAction;
-        if((playerAction = tryUnitsAction()) != null){
+        if ((playerAction = tryUnitsAction()) != null) {
             return playerAction;
         }
-        if((playerAction = tryActivation()) != null){
+        if ((playerAction = tryActivation()) != null) {
             return playerAction;
         }
         return null;
     }
 
     public UnitsAction tryUnitsAction() throws Exception {
-        if(compareTokenType(Token.Type.Move) || compareTokenType(Token.Type.Add) || compareTokenType(Token.Type.Remove)){
+        if (compareTokenType(Token.Type.Move) || compareTokenType(Token.Type.Add) || compareTokenType(Token.Type.Remove)) {
             Token unitsAction = scanner.get();
             UnitsList unitsList = tryUnitsList();
             Value fromWhere = null;
-            if(unitsAction.getType() == Token.Type.Move || unitsAction.getType() == Token.Type.Remove){
+            if (unitsAction.getType() == Token.Type.Move || unitsAction.getType() == Token.Type.Remove) {
                 checkCurrentToken(Token.Type.From);
                 scanner.next();
                 checkCurrentToken(Token.Type.ParenthesisLeft);
@@ -298,7 +297,7 @@ public class Parser {
                 scanner.next();
             }
             Value toWhere = null;
-            if(unitsAction.getType() == Token.Type.Move||unitsAction.getType() == Token.Type.Add){
+            if (unitsAction.getType() == Token.Type.Move || unitsAction.getType() == Token.Type.Add) {
                 checkCurrentToken(Token.Type.To);
                 scanner.next();
                 checkCurrentToken(Token.Type.ParenthesisLeft);
@@ -322,7 +321,7 @@ public class Parser {
 
         Value unit;
         Value amount;
-        while((unit = tryValue()) != null){
+        while ((unit = tryValue()) != null) {
             checkCurrentToken(Token.Type.Colon);
             scanner.next();
 
@@ -330,7 +329,7 @@ public class Parser {
 
             unitsList.add(unit, amount);
 
-            if(!compareTokenType(Token.Type.Comma)){
+            if (!compareTokenType(Token.Type.Comma)) {
                 break;
             }
             scanner.next();
@@ -343,7 +342,7 @@ public class Parser {
     }
 
     public Activation tryActivation() throws Exception {
-        if(compareTokenType(Token.Type.Activate) || compareTokenType(Token.Type.Deactivate)){
+        if (compareTokenType(Token.Type.Activate) || compareTokenType(Token.Type.Deactivate)) {
             Token activation = scanner.get();
             checkCurrentToken(Token.Type.ParenthesisLeft);
             scanner.next();
@@ -359,9 +358,9 @@ public class Parser {
     }
 
     public Statement tryFunctionCallOrAssign() throws Exception {
-        if(compareTokenType(Token.Type.Identifier)){
+        if (compareTokenType(Token.Type.Identifier)) {
             Token identifier = scanner.get();
-            if(compareTokenType(Token.Type.ParenthesisLeft)){
+            if (compareTokenType(Token.Type.ParenthesisLeft)) {
                 return tryFunctionCallStatement(identifier);
             }
             return tryAssign(identifier);
@@ -381,16 +380,16 @@ public class Parser {
         checkCurrentToken(Token.Type.Semicolon);
         scanner.next();
 
-        return new FunctionCall(identifier.getValue(), arguments);
+        return new FunctionCall(identifier.getValue(), arguments, identifier.getPosition());
     }
 
     public Arguments tryArguments() throws Exception {
         Arguments arguments = new Arguments();
-        ConditionExpression conditionExpression;
-        while((conditionExpression = tryConditionExpression()) != null){
-            arguments.add(conditionExpression);
+        Expression orCondition;
+        while ((orCondition = tryOrCondition()) != null) {
+            arguments.add(orCondition);
 
-            if(!compareTokenType(Token.Type.Comma)){
+            if (!compareTokenType(Token.Type.Comma)) {
                 break;
             }
             scanner.next();
@@ -400,7 +399,7 @@ public class Parser {
 
     public Assignment tryAssign(Token identifier) throws Exception {
         String index = null;
-        if(compareTokenType(Token.Type.BracketsLeft)){
+        if (compareTokenType(Token.Type.BracketsLeft)) {
             checkNextToken(Token.Type.NumberLiteral);
             index = scanner.peek().getValue();
             checkNextToken(Token.Type.BracketsRight);
@@ -409,18 +408,21 @@ public class Parser {
         checkCurrentToken(Token.Type.Equals);
         scanner.next();
 
-        ConditionExpression conditionExpression = tryConditionExpression();
+        Expression orCondition = tryOrCondition();
+        if (orCondition == null) {
+            throw new ParserException(scanner.peek(), "Wrong value for assignment.");
+        }
 
         checkCurrentToken(Token.Type.Semicolon);
         scanner.next();
 
-        return new Assignment(index, identifier.getValue(), conditionExpression);
+        return new Assignment(index, identifier.getValue(), orCondition, identifier.getPosition());
     }
 
     public Statement tryVarOrArrayDeclaration() throws Exception {
-        if(compareTokenType(Token.Type.Type) || compareTokenType(Token.Type.VarType)){
+        if (compareTokenType(Token.Type.Type) || compareTokenType(Token.Type.VarType)) {
             Token type = scanner.get();
-            if(compareTokenType(Token.Type.BracketsLeft)){
+            if (compareTokenType(Token.Type.BracketsLeft)) {
                 return tryArrayDeclaration(type);
             }
             return tryVariableDeclaration(type);
@@ -435,12 +437,15 @@ public class Parser {
         checkCurrentToken(Token.Type.Equals);
         scanner.next();
 
-        ConditionExpression conditionExpression = tryConditionExpression();
+        Expression orCondition = tryOrCondition();
+        if (orCondition == null) {
+            throw new ParserException(scanner.peek(), "Missing value for variable declaration");
+        }
 
         checkCurrentToken(Token.Type.Semicolon);
         scanner.next();
 
-        return new VariableDeclaration(new Variable(ParserUtils.keywordToVariableType.get(type.getValue()), identifier.getValue()), conditionExpression);
+        return new VariableDeclaration(keywordToVariable(type.getValue(), identifier.getValue()), orCondition, identifier.getPosition());
     }
 
     public ArrayDeclaration tryArrayDeclaration(Token type) throws Exception {
@@ -456,24 +461,23 @@ public class Parser {
         checkCurrentToken(Token.Type.Type);
         Token arrayType = scanner.get();
 
-        ArrayDeclaration arrayDeclaration = new ArrayDeclaration(ParserUtils.keywordToVariableType.get(arrayType.getValue()), identifier.getValue());
-
         checkCurrentToken(Token.Type.BracketsLeft);
-        scanner.next();
 
-        if(compareTokenType(Token.Type.NumberLiteral)){
-            arrayDeclaration.setSize(Integer.parseInt(scanner.get().getValue()));
-        }
+        checkNextToken(Token.Type.NumberLiteral);
+
+        int size = Integer.parseInt(scanner.get().getValue());
+        ArrayDeclaration arrayDeclaration = new ArrayDeclaration(new ArrayVariable(keywordToVariable(arrayType.getValue(), identifier.getValue()), size), identifier.getPosition());
+        arrayDeclaration.setSize(size);
 
         checkCurrentToken(Token.Type.BracketsRight);
         scanner.next();
 
-        if(compareTokenType(Token.Type.BracesLeft)){
+        if (compareTokenType(Token.Type.BracesLeft)) {
             scanner.next();
             Value value;
-            while((value = tryValue()) != null){
+            while ((value = tryValue()) != null) {
                 arrayDeclaration.add(value);
-                if(!compareTokenType(Token.Type.Comma)){
+                if (!compareTokenType(Token.Type.Comma)) {
                     break;
                 }
                 scanner.next();
@@ -488,130 +492,352 @@ public class Parser {
         return arrayDeclaration;
     }
 
-    public ConditionExpression tryConditionExpression() throws Exception {
-        // Shunting-yard algorithm
-        if(scanner.peek().getType() == Token.Type.ParenthesisRight){
+    public Variable keywordToVariable(String type, String name) throws ParserException {
+        switch (type) {
+            case "int":
+                return new IntVariable(name);
+            case "string":
+                return new StringVariable(name);
+            case "bool":
+                return new BoolVariable(name);
+            case "unit":
+                return new UnitVariable(name);
+            case "color":
+                return new ColorVariable(name);
+            case "hex":
+                return new HexVariable(name);
+            case "planet":
+                return new PlanetVariable(name);
+            case "var":
+                return new VarVariable(name);
+            default:
+                break;
+        }
+        throw new ParserException(scanner.peek(), "Unknown variable type.");
+    }
+
+    public Expression tryOrCondition() throws Exception {
+        OrCondition orCondition = new OrCondition();
+
+        Expression andCondition = tryAndCondition();
+
+        if (andCondition == null) {
             return null;
         }
 
-        Stack<Node> operandStack = new Stack<>();
-        Stack<Node> operatorStack = new Stack<>();
-        Token previousToken = null;
+        orCondition.add(andCondition);
+        while (scanner.peek().getType() == Token.Type.Or) {
+            scanner.next();
+            andCondition = tryAndCondition();
 
-        while(isForValueOrCondition(scanner.peek().getType())){
-            Token token = scanner.peek();
-            Value value = tryValue();
-            if(value != null && (previousToken == null || !isForValue(previousToken.getType()))){
-                operandStack.push(new Node(value));
-            }else if(token.getType() == Token.Type.ParenthesisLeft){
-                operatorStack.push(new Node(Node.Parenthesis.Left));
-            }else if(token.getType() == Token.Type.ParenthesisRight){
-                if(operatorStack.isEmpty() && !operandStack.isEmpty()){
-                    break;
-                }
-                while(!operatorStack.isEmpty() && operatorStack.peek().parenthesis != Node.Parenthesis.Left){
-                    prepareNode(operandStack, operatorStack);
-                }
-                if(operatorStack.isEmpty() && operandStack.size() == 1){
-                    break;
-                }else if(operatorStack.isEmpty()){
-                    throw new ParserException(token, "Wrong number of opening parenthesis.");
-                }
-                operatorStack.pop();
-            }else if(ParserUtils.forConditionExpression.get(token.getType()) != null){
-                Node operator;
-
-                if(previousToken == null || previousToken.getType() == Token.Type.ParenthesisLeft || ParserUtils.forConditionExpression.get(previousToken.getType()) != null){
-                    if(token.getType() == Token.Type.Minus){
-                        operator = new Node(Node.Operator.Negative);
-                    }else if(token.getType() == Token.Type.Not){
-                        operator = new Node(Node.Operator.Not);
-                    }else{
-                        throw new ParserException(token, "Wrong expression.");
-                    }
-                }else{
-                    operator = new Node(ParserUtils.forConditionExpression.get(token.getType()));
-                }
-
-                while( !operatorStack.isEmpty() && !operandStack.isEmpty() && operatorStack.peek().parenthesis == Node.Parenthesis.Non && ParserUtils.compareOperators(operatorStack.peek().operator, operator.operator ) && operator.operator != Node.Operator.Negative){
-                    prepareNode(operandStack, operatorStack);
-                }
-                operatorStack.push(operator);
-            }else{
-                throw new ParserException(token, "Wrong expression.");
+            if (andCondition == null) {
+                throw new ParserException(scanner.peek(), "Wrong expression.");
             }
-            previousToken = token;
-            if(value == null){
-                scanner.next();
+
+            orCondition.add(andCondition);
+        }
+        if (orCondition.getAndConditions().size() > 1) {
+            return orCondition;
+        } else {
+            return andCondition;
+        }
+    }
+
+    public Expression tryAndCondition() throws Exception {
+        AndCondition andCondition = new AndCondition();
+
+        Expression equalityCondition = tryEqualityCondition();
+
+        if (equalityCondition == null) {
+            return null;
+        }
+
+        andCondition.add(equalityCondition);
+        while (scanner.peek().getType() == Token.Type.And) {
+            scanner.next();
+            equalityCondition = tryEqualityCondition();
+
+            if (equalityCondition == null) {
+                throw new ParserException(scanner.peek(), "Wrong expression.");
             }
+
+            andCondition.add(equalityCondition);
         }
-        while(!operatorStack.isEmpty()){
-            prepareNode(operandStack, operatorStack);
+        if (andCondition.getEqualityCondition().size() > 1) {
+            return andCondition;
+        } else {
+            return equalityCondition;
         }
-        if(operandStack.size() != 1){
-            throw new ParserException(scanner.peek(), "Wrong expression.");
-        }
-        return new ConditionExpression(operandStack.pop());
     }
 
-    private void prepareNode(Stack<Node> operandStack, Stack<Node> operatorStack) throws ParserException {
-        Node parent = operatorStack.pop();
-        if(parent.parenthesis != Node.Parenthesis.Non){
-            throw new ParserException(scanner.peek(), "Wrong parenthesis number.");
+    public Expression tryEqualityCondition() throws Exception {
+        EqualityCondition equalityCondition = new EqualityCondition();
+
+        Expression relationalCondition = tryRelationalCondition();
+
+        if (relationalCondition == null) {
+            return null;
         }
-        Node rightChild = operandStack.pop();
-        Node leftChild = null;
 
-        if(ParserUtils.operatorOperandsNumber.get(parent.operator)>1){
-            leftChild = operandStack.pop();
+        equalityCondition.add(relationalCondition);
+
+        Token token;
+
+        while (scanner.peek().getType() == Token.Type.And) {
+            token = scanner.get();
+            relationalCondition = tryRelationalCondition();
+
+            if (relationalCondition == null) {
+                throw new ParserException(scanner.peek(), "Wrong expression.");
+            }
+
+            equalityCondition.add(tokenTypeToOperator(token.getType()), relationalCondition);
         }
-        parent.left = leftChild;
-        parent.right = rightChild;
-        operandStack.push(parent);
+        if (equalityCondition.getRelationalConditions().size() > 1) {
+            return equalityCondition;
+        } else {
+            return relationalCondition;
+        }
     }
 
-    private boolean isForValueOrCondition(Token.Type type){
-        return isForValue(type) || (ParserUtils.forConditionExpression.get(type) != null) || type == Token.Type.ParenthesisLeft || type == Token.Type.ParenthesisRight;
+    public Expression tryRelationalCondition() throws Exception {
+        RelationalCondition relationalCondition = new RelationalCondition();
+
+        Expression addExpression = tryAddExpression();
+
+        if (addExpression == null) {
+            return null;
+        }
+
+        relationalCondition.add(addExpression);
+
+        Token token;
+
+        while (isRelation(scanner.peek().getType())) {
+            token = scanner.get();
+            addExpression = tryAddExpression();
+
+            if (addExpression == null) {
+                throw new ParserException(scanner.peek(), "Wrong expression.");
+            }
+
+            relationalCondition.add(tokenTypeToOperator(token.getType()), addExpression);
+        }
+        if (relationalCondition.getAddExpressions().size() > 1) {
+            return relationalCondition;
+        } else {
+            return addExpression;
+        }
     }
 
-    private boolean isForValue(Token.Type type){
-        return type == Token.Type.Identifier || isLiteral(type) || isBoardCheck(type);
+    public boolean isRelation(Token.Type type) {
+        return type == Token.Type.Greater || type == Token.Type.Less || type == Token.Type.LessEqual || type == Token.Type.GreaterEqual || type == Token.Type.Equal || type == Token.Type.NotEqual;
     }
 
-    private boolean isLiteral(Token.Type type){
-        return type == Token.Type.NumberLiteral || type == Token.Type.StringLiteral || type == Token.Type.BoolLiteral || type == Token.Type.UnitLiteral ||
-                type == Token.Type.ColorLiteral || type == Token.Type.HexLiteral || type == Token.Type.PlanetLiteral;
+    public Expression tryAddExpression() throws Exception {
+        AddExpression addExpression = new AddExpression();
+
+        Expression multiplyExpression = tryMultiplyExpression();
+
+        if (multiplyExpression == null) {
+            return null;
+        }
+
+        addExpression.add(multiplyExpression);
+
+        Token token;
+
+        while (isAdd(scanner.peek().getType())) {
+            token = scanner.get();
+
+            multiplyExpression = tryMultiplyExpression();
+
+            if (multiplyExpression == null) {
+                throw new ParserException(scanner.peek(), "Wrong expression.");
+            }
+
+            addExpression.add(tokenTypeToOperator(token.getType()), multiplyExpression);
+        }
+        if (addExpression.getMultiplyExpressions().size() > 1) {
+            return addExpression;
+        } else {
+            return multiplyExpression;
+        }
     }
 
-    private boolean isBoardCheck(Token.Type type){
+    public boolean isAdd(Token.Type type) {
+        return type == Token.Type.Plus || type == Token.Type.Minus;
+    }
+
+    public Expression tryMultiplyExpression() throws Exception {
+        MultiplyExpression multiplyExpression = new MultiplyExpression();
+
+        Expression expression = tryUnaryExpression();
+
+        if (expression == null) {
+            return null;
+        }
+
+        multiplyExpression.add(expression);
+
+        Token token;
+        while (isMultiply(scanner.peek().getType())) {
+            token = scanner.get();
+
+            expression = tryUnaryExpression();
+
+            if (expression == null) {
+                throw new ParserException(scanner.peek(), "Wrong expression.");
+            }
+
+            multiplyExpression.add(tokenTypeToOperator(token.getType()), expression);
+        }
+        if (multiplyExpression.getExpressions().size() > 1) {
+            return multiplyExpression;
+        } else {
+            return expression;
+        }
+    }
+
+    public boolean isMultiply(Token.Type type) {
+        return type == Token.Type.Multiply || type == Token.Type.Divide;
+    }
+
+    public Expression tryUnaryExpression() throws Exception {
+        Expression expression;
+        if ((expression = tryNegativeUnaryExpression()) != null || (expression = tryNotUnaryExpression()) != null) {
+            return new UnaryExpression(expression);
+        }
+        expression = tryExpression();
+        if (expression == null) {
+            return null;
+        }
+        return new UnaryExpression(expression);
+    }
+
+    public Expression tryNegativeUnaryExpression() throws Exception {
+        if (compareTokenType(Token.Type.Minus)) {
+            scanner.next();
+            Expression unaryExpression = tryUnaryExpression();
+            return new NegativeUnaryExpression(unaryExpression);
+        }
+        return null;
+    }
+
+    public Expression tryNotUnaryExpression() throws Exception {
+        if (compareTokenType(Token.Type.Not)) {
+            scanner.next();
+            Expression unaryExpression = tryUnaryExpression();
+            return new NotUnaryExpression(unaryExpression);
+        }
+        return null;
+    }
+
+    public Expression tryExpression() throws Exception {
+        if (compareTokenType(Token.Type.ParenthesisLeft)) {
+            scanner.next();
+
+            Expression orCondition = tryOrCondition();
+
+            checkCurrentToken(Token.Type.ParenthesisRight);
+            scanner.next();
+
+            return orCondition;
+        } else {
+            return tryValue();
+        }
+    }
+
+    public Operator tokenTypeToOperator(Token.Type type) throws ParserException {
+        switch (type) {
+            case Or:
+                return new OrOperator();
+            case And:
+                return new AndOperator();
+            case Greater:
+                return new GreaterOperator();
+            case GreaterEqual:
+                return new GreaterEqualOperator();
+            case Less:
+                return new LessOperator();
+            case LessEqual:
+                return new LessEqualOperator();
+            case Equal:
+                return new EqualOperator();
+            case NotEqual:
+                return new NotEqualOperator();
+            case Plus:
+                return new PlusOperator();
+            case Minus:
+                return new MinusOperator();
+            case Multiply:
+                return new MultiplyOperator();
+            case Divide:
+                return new DivideOperator();
+            default:
+                break;
+        }
+        throw new ParserException(scanner.peek(), "Unknown operator type.");
+    }
+
+    private boolean isBoardCheck(Token.Type type) {
         return type == Token.Type.Player || type == Token.Type.Type;
     }
 
     public Value tryValue() throws Exception {
         Token token = scanner.peek();
-        if(isLiteral(scanner.peek().getType())){
+        if (isLiteral(scanner.peek().getType())) {
             scanner.next();
-            return new Literal(ParserUtils.tokenTypeToLiteralType.get(token.getType()), token.getValue());
+            return tokenTypeToLiteral(token.getType(), token.getValue());
         }
-        if (token.getType() == Token.Type.Identifier){
+        if (token.getType() == Token.Type.Identifier) {
             Token identifier = scanner.get();
-            if(compareTokenType(Token.Type.ParenthesisLeft)){
+            if (compareTokenType(Token.Type.ParenthesisLeft)) {
                 return tryFunctionCallValue(identifier);
             }
-            if(compareTokenType(Token.Type.BracketsLeft)){
-                checkNextToken(Token.Type.NumberLiteral);
-                Token number = scanner.get();
+            if (compareTokenType(Token.Type.BracketsLeft)) {
+                scanner.next();
+
+                Value value = tryValue();
+
                 checkCurrentToken(Token.Type.BracketsRight);
                 scanner.next();
 
-                return new VariableValue(identifier.getValue(), Integer.parseInt(number.getValue()));
+                return new VariableValue(identifier.getValue(), value);
             }
             return new VariableValue(identifier.getValue());
         }
-        if(isBoardCheck(token.getType())){
+        if (isBoardCheck(token.getType())) {
             return tryBoardStateCheck();
         }
         return null;
+    }
+
+    private boolean isLiteral(Token.Type type) {
+        return type == Token.Type.NumberLiteral || type == Token.Type.StringLiteral || type == Token.Type.BoolLiteral || type == Token.Type.UnitLiteral ||
+                type == Token.Type.ColorLiteral || type == Token.Type.HexLiteral || type == Token.Type.PlanetLiteral;
+    }
+
+    public Literal tokenTypeToLiteral(Token.Type type, String value) throws ParserException {
+        switch (type) {
+            case NumberLiteral:
+                return new IntLiteral(value);
+            case StringLiteral:
+                return new StringLiteral(value.substring(1, value.length() - 1));
+            case BoolLiteral:
+                return new BoolLiteral(value);
+            case UnitLiteral:
+                return new UnitLiteral(value);
+            case ColorLiteral:
+                return new ColorLiteral(value);
+            case HexLiteral:
+                return new HexLiteral(value);
+            case PlanetLiteral:
+                return new PlanetLiteral(value);
+            default:
+                break;
+        }
+        throw new ParserException(scanner.peek(), "Unknown literal type.");
     }
 
     public FunctionCallValue tryFunctionCallValue(Token identifier) throws Exception {
@@ -627,15 +853,15 @@ public class Parser {
     }
 
     public Value tryBoardStateCheck() throws Exception {
-        if(scanner.peek().getType() == Token.Type.Player){
+        if (scanner.peek().getType() == Token.Type.Player) {
             return tryPlayerStateCheckOrActivationCheck();
-        }else{
+        } else {
             return tryPlanetOrHexStateCheck();
         }
     }
 
     public Value tryPlanetOrHexStateCheck() throws Exception {
-        if(compareTokenType(Token.Type.Type) &&(scanner.peek().getValue().equals("hex") || scanner.peek().getValue().equals("planet"))){
+        if (compareTokenType(Token.Type.Type) && (scanner.peek().getValue().equals("hex") || scanner.peek().getValue().equals("planet"))) {
             Token type = scanner.peek();
             checkNextToken(Token.Type.ParenthesisLeft);
             scanner.next();
@@ -647,9 +873,9 @@ public class Parser {
             Value unit = tryValue();
             checkCurrentToken(Token.Type.ParenthesisRight);
             scanner.next();
-            if(type.getValue().equals("planet")){
+            if (type.getValue().equals("planet")) {
                 return new PlanetStateCheck(place, unit);
-            }else if(type.getValue().equals("hex")){
+            } else if (type.getValue().equals("hex")) {
                 return new HexStateCheck(place, unit);
             }
         }
@@ -657,7 +883,7 @@ public class Parser {
     }
 
     public Value tryPlayerStateCheckOrActivationCheck() throws Exception {
-        if(compareTokenType(Token.Type.Player)){
+        if (compareTokenType(Token.Type.Player)) {
             checkNextToken(Token.Type.ParenthesisLeft);
             scanner.next();
 
@@ -666,7 +892,7 @@ public class Parser {
             checkCurrentToken(Token.Type.ParenthesisRight);
             scanner.next();
 
-            if(compareTokenType(Token.Type.Has)){
+            if (compareTokenType(Token.Type.Has)) {
                 checkNextToken(Token.Type.ParenthesisLeft);
                 scanner.next();
                 Value unit = tryValue();
@@ -678,15 +904,15 @@ public class Parser {
                 checkCurrentToken(Token.Type.ParenthesisRight);
                 scanner.next();
                 return new PlayerStateCheck(player, unit, place);
-            }else if(compareTokenType(Token.Type.Activated)){
+            } else if (compareTokenType(Token.Type.Activated)) {
                 checkNextToken(Token.Type.ParenthesisLeft);
                 scanner.next();
                 Value hex = tryValue();
                 checkCurrentToken(Token.Type.ParenthesisRight);
                 scanner.next();
                 return new ActivationCheck(player, hex);
-            }else{
-                throw new ParserException(scanner.peek(), "Expected \"has\" or \"activated\"");
+            } else {
+                throw new ParserException(scanner.peek(), "Expected: \"has\" or \"activated\"");
             }
         }
         return null;
@@ -699,12 +925,12 @@ public class Parser {
 
     private void checkCurrentToken(Token.Type type) throws Exception {
         Token token = scanner.peek();
-        if(!compareTokenType(type)){
+        if (!compareTokenType(type)) {
             throw new ParserException(token, type);
         }
     }
 
-    private boolean compareTokenType(Token.Type type){
+    private boolean compareTokenType(Token.Type type) {
         return scanner.peek().getType() == type;
     }
 }

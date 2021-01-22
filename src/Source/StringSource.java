@@ -1,6 +1,7 @@
 package Source;
 
 import Utilities.Constants;
+import Utilities.Position;
 
 /**
  * Author: Rafal Uzarowicz

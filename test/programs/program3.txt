@@ -1,0 +1,30 @@
+int factorial( int n ){
+    if( n <= 1 ){
+        return 1;
+    }else{
+        return n * factorial(n-1);
+    }
+}
+
+int main(){
+    int[] arr = int[3];
+    int i = 0;
+    foreach( var x : arr ){
+        x = i;
+        i = i + 1;
+    }
+    hex h = h7;
+    color p = Red;
+    unit u = Fighter;
+    foreach( var x : arr ){
+        x = factorial(x);
+        player(p)add(u:x, Carrier:1)to(h);
+    }
+    print(player(p)has(u)at(h), " ");
+    print(player(Red)has(u)at(h), " ");
+    print(player(p)has(Fighter)at(h), " ");
+    print(player(p)has(u)at(h7), " ");
+    print(player(p)has(Carrier)at(h7), " ");
+    print("end");
+    return 0;
+}

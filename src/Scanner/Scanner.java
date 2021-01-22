@@ -2,9 +2,10 @@ package Scanner;
 
 import Exceptions.ScannerException;
 import Source.ISource;
-import Source.Position;
 import Utilities.Constants;
+import Utilities.Position;
 import Utilities.ScannerUtils;
+import Utilities.Token;
 
 /**
  * Author: Rafal Uzarowicz
@@ -52,8 +53,8 @@ public class Scanner {
         }
         // If undefString wasn't initialized, we passed all tries so it's unknown char from source.
         // If undefString is initialized then it's unknown string created by one of tries.
-        String unknownSymbol = undefString != null ? undefString.toString() : "" + (char) source.peek();
-        throw new ScannerException("Undefined symbol: " + unknownSymbol + " at " + position + ".");
+        String unknownSymbol = (undefString != null && undefString.length() > 0 ) ? undefString.toString() : ("" + (char) source.peek());
+        throw new ScannerException(position, "Undefined symbol: " + unknownSymbol);
     }
 
     public Token get() throws Exception {
@@ -62,7 +63,7 @@ public class Scanner {
         return tempToken;
     }
 
-    public Token peek(){
+    public Token peek() {
         return this.token;
     }
 
@@ -94,7 +95,7 @@ public class Scanner {
             if (tempChar == (char) source.peek()) {
                 tempType = ScannerUtils.symbolToType.get("" + tempChar + tempChar);
             } else {
-                throw new ScannerException("Double symbol error at " + position + ".");
+                throw new ScannerException(position, "Double symbol error: Expected: "+tempChar+tempChar);
             }
         } else {
             return false;
@@ -140,7 +141,7 @@ public class Scanner {
                 token = new Token(Token.Type.StringLiteral, position, stringBuilder.toString());
                 return true;
             } else {
-                throw new ScannerException("String not valid at " + position + ".");
+                throw new ScannerException(position, "String not valid: Missing: \"");
             }
         }
         return false;
@@ -208,7 +209,7 @@ public class Scanner {
             }
         }
         if (undefString.length() == Constants.Token.MAX_IDENTIFIER_LEN) {
-            throw new ScannerException("Too long identifier at " + position + ".");
+            throw new ScannerException(position, "Too long identifier.");
         }
         return false;
     }
@@ -264,7 +265,7 @@ public class Scanner {
         if (isZeroDigit((char) source.peek())) {
             token = new Token(Token.Type.NumberLiteral, position, "" + (char) source.get());
             if (isDigit((char) source.peek())) {
-                throw new ScannerException("Wrong number at " + position);
+                throw new ScannerException(position, "Wrong number.");
             }
             return true;
         } else if (isNonZeroDigit((char) source.peek())) {

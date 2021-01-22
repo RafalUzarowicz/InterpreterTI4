@@ -1,9 +1,10 @@
 package Source;
 
 import Utilities.Constants;
+import Utilities.Position;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Author: Rafal Uzarowicz

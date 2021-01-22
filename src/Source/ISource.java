@@ -1,5 +1,7 @@
 package Source;
 
+import Utilities.Position;
+
 /**
  * Author: Rafal Uzarowicz
  * Github: https://github.com/RafalUzarowicz

@@ -1,22 +1,25 @@
 package Parser;
 
 import Exceptions.ParserException;
-import Parser.ProgramTree.*;
-import Parser.ProgramTree.BoardChange.*;
-import Parser.ProgramTree.ConditionExpresion.ConditionExpression;
-import Parser.ProgramTree.Statements.*;
-import Parser.ProgramTree.Value.BoardStateCheck.ActivationCheck;
-import Parser.ProgramTree.Value.BoardStateCheck.HexStateCheck;
-import Parser.ProgramTree.Value.BoardStateCheck.PlanetStateCheck;
-import Parser.ProgramTree.Value.BoardStateCheck.PlayerStateCheck;
-import Parser.ProgramTree.Value.FunctionCallValue;
-import Parser.ProgramTree.Value.Literal;
-import Parser.ProgramTree.Value.Value;
 import Scanner.Scanner;
-import Scanner.Token;
-import Source.Position;
 import Source.StringSource;
-import Utilities.ExpressionString;
+import Utilities.Position;
+import Utilities.ProgramTree.Block;
+import Utilities.ProgramTree.BoardChange.*;
+import Utilities.ProgramTree.ConditionExpresion.Expression;
+import Utilities.ProgramTree.Function;
+import Utilities.ProgramTree.Parameters;
+import Utilities.ProgramTree.Program;
+import Utilities.ProgramTree.Statements.*;
+import Utilities.ProgramTree.Value.BoardStateCheck.ActivationCheck;
+import Utilities.ProgramTree.Value.BoardStateCheck.HexStateCheck;
+import Utilities.ProgramTree.Value.BoardStateCheck.PlanetStateCheck;
+import Utilities.ProgramTree.Value.BoardStateCheck.PlayerStateCheck;
+import Utilities.ProgramTree.Value.FunctionCallValue;
+import Utilities.ProgramTree.Value.Literals.*;
+import Utilities.ProgramTree.Value.Value;
+import Utilities.ProgramTree.Variables.IntVariable;
+import Utilities.Token;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.Arguments;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -39,18 +42,18 @@ public class ParserTest {
     @MethodSource("providePlayerStateCheckGood")
     void goodPlayerStateCheck(String player, String unit, String place) throws Exception {
         // Arrange
-        String line = "player("+player+")has("+unit+")at("+place+")";
+        String line = "player(" + player + ")has(" + unit + ")at(" + place + ")";
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
         // Act
         PlayerStateCheck playerStateCheck = (PlayerStateCheck) parser.tryPlayerStateCheckOrActivationCheck();
         // Assert
-        assertEquals(Literal.LiteralType.Color, ((Literal) playerStateCheck.getPlayer()).getType());
+        assertEquals(ColorLiteral.class, playerStateCheck.getPlayer().getClass());
         assertEquals(player, ((Literal) playerStateCheck.getPlayer()).getValue());
-        assertEquals(Literal.LiteralType.Unit, ((Literal) playerStateCheck.getUnit()).getType());
+        assertEquals(UnitLiteral.class, playerStateCheck.getUnit().getClass());
         assertEquals(unit, ((Literal) playerStateCheck.getUnit()).getValue());
-        assertEquals(Literal.LiteralType.Hex, ((Literal) playerStateCheck.getPlace()).getType());
+        assertEquals(HexLiteral.class, playerStateCheck.getPlace().getClass());
         assertEquals(place, ((Literal) playerStateCheck.getPlace()).getValue());
     }
 
@@ -88,16 +91,16 @@ public class ParserTest {
     @MethodSource("provideActivationCheckGood")
     void goodActivationCheck(String player, String place) throws Exception {
         // Arrange
-        String line = "player("+player+")activated("+place+")";
+        String line = "player(" + player + ")activated(" + place + ")";
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
         // Act
         ActivationCheck activationCheck = (ActivationCheck) parser.tryPlayerStateCheckOrActivationCheck();
         // Assert
-        assertEquals(Literal.LiteralType.Color, ((Literal) activationCheck.getPlayer()).getType());
+        assertEquals(ColorLiteral.class, activationCheck.getPlayer().getClass());
         assertEquals(player, ((Literal) activationCheck.getPlayer()).getValue());
-        assertEquals(Literal.LiteralType.Hex, ((Literal) activationCheck.getHex()).getType());
+        assertEquals(HexLiteral.class, activationCheck.getHex().getClass());
         assertEquals(place, ((Literal) activationCheck.getHex()).getValue());
     }
 
@@ -134,16 +137,16 @@ public class ParserTest {
     @MethodSource("provideHexStateCheckGood")
     void goodHexStateCheck(String hex, String place, String unit) throws Exception {
         // Arrange
-        String line = hex+"("+place+")has("+unit+")";
+        String line = hex + "(" + place + ")has(" + unit + ")";
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
         // Act
         HexStateCheck hexStateCheck = (HexStateCheck) parser.tryPlanetOrHexStateCheck();
         // Assert
-        assertEquals(Literal.LiteralType.Unit, ((Literal) hexStateCheck.getUnit()).getType());
+        assertEquals(UnitLiteral.class, hexStateCheck.getUnit().getClass());
         assertEquals(unit, ((Literal) hexStateCheck.getUnit()).getValue());
-        assertEquals(Literal.LiteralType.Hex, ((Literal) hexStateCheck.getHex()).getType());
+        assertEquals(HexLiteral.class, hexStateCheck.getHex().getClass());
         assertEquals(place, ((Literal) hexStateCheck.getHex()).getValue());
     }
 
@@ -181,16 +184,16 @@ public class ParserTest {
     @MethodSource("providePlanetStateCheckGood")
     void goodPlanetStateCheck(String planet, String place, String unit) throws Exception {
         // Arrange
-        String line = planet+"("+place+")has("+unit+")";
+        String line = planet + "(" + place + ")has(" + unit + ")";
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
         // Act
         PlanetStateCheck planetStateCheck = (PlanetStateCheck) parser.tryPlanetOrHexStateCheck();
         // Assert
-        assertEquals(Literal.LiteralType.Unit, ((Literal) planetStateCheck.getUnit()).getType());
+        assertEquals(UnitLiteral.class, planetStateCheck.getUnit().getClass());
         assertEquals(unit, ((Literal) planetStateCheck.getUnit()).getValue());
-        assertEquals(Literal.LiteralType.Planet, ((Literal) planetStateCheck.getPlanet()).getType());
+        assertEquals(PlanetLiteral.class, planetStateCheck.getPlanet().getClass());
         assertEquals(place, ((Literal) planetStateCheck.getPlanet()).getValue());
     }
 
@@ -264,7 +267,7 @@ public class ParserTest {
     @MethodSource("provideFunctionCallValueGood")
     void goodFunctionCallValue(Token token, String argumentsString) throws Exception {
         // Arrange
-        String line = token.getValue()+"("+argumentsString+")";
+        String line = token.getValue() + "(" + argumentsString + ")";
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
@@ -276,9 +279,9 @@ public class ParserTest {
         // Assert
         assertNotEquals(null, arguments);
         assertEquals(token.getValue(), functionCallValue.getIdentifier());
-        if(!argumentsString.equals("")){
+        if (!argumentsString.equals("")) {
             assertEquals(args.length, arguments.getArguments().size());
-        }else{
+        } else {
             assertEquals(0, arguments.getArguments().size());
         }
     }
@@ -295,7 +298,7 @@ public class ParserTest {
     @MethodSource("provideFunctionCallValueBad")
     void badFunctionCallValue(Token token, String string) throws Exception {
         // Arrange
-        String line = token.getValue()+string;
+        String line = token.getValue() + string;
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
@@ -363,52 +366,48 @@ public class ParserTest {
 
     private static Stream<Arguments> provideConditionExpressionGood() {
         return Stream.of(
-                Arguments.of("12"),
-                Arguments.of("h0"),
-                Arguments.of("p1"),
-                Arguments.of("Red"),
-                Arguments.of("Fighter"),
-                Arguments.of("\"Tak\""),
-                Arguments.of("true"),
-                Arguments.of("x"),
-                Arguments.of("arr[2]"),
-                Arguments.of("fun()"),
-                Arguments.of("player(Red)activated(h0)"),
-                Arguments.of("hex(h1)has(Carrier)"),
-                Arguments.of("7*2+3"),
-                Arguments.of("(3+4)*(8-1||2)"),
-                Arguments.of("2&&7----1"),
-                Arguments.of("!(x||!y+2)")
+                Arguments.of("12", "12"),
+                Arguments.of("h0", "h0"),
+                Arguments.of("p1", "p1"),
+                Arguments.of("Red", "Red"),
+                Arguments.of("Fighter", "Fighter"),
+                Arguments.of("\"Tak\"", "\"Tak\""),
+                Arguments.of("true", "true"),
+                Arguments.of("x", "x"),
+                Arguments.of("arr[2]", "arr[2]"),
+                Arguments.of("fun()", "fun()"),
+                Arguments.of("player(Red)activated(h0)", "player(Red)activated(h0)"),
+                Arguments.of("hex(h1)has(Carrier)", "hex(h1)has(Carrier)"),
+                Arguments.of("7*2+3", "((7*2)+3)"),
+                Arguments.of("(3+4)*(8-1||2)", "((3+4)*((8-1)||2))"),
+                Arguments.of("2&&7----1", "(2&&(7--(-(-(1)))))"),
+                Arguments.of("!(x||!y+2)", "!((x||(!(y)+2)))"),
+                Arguments.of("2+2*2", "(2+(2*2))")
         );
     }
 
     @ParameterizedTest
     @MethodSource("provideConditionExpressionGood")
-    void goodConditionExpression(String line) throws Exception {
+    void goodConditionExpression(String line, String expected) throws Exception {
         // Arrange
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
-        ExpressionString expressionString = new ExpressionString(line);
         // Act
-        ConditionExpression conditionExpression = parser.tryConditionExpression();
+        Expression orCondition = parser.tryOrCondition();
         // Assert
-        assertNotEquals(null, conditionExpression);
-        assertTrue(expressionString.compareExpressions(conditionExpression.toString()));
+        assertNotEquals(null, orCondition);
+        assertEquals(expected, orCondition.toString());
     }
+
 
     private static Stream<Arguments> provideConditionExpressionBad() {
         return Stream.of(
-                Arguments.of("int x;"),
-                Arguments.of("if"),
-                Arguments.of("foreach"),
-                Arguments.of(","),
-                Arguments.of(";"),
-                Arguments.of("var"),
                 Arguments.of("7*2++3"),
                 Arguments.of("(3+4)*(8-1||2("),
+                Arguments.of("!(x+(!y+2)"),
                 Arguments.of("!(x+(!y+2)")
-                );
+        );
     }
 
     @ParameterizedTest
@@ -420,16 +419,14 @@ public class ParserTest {
         Parser parser = new Parser(scanner);
         // Act
         // Assert
-        assertThrows(ParserException.class, parser::tryConditionExpression);
+        assertThrows(ParserException.class, parser::tryOrCondition);
     }
 
 
     private static Stream<Arguments> provideArrayDeclarationGood() {
         return Stream.of(
                 Arguments.of("int[] x = int[2];"),
-                Arguments.of("int[] x = int[];"),
-                Arguments.of("int[] x = int[2]{2,5};"),
-                Arguments.of("int[] x = int[]{2,5};")
+                Arguments.of("int[] x = int[2]{2,5};")
         );
     }
 
@@ -445,7 +442,7 @@ public class ParserTest {
         ArrayDeclaration arrayDeclaration = parser.tryArrayDeclaration(scanner.peek());
         // Assert
         assertNotEquals(null, arrayDeclaration);
-        assertEquals(Variable.VariableType.Int, arrayDeclaration.getType());
+        assertEquals(IntVariable.class, arrayDeclaration.getType().getVariable().getClass());
         assertEquals("x", arrayDeclaration.getIdentifier());
     }
 
@@ -497,7 +494,7 @@ public class ParserTest {
         VariableDeclaration variableDeclaration = parser.tryVariableDeclaration(type);
         // Assert
         assertNotEquals(null, variableDeclaration);
-        assertEquals(Variable.VariableType.valueOf(variableDeclaration.getVariable().getType().toString()), variableDeclaration.getVariable().getType());
+        assertEquals(parser.keywordToVariable(strings[0], "name").getClass(), variableDeclaration.getVariable().getClass());
         assertEquals(strings[1], variableDeclaration.getVariable().getName());
         assertNotEquals(null, variableDeclaration.getValue());
     }
@@ -579,12 +576,12 @@ public class ParserTest {
         assertNotEquals(null, assignment);
         assertNotEquals(null, assignment.getValue());
 
-        if(strings[0].endsWith("]")){
+        if (strings[0].endsWith("]")) {
             String[] subStrs = strings[0].split("\\[");
             assertEquals(subStrs[0], assignment.getIdentifier());
-            String subStr = subStrs[1].substring(0, subStrs[1].length()-1);
+            String subStr = subStrs[1].substring(0, subStrs[1].length() - 1);
             assertEquals(subStr, assignment.getIndex());
-        }else{
+        } else {
             assertEquals(strings[0], assignment.getIdentifier());
         }
     }
@@ -642,9 +639,7 @@ public class ParserTest {
 
     private static Stream<Arguments> provideArgumentsBad() {
         return Stream.of(
-                Arguments.of("activated"),
-                Arguments.of("x2(3"),
-                Arguments.of(";")
+                Arguments.of("x2(3")
         );
     }
 
@@ -673,7 +668,7 @@ public class ParserTest {
     @MethodSource("provideFunctionCallStatementGood")
     void goodFunctionCallStatement(Token token, String argumentsString) throws Exception {
         // Arrange
-        String line = token.getValue()+"("+argumentsString+");";
+        String line = token.getValue() + "(" + argumentsString + ");";
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
@@ -685,9 +680,9 @@ public class ParserTest {
         // Assert
         assertNotEquals(null, arguments);
         assertEquals(token.getValue(), functionCall.getIdentifier());
-        if(!argumentsString.equals("")){
+        if (!argumentsString.equals("")) {
             assertEquals(args.length, arguments.getArguments().size());
-        }else{
+        } else {
             assertEquals(0, arguments.getArguments().size());
         }
     }
@@ -704,7 +699,7 @@ public class ParserTest {
     @MethodSource("provideFunctionCallStatementBad")
     void badFunctionCallStatement(Token token, String string) throws Exception {
         // Arrange
-        String line = token.getValue()+string;
+        String line = token.getValue() + string;
         StringSource source = new StringSource(line);
         Scanner scanner = new Scanner(source);
         Parser parser = new Parser(scanner);
@@ -1237,7 +1232,7 @@ public class ParserTest {
                 Arguments.of("funcall(2, 3 , 4);"),
                 Arguments.of("x=2;"),
                 Arguments.of("int x = 2;"),
-                Arguments.of("int[] x = int[];")
+                Arguments.of("int[] x = int[2];")
         );
     }
 
@@ -1327,7 +1322,7 @@ public class ParserTest {
 
     private static Stream<Arguments> provideParametersGood() {
         return Stream.of(
-                Arguments.of("int x, color[] colors"),
+                Arguments.of("int x, color c"),
                 Arguments.of("int x"),
                 Arguments.of("")
         );
@@ -1345,9 +1340,9 @@ public class ParserTest {
         Parameters parameters = parser.tryParameters();
         // Assert
         assertNotEquals(null, parameters);
-        if(!line.equals("")){
+        if (!line.equals("")) {
             assertEquals(params.length, parameters.getParameters().size());
-        }else{
+        } else {
             assertEquals(0, parameters.getParameters().size());
         }
     }
@@ -1376,7 +1371,7 @@ public class ParserTest {
         return Stream.of(
                 Arguments.of("int x(){}"),
                 Arguments.of("int x(int a){}"),
-                Arguments.of("int x(int a, int[] b){}"),
+                Arguments.of("int x(int a, int b){}"),
                 Arguments.of("int x(){return 2;}")
         );
     }
@@ -1420,7 +1415,7 @@ public class ParserTest {
         return Stream.of(
                 Arguments.of("int x(){}\nint main(){}"),
                 Arguments.of("int x(int a){}"),
-                Arguments.of("int x(int a, int[] b){}"),
+                Arguments.of("int x(int a, int b){}"),
                 Arguments.of("int x(){return 2;}")
         );
     }
@@ -1442,7 +1437,7 @@ public class ParserTest {
         return Stream.of(
                 Arguments.of("x(){}"),
                 Arguments.of("int (int a){}"),
-                Arguments.of("int x int a, int[] b){}"),
+                Arguments.of("int x int a, int b){}"),
                 Arguments.of("int x({return 2;}")
         );
     }
