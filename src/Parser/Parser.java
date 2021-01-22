@@ -912,7 +912,7 @@ public class Parser {
                 scanner.next();
                 return new ActivationCheck(player, hex);
             } else {
-                throw new ParserException(scanner.peek(), "Expected \"has\" or \"activated\"");
+                throw new ParserException(scanner.peek(), "Expected: \"has\" or \"activated\"");
             }
         }
         return null;

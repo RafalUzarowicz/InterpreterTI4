@@ -40,7 +40,7 @@ public class CallContext {
         throw new InterpreterException(line, "Unknown variable identifier: " + name);
     }
 
-    public Variable getVariable(String name) {
+    public Variable getVariable(int line, String name) throws InterpreterException {
         Variable variable;
         for (var context : blockContexts) {
             variable = context.getVariable(name);
@@ -48,6 +48,6 @@ public class CallContext {
                 return variable;
             }
         }
-        return null;
+        throw new InterpreterException(line, "Unknown variable identifier: " + name);
     }
 }

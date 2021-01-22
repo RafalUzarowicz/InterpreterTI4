@@ -186,7 +186,7 @@ public class Interpreter implements IVisitor {
     // Value
     @Override
     public void visit(VariableValue variableValue) throws Exception {
-        Variable variable = environment.peekCallContext().getVariable(variableValue.getName());
+        Variable variable = environment.peekCallContext().getVariable(environment.getCurrentStatementLine(), variableValue.getName());
         if (variable != null) {
             if (variableValue.getIndex() != null) {
                 variableValue.getIndex().accept(this);
@@ -340,7 +340,7 @@ public class Interpreter implements IVisitor {
         Variable variable = arrayVariable.getVariable();
 
         environment.peekCallContext().peekBlockContext().setVariable(arrayVariable.getName(), arrayVariable);
-        arrayVariable = (ArrayVariable) environment.peekCallContext().getVariable(arrayVariable.getName());
+        arrayVariable = (ArrayVariable) environment.peekCallContext().getVariable(environment.getCurrentStatementLine(), arrayVariable.getName());
 
         if (arrayDeclaration.getValues().size() > arrayVariable.size()) {
             throw new InterpreterException(arrayDeclaration.getPosition().getLine(), "Array elements number mismatch.");
@@ -363,7 +363,7 @@ public class Interpreter implements IVisitor {
     public void visit(Assignment assignment) throws Exception {
         CallContext callContext = environment.peekCallContext();
 
-        Variable variable = callContext.getVariable(assignment.getIdentifier());
+        Variable variable = callContext.getVariable(environment.getCurrentStatementLine(), assignment.getIdentifier());
 
         Expression orCondition = assignment.getValue();
 
@@ -426,14 +426,14 @@ public class Interpreter implements IVisitor {
     public void visit(Loop loop) throws Exception {
         environment.setHasContinued(false);
         environment.setHasBroken(false);
-        ArrayVariable arrayVariable = (ArrayVariable) environment.peekCallContext().getVariable(loop.getArrayIdentifier());
+        ArrayVariable arrayVariable = (ArrayVariable) environment.peekCallContext().getVariable(environment.getCurrentStatementLine(), loop.getArrayIdentifier());
 
         if (!loop.getVariable().getClass().equals(VarVariable.class) && !loop.getVariable().getClass().equals(arrayVariable.getVariable().getClass())) {
             throw new InterpreterException(loop.getPosition().getLine(), "Types doesn't match inside loop");
         }
         environment.peekCallContext().pushBlockContext();
         environment.peekCallContext().peekBlockContext().setVariable(loop.getVariable().getName(), loop.getVariable());
-        ArrayVariable array = (ArrayVariable) environment.peekCallContext().getVariable(loop.getArrayIdentifier());
+        ArrayVariable array = (ArrayVariable) environment.peekCallContext().getVariable(environment.getCurrentStatementLine(), loop.getArrayIdentifier());
         for (int i = 0; i < arrayVariable.size(); ++i) {
             array.getValue(i).accept(this);
             environment.peekCallContext().setVariableValue(environment.getCurrentStatementLine(), loop.getVariable().getName(), environment.popValue().getValue());
@@ -441,7 +441,7 @@ public class Interpreter implements IVisitor {
                 loop.getBlock().accept(this);
             }
             environment.setHasContinued(false);
-            String val = environment.peekCallContext().getVariable(loop.getVariable().getName()).getValue();
+            String val = environment.peekCallContext().getVariable(environment.getCurrentStatementLine(), loop.getVariable().getName()).getValue();
             if (val != null) {
                 array.setValue(i, InterpreterUtils.literalCast(new Literal(val), array.getVariable()));
             }

@@ -1,6 +1,7 @@
 package Interpreter;
 
 import Exceptions.InterpreterException;
+import Exceptions.InterpretingException;
 import Utilities.ProgramTree.*;
 import Utilities.ProgramTree.BoardChange.*;
 import Utilities.ProgramTree.ConditionExpresion.*;
@@ -16,6 +17,7 @@ import Utilities.ProgramTree.Value.Value;
 import Utilities.ProgramTree.Value.VariableValue;
 import Utilities.ProgramTree.Variables.*;
 
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
@@ -24,9 +26,15 @@ import java.lang.reflect.Method;
  * Visitor interface.
  */
 public interface IVisitor {
-    default void visit(INode node) throws Exception {
-        Method method = this.getClass().getMethod("visit", node.getClass());
-        method.invoke(this, node);
+    default void visit(INode node) throws InterpretingException {
+        try{
+            Method method = this.getClass().getMethod("visit", node.getClass());
+            method.invoke(this, node);
+        } catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException exception){
+            if(exception.getCause() instanceof InterpretingException){
+                throw new InterpretingException(exception.getCause().getMessage());
+            }
+        }
     }
 
     void visit(Program program) throws Exception;

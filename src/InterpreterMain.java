@@ -1,4 +1,5 @@
 import Board.Board;
+import Exceptions.InterpretingException;
 import Interpreter.Interpreter;
 import Parser.Parser;
 import Scanner.Scanner;
@@ -26,8 +27,10 @@ public class InterpreterMain {
 
                 interpreter.execute(false);
 
-            } catch (Exception exception) {
-                exception.printStackTrace();
+            } catch (InterpretingException exception) {
+                System.err.println(exception.getMessage());
+            }  catch (Exception exception) {
+                System.err.println("Error: Internal interpreter exception.");
             }
         }else{
             System.err.println("Wrong number of files.");
